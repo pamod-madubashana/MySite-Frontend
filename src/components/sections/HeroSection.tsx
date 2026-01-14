@@ -77,7 +77,7 @@ export const HeroSection = () => {
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
         >
           <span className="text-foreground">Hi, I'm </span>
-          <span className="text-gradient">Alex Chen</span>
+          <span className="text-gradient">Pamod Madubashana</span>
           <br />
           <span className="text-foreground">Full-Stack Developer</span>
         </motion.h1>
