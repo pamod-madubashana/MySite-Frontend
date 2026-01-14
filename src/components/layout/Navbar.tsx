@@ -13,9 +13,9 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com/yourusername", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com/in/yourusername", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:hello@portfolio.com", label: "Email" },
+  { icon: Github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
+  { icon: Linkedin, href: "https://linkedin.com/in/pamod-madubashana", label: "LinkedIn" },
+  { icon: Mail, href: "mailto:hello@pamodmadubashana.com", label: "Email" },
 ];
 
 export const Navbar = () => {
@@ -62,7 +62,7 @@ export const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="relative group">
             <span className="text-xl md:text-2xl font-bold text-gradient">
-              &lt;DEV/&gt;
+              P A M O D
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
           </Link>
