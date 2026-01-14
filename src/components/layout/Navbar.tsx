@@ -13,9 +13,9 @@ const navLinks = [
 ];
 
 const socialLinks = [
-  { icon: Github, href: "https://github.com", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:contact@example.com", label: "Email" },
+  { icon: Github, href: "https://github.com/yourusername", label: "GitHub" },
+  { icon: Linkedin, href: "https://linkedin.com/in/yourusername", label: "LinkedIn" },
+  { icon: Mail, href: "mailto:hello@portfolio.com", label: "Email" },
 ];
 
 export const Navbar = () => {
@@ -171,9 +171,14 @@ export const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
+                <Link to="/#contact" onClick={() => {
+                        // Close menu with slight delay for better UX
+                        setTimeout(() => setIsOpen(false), 150);
+                      }}>
                 <Button variant="default" className="mt-4 neon-glow">
                   Contact
                 </Button>
+                </Link>
               </div>
             </div>
           </motion.div>
