@@ -113,9 +113,11 @@ export const Navbar = () => {
                 </a>
               ))}
             </div>
-            <Button variant="default" size="sm" className="neon-glow">
-              Contact
-            </Button>
+            <Link to="/#contact">
+              <Button variant="default" size="sm" className="neon-glow">
+                Contact
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
