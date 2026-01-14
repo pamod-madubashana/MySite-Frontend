@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import ArticleManager from "./pages/Admin/ArticleManager";
 import SettingsPage from "./pages/Admin/Settings";
+import ProjectManager from "./pages/Admin/ProjectManager";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 
@@ -55,6 +56,14 @@ const App = () => (
                 element={
                   <ProtectedRoute adminOnly={true}>
                     <SettingsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/projects" 
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <ProjectManager />
                   </ProtectedRoute>
                 } 
               />

@@ -4,64 +4,73 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Star, GitFork, ExternalLink, Github, Filter, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { githubApi } from "@/api/githubApi";
 import { useSettings } from "@/contexts/SettingsContext";
 
 const languageColors: Record<string, string> = {
+  React: "bg-cyan-500",
+  "Node.js": "bg-green-500",
   TypeScript: "bg-blue-500",
-  Python: "bg-yellow-500",
-  JavaScript: "bg-amber-500",
-  Go: "bg-cyan-500",
-  Rust: "bg-orange-500",
-  Java: "bg-red-500",
-  C: "bg-gray-500",
-  "C++": "bg-gray-700",
-  "C#": "bg-purple-500",
+  JavaScript: "bg-yellow-500",
+  Python: "bg-yellow-600",
+  MongoDB: "bg-green-600",
+  PostgreSQL: "bg-blue-700",
+  "Next.js": "bg-black",
+  "Tailwind CSS": "bg-teal-500",
 };
 
-const languages = ["All", "TypeScript", "Python", "Go", "JavaScript"];
+const languages = ["All", "React", "Node.js", "TypeScript", "JavaScript", "Python", "MongoDB", "PostgreSQL", "Next.js", "Tailwind CSS"];
+
+interface Project {
+  _id: string;
+  title: string;
+  description: string;
+  techStack: string[];
+  githubUrl?: string;
+  liveUrl?: string;
+  featured: boolean;
+  status: 'draft' | 'published';
+  thumbnail?: string;
+  screenshots?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
 
 const Projects = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [githubRepos, setGithubRepos] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { settings, loading: settingsLoading } = useSettings();
   
   useEffect(() => {
-    const fetchGithubRepos = async () => {
+    const fetchProjects = async () => {
       try {
-        let githubUsername = 'octocat'; // default fallback
+        const response = await fetch('/api/projects');
+        const data = await response.json();
         
-        // Try to get GitHub username from settings first
-        if (settings?.socialLinks.github) {
-          githubUsername = settings.socialLinks.github.split('/').pop() || githubUsername;
+        if (response.ok) {
+          setProjects(data.projects || []);
+        } else {
+          setError(data.error || 'Failed to fetch projects');
         }
-        // Fallback to default if settings don't have it
-        else {
-          githubUsername = 'octocat';
-        }
-        
-        const repos = await githubApi.getRepos(githubUsername);
-        setGithubRepos(repos);
       } catch (err: any) {
-        setError(err.message || 'Failed to fetch GitHub repositories');
-        console.error('Error fetching GitHub repos:', err);
+        setError(err.message || 'Failed to fetch projects');
+        console.error('Error fetching projects:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGithubRepos();
-  }, [settings]);
+    fetchProjects();
+  }, []);
 
-  const filteredProjects = githubRepos.filter((repo) => {
-    const matchesLanguage = selectedLanguage === "All" || repo.language === selectedLanguage;
-    const matchesSearch = repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.topics?.some((topic: string) => topic.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredProjects = projects.filter((project) => {
+    const matchesLanguage = selectedLanguage === "All" || project.techStack.includes(selectedLanguage);
+    const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.techStack.some(tech => tech.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesLanguage && matchesSearch;
   });
 
@@ -146,9 +155,9 @@ const Projects = () => {
                 transition={{ duration: 0.3 }}
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
               >
-                {filteredProjects.map((repo, index) => (
+                {filteredProjects.map((project, index) => (
                   <motion.article
-                    key={repo.id || repo.fullName}
+                    key={project._id}
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -158,66 +167,74 @@ const Projects = () => {
                     <div className="relative aspect-video overflow-hidden bg-muted/20 flex items-center justify-center">
                       <Github className="w-16 h-16 text-muted-foreground/30" />
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 gap-2">
-                        <Button size="sm" variant="outline" className="gap-1" asChild>
-                          <a href={repo.htmlUrl} target="_blank" rel="noopener noreferrer">
-                            <Github className="w-4 h-4" />
-                            Code
-                          </a>
-                        </Button>
+                        {project.githubUrl && (
+                          <Button size="sm" variant="outline" className="gap-1" asChild>
+                            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                              <Github className="w-4 h-4" />
+                              Code
+                            </a>
+                          </Button>
+                        )}
+                        {project.liveUrl && (
+                          <Button size="sm" variant="outline" className="gap-1" asChild>
+                            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="w-4 h-4" />
+                              Live
+                            </a>
+                          </Button>
+                        )}
                       </div>
                     </div>
 
                     {/* Content */}
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className={`w-3 h-3 rounded-full ${languageColors[repo.language] || "bg-muted"}`} />
+                        <span className={`w-3 h-3 rounded-full ${languageColors[project.techStack[0]] || "bg-muted"}`} />
                         <span className="text-xs font-mono text-muted-foreground">
-                          {repo.language}
+                          {project.techStack[0] || 'Technology'}
                         </span>
                       </div>
 
                       <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                        {repo.name}
+                        {project.title}
                       </h3>
 
                       <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                        {repo.description || 'No description provided'}
+                        {project.description}
                       </p>
 
-                      {/* Topics */}
+                      {/* Tech Stack */}
                       <div className="flex flex-wrap gap-2 mb-4">
-                        {repo.topics?.slice(0, 3).map((topic: string) => (
+                        {project.techStack.slice(0, 3).map((tech: string, idx: number) => (
                           <span
-                            key={topic}
+                            key={idx}
                             className="px-2 py-1 text-xs font-mono bg-muted/50 rounded-md"
                           >
-                            {topic}
+                            {tech}
                           </span>
                         ))}
-                        {repo.topics && repo.topics.length > 3 && (
+                        {project.techStack.length > 3 && (
                           <span className="px-2 py-1 text-xs text-muted-foreground">
-                            +{repo.topics.length - 3}
+                            +{project.techStack.length - 3}
                           </span>
                         )}
                       </div>
 
                       {/* Stats */}
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Star className="w-4 h-4" />
-                          {repo.stargazersCount}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <GitFork className="w-4 h-4" />
-                          {repo.forksCount}
-                        </span>
-                      </div>
+                      {project.featured && (
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1 text-yellow-500">
+                            <Star className="w-4 h-4" />
+                            Featured
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </motion.article>
                 ))}
               </motion.div>
             </AnimatePresence>
-            {(loading || error || (filteredProjects.length === 0 && githubRepos.length > 0)) && (
+            {(loading || error || (filteredProjects.length === 0 && projects.length > 0)) && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {loading ? (
                   <motion.div
@@ -228,7 +245,7 @@ const Projects = () => {
                     <div className="flex justify-center">
                       <Loader2 className="w-8 h-8 text-primary animate-spin" />
                     </div>
-                    <p className="text-muted-foreground mt-4">Loading projects from GitHub...</p>
+                    <p className="text-muted-foreground mt-4">Loading projects...</p>
                   </motion.div>
                 ) : error ? (
                   <motion.div
@@ -238,7 +255,7 @@ const Projects = () => {
                   >
                     <p className="text-destructive">Error: {error}</p>
                   </motion.div>
-                ) : filteredProjects.length === 0 && githubRepos.length > 0 ? (
+                ) : filteredProjects.length === 0 && projects.length > 0 ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

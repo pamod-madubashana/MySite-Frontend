@@ -46,18 +46,20 @@ const AdminDashboard = () => {
             </Card>
           </Link>
 
-          <Card className="glass border border-primary/30 h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <LayoutDashboard className="w-8 h-8 text-primary" />
-                <span>Analytics</span>
-              </CardTitle>
-              <CardDescription>Site statistics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Coming soon...</p>
-            </CardContent>
-          </Card>
+          <Link to="/admin/projects" className="block">
+            <Card className="glass border border-primary/30 hover:border-primary/50 transition-all cursor-pointer h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <FileText className="w-8 h-8 text-primary" />
+                  <span>Projects</span>
+                </CardTitle>
+                <CardDescription>Manage your projects</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Create, edit, and showcase projects</p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         <div className="flex gap-4">
