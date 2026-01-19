@@ -43,6 +43,9 @@ jobs:
         
     - name: Deploy to fronthost repository
       run: |
+        # Set up git credentials
+        git config --global url."https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/".insteadOf "https://github.com/"
+        
         # Clone the target repository
         git clone "https://github.com/pamod-madubashana/fronthost.git" deployment
         cd deployment
@@ -64,7 +67,8 @@ jobs:
           git commit -m "Deploy build files from $GITHUB_REPOSITORY@$GITHUB_SHA [ci skip]"
           
           # Push to fronthost repository
-          git push "https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/pamod-madubashana/fronthost.git"
+          git remote set-url origin "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/pamod-madubashana/fronthost.git"
+          git push
           echo "Changes pushed successfully!"
         else
           echo "No changes to commit"
