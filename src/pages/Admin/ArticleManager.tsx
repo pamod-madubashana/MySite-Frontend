@@ -8,22 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, Plus, Edit, Trash2, Eye, Save, X } from 'lucide-react';
-
-interface Article {
-  _id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  status: 'draft' | 'published';
-  tags: string[];
-  featuredImage?: string;
-  author: {
-    username: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
+import { articleApi, Article, CreateArticleData, UpdateArticleData } from '@/api/articleApi';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const ArticleManager = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -36,24 +22,132 @@ const ArticleManager = () => {
     title: '',
     content: '',
     excerpt: '',
+    featuredImage: '',
     status: 'draft' as 'draft' | 'published',
     tags: '' // Will be converted to array
   });
+  const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
   const { token } = useAuth();
+
+  // Handle image file selection
+  const handleFeaturedImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFeaturedImageFile(file);
+    }
+  };
+
+  // Create article with image upload
+  const handleCreateArticle = async () => {
+    if (!token) {
+      console.error('Authentication token is missing');
+      alert('You must be logged in to create an article');
+      return;
+    }
+    
+    setIsCreating(true);
+    
+    try {
+      const formData = new FormData();
+      
+      // Add form fields to FormData
+      formData.append('title', newArticle.title);
+      formData.append('content', newArticle.content);
+      formData.append('excerpt', newArticle.excerpt);
+      formData.append('status', newArticle.status);
+      formData.append('tags', JSON.stringify(newArticle.tags.split(',').map(tag => tag.trim()).filter(tag => tag)));
+      
+      // Add image file to FormData if selected
+      if (featuredImageFile) {
+        formData.append('featuredImage', featuredImageFile);
+      }
+      
+      console.log('Sending request to create article with data:', {
+        title: newArticle.title,
+        hasFeaturedImage: !!featuredImageFile
+      });
+      
+      // Use the new API method that handles image upload
+      const response = await articleApi.createArticleWithImage(token, formData);
+      console.log('Article created successfully:', response);
+      
+      setArticles([response.article, ...articles]);
+      setNewArticle({
+        title: '',
+        content: '',
+        excerpt: '',
+        featuredImage: '',
+        status: 'draft',
+        tags: ''
+      });
+      setFeaturedImageFile(null);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error creating article with image:', error);
+      alert('Failed to create article: ' + (error as Error).message);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  // Update article with image upload
+  const handleUpdateArticle = async () => {
+    if (!editingArticle || !token) {
+      if (!token) {
+        console.error('Authentication token is missing');
+        alert('You must be logged in to update an article');
+      }
+      return;
+    }
+
+    setIsUpdating(true);
+    
+    try {
+      const formData = new FormData();
+      
+      // Add form fields to FormData
+      formData.append('title', editingArticle.title);
+      formData.append('content', editingArticle.content);
+      formData.append('excerpt', editingArticle.excerpt);
+      formData.append('status', editingArticle.status);
+      formData.append('tags', JSON.stringify(editingArticle.tags));
+      
+      // Add image file to FormData if selected
+      if (featuredImageFile) {
+        formData.append('featuredImage', featuredImageFile);
+      }
+      
+      console.log('Sending request to update article with data:', {
+        id: editingArticle._id,
+        title: editingArticle.title,
+        hasFeaturedImage: !!featuredImageFile
+      });
+      
+      // Use the new API method that handles image upload
+      const response = await articleApi.updateArticleWithImage(token, editingArticle._id, formData);
+      console.log('Article updated successfully:', response);
+      
+      setArticles(articles.map(a => a._id === editingArticle._id ? response.article : a));
+      setEditingArticle(null);
+      setFeaturedImageFile(null);
+    } catch (error) {
+      console.error('Error updating article with image:', error);
+      alert('Failed to update article: ' + (error as Error).message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   // Fetch articles
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await fetch('/api/articles', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setArticles(data.articles || []);
-        }
+        const data = await articleApi.getAllArticles(token);
+        setArticles(data.articles || []);
       } catch (error) {
         console.error('Error fetching articles:', error);
       } finally {
@@ -80,82 +174,22 @@ const ArticleManager = () => {
     }
   }, [searchTerm, articles]);
 
-  const handleCreateArticle = async () => {
-    try {
-      const response = await fetch('/api/articles', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...newArticle,
-          tags: newArticle.tags.split(',').map(tag => tag.trim()).filter(tag => tag)
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setArticles([data.article, ...articles]);
-        setNewArticle({
-          title: '',
-          content: '',
-          excerpt: '',
-          status: 'draft',
-          tags: ''
-        });
-        setIsDialogOpen(false);
-      }
-    } catch (error) {
-      console.error('Error creating article:', error);
-    }
-  };
-
-  const handleUpdateArticle = async () => {
-    if (!editingArticle) return;
-
-    try {
-      const response = await fetch(`/api/articles/${editingArticle._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          title: editingArticle.title,
-          content: editingArticle.content,
-          excerpt: editingArticle.excerpt,
-          status: editingArticle.status,
-          tags: editingArticle.tags
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setArticles(articles.map(a => a._id === editingArticle._id ? data.article : a));
-        setEditingArticle(null);
-      }
-    } catch (error) {
-      console.error('Error updating article:', error);
-    }
-  };
-
   const handleDeleteArticle = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this article?')) {
-      try {
-        const response = await fetch(`/api/articles/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+    setArticleToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
 
-        if (response.ok) {
-          setArticles(articles.filter(article => article._id !== id));
-        }
-      } catch (error) {
-        console.error('Error deleting article:', error);
-      }
+  const confirmDeleteArticle = async () => {
+    if (!articleToDelete || !token) return;
+    
+    try {
+      await articleApi.deleteArticle(token, articleToDelete);
+      setArticles(articles.filter(article => article._id !== articleToDelete));
+    } catch (error) {
+      console.error('Error deleting article:', error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setArticleToDelete(null);
     }
   };
 
@@ -183,7 +217,7 @@ const ArticleManager = () => {
                   New Article
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border border-gray-700">
                 <DialogHeader>
                   <DialogTitle>Create New Article</DialogTitle>
                 </DialogHeader>
@@ -195,7 +229,7 @@ const ArticleManager = () => {
                       value={newArticle.title}
                       onChange={(e) => setNewArticle({...newArticle, title: e.target.value})}
                       placeholder="Enter article title"
-                    />
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"/>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="excerpt">Excerpt</Label>
@@ -205,7 +239,38 @@ const ArticleManager = () => {
                       onChange={(e) => setNewArticle({...newArticle, excerpt: e.target.value})}
                       placeholder="Brief description of the article"
                       rows={3}
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="featuredImage">Featured Image</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="featuredImage"
+                        type="url"
+                        value={newArticle.featuredImage}
+                        onChange={(e) => setNewArticle({...newArticle, featuredImage: e.target.value})}
+                        placeholder="https://example.com/image.jpg"
+                        className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('file-upload-create')?.click()}
+                        className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Choose File
+                      </Button>
+                      <Input
+                        id="file-upload-create"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFeaturedImageFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Enter image URL or upload a file (JPG, PNG, GIF)</p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="content">Content</Label>
@@ -215,6 +280,7 @@ const ArticleManager = () => {
                       onChange={(e) => setNewArticle({...newArticle, content: e.target.value})}
                       placeholder="Write your article content here..."
                       rows={8}
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -224,6 +290,7 @@ const ArticleManager = () => {
                       value={newArticle.tags}
                       onChange={(e) => setNewArticle({...newArticle, tags: e.target.value})}
                       placeholder="tag1, tag2, tag3"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -253,12 +320,17 @@ const ArticleManager = () => {
                     <Button
                       variant="outline"
                       onClick={() => setIsDialogOpen(false)}
+                      className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleCreateArticle}>
-                      <Save className="w-4 h-4 mr-2" />
-                      Create Article
+                    <Button onClick={handleCreateArticle} disabled={isCreating}>
+                      {isCreating ? 'Creating...' : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Create Article
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -274,7 +346,7 @@ const ArticleManager = () => {
               placeholder="Search articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-slate-800 text-gray-900 dark:text-white px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pl-10"
             />
           </div>
         </div>
@@ -301,7 +373,7 @@ const ArticleManager = () => {
                     </Badge>
                   </div>
                   <CardDescription>
-                    By {article.author.username} • {formatDate(article.createdAt)}
+                    By {article.author?.username || 'Unknown Author'} • {formatDate(article.createdAt)}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -333,10 +405,6 @@ const ArticleManager = () => {
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete
                     </Button>
-                    <Button variant="outline" size="sm">
-                      <Eye className="w-4 h-4 mr-2" />
-                      View
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -347,7 +415,7 @@ const ArticleManager = () => {
         {/* Edit Article Dialog */}
         {editingArticle && (
           <Dialog open={!!editingArticle} onOpenChange={(open) => !open && setEditingArticle(null)}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border border-gray-700">
               <DialogHeader>
                 <DialogTitle>Edit Article</DialogTitle>
               </DialogHeader>
@@ -359,6 +427,7 @@ const ArticleManager = () => {
                     value={editingArticle.title}
                     onChange={(e) => setEditingArticle({...editingArticle, title: e.target.value})}
                     placeholder="Enter article title"
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -369,7 +438,38 @@ const ArticleManager = () => {
                     onChange={(e) => setEditingArticle({...editingArticle, excerpt: e.target.value})}
                     placeholder="Brief description of the article"
                     rows={3}
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                   />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-featuredImage">Featured Image</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="edit-featuredImage"
+                      type="url"
+                      value={editingArticle.featuredImage || ''}
+                      onChange={(e) => setEditingArticle({...editingArticle, featuredImage: e.target.value})}
+                      placeholder="https://example.com/image.jpg"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload-edit')?.click()}
+                      className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                    >
+                      Choose File
+                    </Button>
+                    <Input
+                      id="file-upload-edit"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFeaturedImageFileChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Enter image URL or upload a file (JPG, PNG, GIF)</p>
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-content">Content</Label>
@@ -379,6 +479,7 @@ const ArticleManager = () => {
                     onChange={(e) => setEditingArticle({...editingArticle, content: e.target.value})}
                     placeholder="Write your article content here..."
                     rows={8}
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -388,6 +489,7 @@ const ArticleManager = () => {
                     value={editingArticle.tags.join(', ')}
                     onChange={(e) => setEditingArticle({...editingArticle, tags: e.target.value.split(',').map(tag => tag.trim())})}
                     placeholder="tag1, tag2, tag3"
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -417,18 +519,38 @@ const ArticleManager = () => {
                   <Button
                     variant="outline"
                     onClick={() => setEditingArticle(null)}
+                    className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleUpdateArticle}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
+                  <Button onClick={handleUpdateArticle} disabled={isUpdating}>
+                    {isUpdating ? 'Saving...' : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
         )}
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setArticleToDelete(null);
+        }}
+        onConfirm={confirmDeleteArticle}
+        title="Delete Article"
+        message="Are you sure you want to delete this article? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+      />
+
       </div>
     </div>
   );

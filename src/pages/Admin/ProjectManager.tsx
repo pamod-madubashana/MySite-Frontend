@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { projectApi } from '@/api/projectApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,12 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { Search, Plus, Edit, Trash2, Eye, Save, X, Star, ExternalLink, Github } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface Project {
   _id: string;
   title: string;
   description: string;
-  techStack: string[];
+  tags: string[];
+  languages: string[];
   githubUrl?: string;
   liveUrl?: string;
   featured: boolean;
@@ -34,7 +37,8 @@ const ProjectManager = () => {
   const [newProject, setNewProject] = useState({
     title: '',
     description: '',
-    techStack: '',
+    tags: '',
+    languages: '',
     githubUrl: '',
     liveUrl: '',
     featured: false,
@@ -42,21 +46,207 @@ const ProjectManager = () => {
     thumbnail: '',
     screenshots: ''
   });
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [screenshotsFiles, setScreenshotsFiles] = useState<FileList | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const { token } = useAuth();
+
+  // Handle image file selection
+  const handleThumbnailFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+    }
+  };
+
+  const handleScreenshotsFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setScreenshotsFiles(e.target.files);
+  };
+
+  // Create project with image upload
+  const handleCreateProject = async () => {
+    if (!token) {
+      console.error('Authentication token is missing');
+      alert('You must be logged in to create a project');
+      return;
+    }
+    
+    // Validate required fields
+    if (!newProject.title.trim()) {
+      console.error('Error: Title is required');
+      alert('Title is required');
+      return;
+    }
+    if (!newProject.description.trim()) {
+      console.error('Error: Description is required');
+      alert('Description is required');
+      return;
+    }
+    
+    const tagsArray = newProject.tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+    if (tagsArray.length === 0) {
+      console.error('Error: At least one tag is required');
+      alert('At least one tag is required');
+      return;
+    }
+    
+    setIsCreating(true);
+    
+    try {
+      const formData = new FormData();
+      
+      // Add form fields to FormData
+      formData.append('title', newProject.title);
+      formData.append('description', newProject.description);
+      formData.append('tags', JSON.stringify(tagsArray));
+      const languagesArray = newProject.languages.split(',').map(lang => lang.trim()).filter(lang => lang);
+      formData.append('languages', JSON.stringify(languagesArray));
+      formData.append('status', newProject.status);
+      formData.append('featured', newProject.featured.toString());
+      
+      // Always send githubUrl, even if empty, so backend knows to remove it
+      formData.append('githubUrl', newProject.githubUrl.trim());
+      
+      // Always send liveUrl, even if empty, so backend knows to remove it
+      formData.append('liveUrl', newProject.liveUrl.trim());
+      
+      // Add image files to FormData if selected
+      if (thumbnailFile) {
+        formData.append('thumbnail', thumbnailFile);
+      }
+      
+      if (screenshotsFiles) {
+        for (let i = 0; i < screenshotsFiles.length; i++) {
+          formData.append('screenshots', screenshotsFiles[i]);
+        }
+      }
+      
+      console.log('Sending request to create project with data:', {
+        title: newProject.title,
+        description: newProject.description,
+        tags: tagsArray,
+        hasThumbnail: !!thumbnailFile,
+        screenshotCount: screenshotsFiles?.length || 0
+      });
+      
+      // Use the new API method that handles image upload
+      const result = await projectApi.createProjectWithImage(token, formData);
+      console.log('Project created successfully:', result);
+      
+      setProjects([result.project, ...projects]);
+      setNewProject({
+        title: '',
+        description: '',
+        tags: '',
+        languages: '',
+        githubUrl: '',
+        liveUrl: '',
+        featured: false,
+        status: 'draft',
+        thumbnail: '',
+        screenshots: ''
+      });
+      setThumbnailFile(null);
+      setScreenshotsFiles(null);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error('Error creating project with image:', error);
+      alert('Failed to create project: ' + (error as Error).message);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  // Update project with image upload
+  const handleUpdateProject = async () => {
+    if (!editingProject || !token) {
+      if (!token) {
+        console.error('Authentication token is missing');
+        alert('You must be logged in to update a project');
+      }
+      return;
+    }
+
+    // Validate required fields
+    if (!editingProject.title.trim()) {
+      console.error('Error: Title is required');
+      alert('Title is required');
+      return;
+    }
+    if (!editingProject.description.trim()) {
+      console.error('Error: Description is required');
+      alert('Description is required');
+      return;
+    }
+    
+    if (editingProject.tags.length === 0) {
+      console.error('Error: At least one tag is required');
+      alert('At least one tag is required');
+      return;
+    }
+    
+    setIsUpdating(true);
+    
+    try {
+      const formData = new FormData();
+      
+      // Add form fields to FormData
+      formData.append('title', editingProject.title);
+      formData.append('description', editingProject.description);
+      formData.append('tags', JSON.stringify(editingProject.tags));
+      formData.append('languages', JSON.stringify(editingProject.languages));
+      formData.append('featured', editingProject.featured.toString());
+      formData.append('status', editingProject.status);
+      
+      // Always send githubUrl, even if empty, so backend knows to remove it
+      formData.append('githubUrl', editingProject.githubUrl?.trim() || '');
+      
+      // Always send liveUrl, even if empty, so backend knows to remove it
+      formData.append('liveUrl', editingProject.liveUrl?.trim() || '');
+      
+      // Add image files to FormData if selected
+      if (thumbnailFile) {
+        formData.append('thumbnail', thumbnailFile);
+      }
+      
+      if (screenshotsFiles) {
+        for (let i = 0; i < screenshotsFiles.length; i++) {
+          formData.append('screenshots', screenshotsFiles[i]);
+        }
+      }
+      
+      console.log('Sending request to update project with data:', {
+        id: editingProject._id,
+        title: editingProject.title,
+        hasThumbnail: !!thumbnailFile,
+        screenshotCount: screenshotsFiles?.length || 0
+      });
+      
+      // Use the new API method that handles image upload
+      const result = await projectApi.updateProjectWithImage(editingProject._id, token, formData);
+      console.log('Project updated successfully:', result);
+      
+      setProjects(projects.map(p => p._id === editingProject._id ? result.project : p));
+      setEditingProject(null);
+      setThumbnailFile(null);
+      setScreenshotsFiles(null);
+    } catch (error) {
+      console.error('Error updating project with image:', error);
+      alert('Failed to update project: ' + (error as Error).message);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   // Fetch projects
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch('/api/projects/all', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setProjects(data.projects || []);
-        }
+        const data = await projectApi.getAllProjects(token);
+        setProjects(data.projects || []);
       } catch (error) {
         console.error('Error fetching projects:', error);
       } finally {
@@ -77,97 +267,28 @@ const ProjectManager = () => {
         projects.filter(project => 
           project.title.toLowerCase().includes(term) ||
           project.description.toLowerCase().includes(term) ||
-          project.techStack.some(tech => tech.toLowerCase().includes(term))
+          project.tags.some(tech => tech.toLowerCase().includes(term))
         )
       );
     }
   }, [searchTerm, projects]);
 
-  const handleCreateProject = async () => {
-    try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...newProject,
-          techStack: newProject.techStack.split(',').map(tag => tag.trim()).filter(tag => tag),
-          screenshots: newProject.screenshots ? newProject.screenshots.split(',').map(url => url.trim()).filter(url => url) : []
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProjects([data.project, ...projects]);
-        setNewProject({
-          title: '',
-          description: '',
-          techStack: '',
-          githubUrl: '',
-          liveUrl: '',
-          featured: false,
-          status: 'draft',
-          thumbnail: '',
-          screenshots: ''
-        });
-        setIsDialogOpen(false);
-      }
-    } catch (error) {
-      console.error('Error creating project:', error);
-    }
-  };
-
-  const handleUpdateProject = async () => {
-    if (!editingProject) return;
-
-    try {
-      const response = await fetch(`/api/projects/${editingProject._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          title: editingProject.title,
-          description: editingProject.description,
-          techStack: editingProject.techStack,
-          githubUrl: editingProject.githubUrl,
-          liveUrl: editingProject.liveUrl,
-          featured: editingProject.featured,
-          status: editingProject.status,
-          thumbnail: editingProject.thumbnail,
-          screenshots: editingProject.screenshots
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(projects.map(p => p._id === editingProject._id ? data.project : p));
-        setEditingProject(null);
-      }
-    } catch (error) {
-      console.error('Error updating project:', error);
-    }
-  };
-
   const handleDeleteProject = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      try {
-        const response = await fetch(`/api/projects/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+    setProjectToDelete(id);
+    setIsDeleteDialogOpen(true);
+  };
 
-        if (response.ok) {
-          setProjects(projects.filter(project => project._id !== id));
-        }
-      } catch (error) {
-        console.error('Error deleting project:', error);
-      }
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete || !token) return;
+    
+    try {
+      await projectApi.deleteProject(projectToDelete, token);
+      setProjects(projects.filter(project => project._id !== projectToDelete));
+    } catch (error) {
+      console.error('Error deleting project:', error);
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setProjectToDelete(null);
     }
   };
 
@@ -176,22 +297,15 @@ const ProjectManager = () => {
     if (!project) return;
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...project,
-          featured: !project.featured
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(projects.map(p => p._id === id ? data.project : p));
-      }
+      // Prepare project data
+      const projectData: any = {
+        ...project,
+        featured: !project.featured
+      };
+      
+      const result = await projectApi.updateProject(id, token, projectData);
+      
+      setProjects(projects.map(p => p._id === id ? result.project : p));
     } catch (error) {
       console.error('Error toggling featured status:', error);
     }
@@ -202,22 +316,15 @@ const ProjectManager = () => {
     if (!project) return;
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...project,
-          status: project.status === 'published' ? 'draft' : 'published'
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(projects.map(p => p._id === id ? data.project : p));
-      }
+      // Prepare project data
+      const projectData: any = {
+        ...project,
+        status: project.status === 'published' ? 'draft' : 'published'
+      };
+      
+      const result = await projectApi.updateProject(id, token, projectData);
+      
+      setProjects(projects.map(p => p._id === id ? result.project : p));
     } catch (error) {
       console.error('Error toggling publish status:', error);
     }
@@ -247,7 +354,7 @@ const ProjectManager = () => {
                   New Project
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border border-gray-700">
                 <DialogHeader>
                   <DialogTitle>Create New Project</DialogTitle>
                 </DialogHeader>
@@ -259,6 +366,7 @@ const ProjectManager = () => {
                       value={newProject.title}
                       onChange={(e) => setNewProject({...newProject, title: e.target.value})}
                       placeholder="Enter project title"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -269,15 +377,27 @@ const ProjectManager = () => {
                       onChange={(e) => setNewProject({...newProject, description: e.target.value})}
                       placeholder="Describe your project"
                       rows={4}
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="techStack">Tech Stack (comma separated)</Label>
+                    <Label htmlFor="tags">Tags (comma separated)</Label>
                     <Input
-                      id="techStack"
-                      value={newProject.techStack}
-                      onChange={(e) => setNewProject({...newProject, techStack: e.target.value})}
+                      id="tags"
+                      value={newProject.tags}
+                      onChange={(e) => setNewProject({...newProject, tags: e.target.value})}
                       placeholder="React, Node.js, MongoDB, etc."
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="languages">Languages (comma separated)</Label>
+                    <Input
+                      id="languages"
+                      value={newProject.languages}
+                      onChange={(e) => setNewProject({...newProject, languages: e.target.value})}
+                      placeholder="JavaScript, TypeScript, Python, etc."
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -289,6 +409,7 @@ const ProjectManager = () => {
                         value={newProject.githubUrl}
                         onChange={(e) => setNewProject({...newProject, githubUrl: e.target.value})}
                         placeholder="https://github.com/username/repo"
+                        className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                       />
                     </div>
                     <div className="grid gap-2">
@@ -299,27 +420,72 @@ const ProjectManager = () => {
                         value={newProject.liveUrl}
                         onChange={(e) => setNewProject({...newProject, liveUrl: e.target.value})}
                         placeholder="https://project-name.vercel.app"
+                        className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                       />
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="thumbnail">Thumbnail URL</Label>
-                    <Input
-                      id="thumbnail"
-                      type="url"
-                      value={newProject.thumbnail}
-                      onChange={(e) => setNewProject({...newProject, thumbnail: e.target.value})}
-                      placeholder="https://example.com/image.jpg"
-                    />
+                    <Label htmlFor="thumbnail">Thumbnail</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="thumbnail"
+                        type="url"
+                        value={newProject.thumbnail}
+                        onChange={(e) => setNewProject({...newProject, thumbnail: e.target.value})}
+                        placeholder="https://example.com/image.jpg"
+                        className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('file-upload-project-create')?.click()}
+                        disabled={false}
+                        className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Choose File
+                      </Button>
+                      <Input
+                        id="file-upload-project-create"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleThumbnailFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Enter image URL or upload a file (JPG, PNG, GIF)</p>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="screenshots">Screenshots URLs (comma separated)</Label>
-                    <Input
-                      id="screenshots"
-                      value={newProject.screenshots}
-                      onChange={(e) => setNewProject({...newProject, screenshots: e.target.value})}
-                      placeholder="https://example.com/screenshot1.jpg, https://example.com/screenshot2.jpg"
-                    />
+                    <Label htmlFor="screenshots">Screenshots</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="screenshots"
+                        value={newProject.screenshots}
+                        onChange={(e) => setNewProject({...newProject, screenshots: e.target.value})}
+                        placeholder="Upload screenshots"
+                        className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                        readOnly
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById('file-upload-screenshots-create')?.click()}
+                        disabled={false}
+                        className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                      >
+                        Choose Files
+                      </Button>
+                      <Input
+                        id="file-upload-screenshots-create"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleScreenshotsFileChange}
+                        className="hidden"
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">Select multiple screenshot files (JPG, PNG, GIF)</p>
                   </div>
                   <div className="grid gap-2">
                     <Label>Status</Label>
@@ -357,12 +523,17 @@ const ProjectManager = () => {
                     <Button
                       variant="outline"
                       onClick={() => setIsDialogOpen(false)}
+                      className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
                     >
                       Cancel
                     </Button>
-                    <Button onClick={handleCreateProject}>
-                      <Save className="w-4 h-4 mr-2" />
-                      Create Project
+                    <Button onClick={handleCreateProject} disabled={isCreating}>
+                      {isCreating ? 'Creating...' : (
+                        <>
+                          <Save className="w-4 h-4 mr-2" />
+                          Create Project
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -378,7 +549,7 @@ const ProjectManager = () => {
               placeholder="Search projects..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="flex h-10 w-full rounded-md border border-input bg-white dark:bg-slate-800 text-gray-900 dark:text-white px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm pl-10"
             />
           </div>
         </div>
@@ -421,7 +592,7 @@ const ProjectManager = () => {
                     {project.description}
                   </p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {project.techStack.map((tech, index) => (
+                    {project.tags.map((tech, index) => (
                       <Badge key={index} variant="outline">{tech}</Badge>
                     ))}
                   </div>
@@ -487,7 +658,7 @@ const ProjectManager = () => {
         {/* Edit Project Dialog */}
         {editingProject && (
           <Dialog open={!!editingProject} onOpenChange={(open) => !open && setEditingProject(null)}>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-900 text-white border border-gray-700">
               <DialogHeader>
                 <DialogTitle>Edit Project</DialogTitle>
               </DialogHeader>
@@ -499,6 +670,7 @@ const ProjectManager = () => {
                     value={editingProject.title}
                     onChange={(e) => setEditingProject({...editingProject, title: e.target.value})}
                     placeholder="Enter project title"
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                   />
                 </div>
                 <div className="grid gap-2">
@@ -509,15 +681,27 @@ const ProjectManager = () => {
                     onChange={(e) => setEditingProject({...editingProject, description: e.target.value})}
                     placeholder="Describe your project"
                     rows={4}
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-techStack">Tech Stack (comma separated)</Label>
+                  <Label htmlFor="edit-tags">Tags (comma separated)</Label>
                   <Input
-                    id="edit-techStack"
-                    value={editingProject.techStack.join(', ')}
-                    onChange={(e) => setEditingProject({...editingProject, techStack: e.target.value.split(',').map(tag => tag.trim())})}
+                    id="edit-tags"
+                    value={editingProject.tags.join(', ')}
+                    onChange={(e) => setEditingProject({...editingProject, tags: e.target.value.split(',').map(tag => tag.trim())})}
                     placeholder="React, Node.js, MongoDB, etc."
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-languages">Languages (comma separated)</Label>
+                  <Input
+                    id="edit-languages"
+                    value={editingProject.languages.join(', ')}
+                    onChange={(e) => setEditingProject({...editingProject, languages: e.target.value.split(',').map(lang => lang.trim())})}
+                    placeholder="JavaScript, TypeScript, Python, etc."
+                    className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                   />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -529,6 +713,7 @@ const ProjectManager = () => {
                       value={editingProject.githubUrl || ''}
                       onChange={(e) => setEditingProject({...editingProject, githubUrl: e.target.value})}
                       placeholder="https://github.com/username/repo"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -539,27 +724,69 @@ const ProjectManager = () => {
                       value={editingProject.liveUrl || ''}
                       onChange={(e) => setEditingProject({...editingProject, liveUrl: e.target.value})}
                       placeholder="https://project-name.vercel.app"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
                     />
                   </div>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-thumbnail">Thumbnail URL</Label>
-                  <Input
-                    id="edit-thumbnail"
-                    type="url"
-                    value={editingProject.thumbnail || ''}
-                    onChange={(e) => setEditingProject({...editingProject, thumbnail: e.target.value})}
-                    placeholder="https://example.com/image.jpg"
-                  />
+                  <Label htmlFor="edit-thumbnail">Thumbnail</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="edit-thumbnail"
+                      type="url"
+                      value={editingProject.thumbnail || ''}
+                      onChange={(e) => setEditingProject({...editingProject, thumbnail: e.target.value})}
+                      placeholder="https://example.com/image.jpg"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload-project-edit')?.click()}
+                      className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                    >
+                      Choose File
+                    </Button>
+                    <Input
+                      id="file-upload-project-edit"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleThumbnailFileChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Enter image URL or upload a file (JPG, PNG, GIF)</p>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="edit-screenshots">Screenshots URLs (comma separated)</Label>
-                  <Input
-                    id="edit-screenshots"
-                    value={editingProject.screenshots?.join(', ') || ''}
-                    onChange={(e) => setEditingProject({...editingProject, screenshots: e.target.value.split(',').map(url => url.trim())})}
-                    placeholder="https://example.com/screenshot1.jpg, https://example.com/screenshot2.jpg"
-                  />
+                  <Label htmlFor="edit-screenshots">Screenshots</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="edit-screenshots"
+                      value={editingProject.screenshots?.length ? `${editingProject.screenshots.length} files selected` : ''}
+                      placeholder="Upload screenshots"
+                      className="bg-gray-800 border-none text-white placeholder-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none"
+                      readOnly
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload-screenshots-edit')?.click()}
+                      className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
+                    >
+                      Choose Files
+                    </Button>
+                    <Input
+                      id="file-upload-screenshots-edit"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleScreenshotsFileChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Select multiple screenshot files (JPG, PNG, GIF)</p>
                 </div>
                 <div className="grid gap-2">
                   <Label>Status</Label>
@@ -597,18 +824,38 @@ const ProjectManager = () => {
                   <Button
                     variant="outline"
                     onClick={() => setEditingProject(null)}
+                    className="border-input text-foreground hover:bg-accent hover:text-accent-foreground"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleUpdateProject}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
+                  <Button onClick={handleUpdateProject} disabled={isUpdating}>
+                    {isUpdating ? 'Saving...' : (
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
             </DialogContent>
           </Dialog>
         )}
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false);
+          setProjectToDelete(null);
+        }}
+        onConfirm={confirmDeleteProject}
+        title="Delete Project"
+        message="Are you sure you want to delete this project? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+      />
+
       </div>
     </div>
   );

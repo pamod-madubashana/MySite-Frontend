@@ -5,19 +5,26 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    
     try {
       await login(email, password);
     } catch (err: any) {
       setError(err.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,6 +49,8 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
+                  className="transition-opacity duration-200"
                 />
               </div>
               <div className="space-y-2">
@@ -52,11 +61,28 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
+                  className="transition-opacity duration-200"
                 />
               </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" className="w-full neon-glow">
-                Sign In
+              {error && (
+                <div className="transition-all duration-300 ease-in-out">
+                  <p className="text-red-500 text-sm animate-in slide-in-from-top-2 fade-in">{error}</p>
+                </div>
+              )}
+              <Button 
+                type="submit" 
+                className="w-full neon-glow transition-all duration-300"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
               </Button>
             </div>
           </form>

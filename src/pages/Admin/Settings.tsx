@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@/lib/apiConfig';
+import { settingsApi } from '@/api/settingsApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,19 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useAuth } from '@/contexts/AuthContext';
-import { Settings as SettingsIcon, Save, X } from 'lucide-react';
+import { useSettings } from '@/contexts/SettingsContext';
+import { Settings as SettingsIcon, Save, CheckCircle, XCircle } from 'lucide-react';
 
 interface Settings {
   _id?: string;
-  aboutContent: string;
-  featuredRepos: string[];
-  themeOptions: {
-    primaryColor: string;
-    secondaryColor: string;
-    fontFamily: string;
-  };
   siteSections: {
-    showAbout: boolean;
     showProjects: boolean;
     showArticles: boolean;
     showContact: boolean;
@@ -26,22 +21,14 @@ interface Settings {
   socialLinks: {
     github?: string;
     linkedin?: string;
-    twitter?: string;
+    telegram?: string;
     email?: string;
   };
 }
 
 const SettingsPage = () => {
   const [settings, setSettings] = useState<Settings>({
-    aboutContent: '',
-    featuredRepos: [],
-    themeOptions: {
-      primaryColor: '#3b82f6',
-      secondaryColor: '#8b5cf6',
-      fontFamily: 'Inter, sans-serif'
-    },
     siteSections: {
-      showAbout: true,
       showProjects: true,
       showArticles: true,
       showContact: true
@@ -49,7 +36,7 @@ const SettingsPage = () => {
     socialLinks: {
       github: '',
       linkedin: '',
-      twitter: '',
+      telegram: '',
       email: ''
     }
   });
@@ -61,15 +48,21 @@ const SettingsPage = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const response = await fetch('/api/settings', {
-          headers: {
-            'Authorization': `Bearer ${token}`
+        // Use the settings API with force refresh
+        const data = await settingsApi.getSettings(true); // Force refresh to get latest from backend
+        // Merge API data with default structure to ensure all fields exist
+        setSettings(prev => ({
+          ...prev,
+          ...data,
+          socialLinks: {
+            github: '',
+            linkedin: '',
+            telegram: '',
+            email: '',
+            ...(prev.socialLinks || {}),
+            ...(data.socialLinks || {})
           }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setSettings(data);
-        }
+        }));
       } catch (error) {
         console.error('Error fetching settings:', error);
       } finally {
@@ -87,15 +80,6 @@ const SettingsPage = () => {
     }));
   };
 
-  const handleThemeChange = (field: string, value: string) => {
-    setSettings(prev => ({
-      ...prev,
-      themeOptions: {
-        ...prev.themeOptions,
-        [field]: value
-      }
-    }));
-  };
 
   const handleSectionChange = (field: string, value: boolean) => {
     setSettings(prev => ({
@@ -117,12 +101,15 @@ const SettingsPage = () => {
     }));
   };
 
+  const { refreshSettings } = useSettings();
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     
     try {
-      const response = await fetch('/api/settings', {
+      console.log('Sending settings to backend:', settings);
+      const response = await fetch(`${API_BASE_URL}/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -130,13 +117,20 @@ const SettingsPage = () => {
         },
         body: JSON.stringify(settings)
       });
+      
+      const responseText = await response.text();
+      console.log('Response from backend:', response.status, responseText);
 
       if (response.ok) {
         setSavedSuccessfully(true);
+        // Refresh settings to apply changes immediately
+        await refreshSettings(true);
         setTimeout(() => setSavedSuccessfully(false), 3000);
+      } else {
+        console.error('Error saving settings:', response.status, responseText);
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('Network error saving settings:', error);
     } finally {
       setSaving(false);
     }
@@ -165,31 +159,10 @@ const SettingsPage = () => {
         </header>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Column - Site Content */}
-            <div className="lg:col-span-2 space-y-6">
-              <Card className="glass border border-primary/30">
-                <CardHeader>
-                  <CardTitle>About Section</CardTitle>
-                  <CardDescription>Update your bio and professional summary</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="aboutContent">About Content</Label>
-                      <Textarea
-                        id="aboutContent"
-                        value={settings.aboutContent}
-                        onChange={(e) => handleChange('aboutContent', e.target.value)}
-                        placeholder="Tell visitors about yourself..."
-                        rows={6}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass border border-primary/30">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Social Links */}
+            <div className="space-y-6">
+              <Card className="glass border border-primary/30 h-full">
                 <CardHeader>
                   <CardTitle>Social Links</CardTitle>
                   <CardDescription>Connect with visitors on social platforms</CardDescription>
@@ -217,13 +190,13 @@ const SettingsPage = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="twitter">Twitter/X Profile</Label>
+                      <Label htmlFor="telegram">Telegram Profile</Label>
                       <Input
-                        id="twitter"
+                        id="telegram"
                         type="url"
-                        value={settings.socialLinks.twitter || ''}
-                        onChange={(e) => handleSocialChange('twitter', e.target.value)}
-                        placeholder="https://twitter.com/username"
+                        value={settings.socialLinks.telegram || ''}
+                        onChange={(e) => handleSocialChange('telegram', e.target.value)}
+                        placeholder="https://t.me/username"
                       />
                     </div>
                     <div className="space-y-2">
@@ -240,80 +213,16 @@ const SettingsPage = () => {
                 </CardContent>
               </Card>
             </div>
-
-            {/* Right Column - Theme & Sections */}
+            
+            {/* Right Column - Site Sections */}
             <div className="space-y-6">
-              <Card className="glass border border-primary/30">
-                <CardHeader>
-                  <CardTitle>Theme Options</CardTitle>
-                  <CardDescription>Customize the look and feel</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="primaryColor">Primary Color</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          id="primaryColor"
-                          type="color"
-                          value={settings.themeOptions.primaryColor}
-                          onChange={(e) => handleThemeChange('primaryColor', e.target.value)}
-                          className="w-12 h-10 p-1"
-                        />
-                        <Input
-                          type="text"
-                          value={settings.themeOptions.primaryColor}
-                          onChange={(e) => handleThemeChange('primaryColor', e.target.value)}
-                          placeholder="#3b82f6"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="secondaryColor">Secondary Color</Label>
-                      <div className="flex items-center gap-2">
-                        <Input
-                          id="secondaryColor"
-                          type="color"
-                          value={settings.themeOptions.secondaryColor}
-                          onChange={(e) => handleThemeChange('secondaryColor', e.target.value)}
-                          className="w-12 h-10 p-1"
-                        />
-                        <Input
-                          type="text"
-                          value={settings.themeOptions.secondaryColor}
-                          onChange={(e) => handleThemeChange('secondaryColor', e.target.value)}
-                          placeholder="#8b5cf6"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="fontFamily">Font Family</Label>
-                      <Input
-                        id="fontFamily"
-                        value={settings.themeOptions.fontFamily}
-                        onChange={(e) => handleThemeChange('fontFamily', e.target.value)}
-                        placeholder="Inter, sans-serif"
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="glass border border-primary/30">
+              <Card className="glass border border-primary/30 h-full">
                 <CardHeader>
                   <CardTitle>Site Sections</CardTitle>
                   <CardDescription>Control which sections are visible</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="showAbout">Show About Section</Label>
-                      <Switch
-                        id="showAbout"
-                        checked={settings.siteSections.showAbout}
-                        onCheckedChange={(checked) => handleSectionChange('showAbout', checked)}
-                      />
-                    </div>
                     <div className="flex items-center justify-between">
                       <Label htmlFor="showProjects">Show Projects Section</Label>
                       <Switch
@@ -341,31 +250,11 @@ const SettingsPage = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="glass border border-primary/30">
-                <CardHeader>
-                  <CardTitle>Featured Repositories</CardTitle>
-                  <CardDescription>Specify which GitHub repos to highlight</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <Label htmlFor="featuredRepos">Repository Names (one per line)</Label>
-                    <Textarea
-                      id="featuredRepos"
-                      value={settings.featuredRepos.join('\n')}
-                      onChange={(e) => handleChange('featuredRepos', e.target.value.split('\n'))}
-                      placeholder="repo-name-1&#10;repo-name-2&#10;repo-name-3"
-                      rows={4}
-                    />
-                    <p className="text-xs text-muted-foreground">Enter one repository name per line</p>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
 
           <div className="mt-8 flex justify-end gap-4">
-            <Button type="submit" disabled={saving} className="flex items-center gap-2">
+            <Button type="submit" disabled={saving} className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white">
               {saving ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
@@ -380,7 +269,7 @@ const SettingsPage = () => {
             </Button>
             {savedSuccessfully && (
               <div className="flex items-center gap-2 text-green-500">
-                <X className="w-4 h-4" />
+                <CheckCircle className="w-4 h-4" />
                 Settings saved successfully!
               </div>
             )}

@@ -104,7 +104,7 @@ export const HeroSection = () => {
               View Projects
             </Link>
           </Button>
-          <Button asChild variant="outline" size="lg" className="group">
+          <Button asChild variant="outline" size="lg" className="group text-foreground border-foreground/40 hover:border-foreground/70 hover:bg-foreground/10 hover:text-foreground font-medium shadow-sm hover:shadow-md transition-all duration-300">
             <Link to="/about">
               <Zap className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
               Learn More
@@ -112,26 +112,6 @@ export const HeroSection = () => {
           </Button>
         </motion.div>
 
-        {/* Tech Stack Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-16 flex items-center justify-center gap-3 flex-wrap"
-        >
-          <span className="text-sm text-muted-foreground mr-2">Built with:</span>
-          {["React", "TypeScript", "Node.js", "PostgreSQL"].map((tech, index) => (
-            <motion.span
-              key={tech}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.5 + index * 0.1 }}
-              className="px-3 py-1 text-xs font-mono rounded-full glass border border-border hover:border-primary/50 transition-colors"
-            >
-              {tech}
-            </motion.span>
-          ))}
-        </motion.div>
       </div>
 
       {/* Scroll Indicator */}

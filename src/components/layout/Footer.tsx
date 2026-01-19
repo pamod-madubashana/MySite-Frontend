@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { Github, Linkedin, Twitter, Mail, Heart } from "lucide-react";
+import { Github, Linkedin, Send, Mail, Heart } from "lucide-react";
 
 const socialLinks = [
   { icon: Github, href: "https://github.com", label: "GitHub" },
   { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
+  { icon: Send, href: "https://t.me/", label: "Telegram" },
   { icon: Mail, href: "mailto:hello@example.com", label: "Email" },
 ];
 
@@ -25,8 +25,8 @@ export const Footer = () => {
           {/* Brand */}
           <div className="space-y-4">
             <Link to="/" className="inline-block">
-              <span className="text-2xl font-bold text-gradient">
-                &lt;DEV/&gt;
+              <span className="text-2xl font-bold text-foreground/70">
+                P A M O D
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
@@ -80,7 +80,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground flex items-center gap-1">
-            © {currentYear} Made with <Heart className="w-4 h-4 text-destructive" /> All rights reserved.
+            © {currentYear} Pamod Madubashana. All rights reserved.
           </p>
           <div className="flex gap-4">
             <Link

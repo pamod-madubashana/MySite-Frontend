@@ -1,14 +1,17 @@
+/// <reference types="./src/types/connect-history-api-fallback" />
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import history from "connect-history-api-fallback";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/mySite/' : '/', // Change this to match your repository name for GitHub Pages
+  base: './', // Relative path for GitHub Pages deployment
   server: {
     host: "::",
-    port: 8080,
+    port: 3000,
     hmr: {
       overlay: false,
     },
@@ -17,8 +20,16 @@ export default defineConfig(({ mode }) => ({
         target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ''), // Remove /api prefix before forwarding
       },
     },
+    middlewares: [((req: any, res: any, next: () => void) => {
+      history({
+        verbose: false,
+        disableDotRule: true,
+        htmlAcceptHeaders: ['text/html', 'application/xhtml+xml'],
+      })(req, res, next);
+    })],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

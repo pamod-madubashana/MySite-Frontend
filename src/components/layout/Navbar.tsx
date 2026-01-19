@@ -1,27 +1,59 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Github, Linkedin, Mail } from "lucide-react";
+import { Menu, X, Github, Linkedin, Send, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const navLinks = [
   { name: "Home", path: "/" },
   { name: "About", path: "/about" },
   { name: "Projects", path: "/projects" },
   { name: "Articles", path: "/articles" },
-  { name: "Contact", path: "/#contact" },
 ];
 
-const socialLinks = [
-  { icon: Github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com/in/pamod-madubashana", label: "LinkedIn" },
-  { icon: Mail, href: "mailto:hello@pamodmadubashana.com", label: "Email" },
-];
+// Social link icons mapping
+const socialIcons = {
+  github: Github,
+  linkedin: Linkedin,
+  telegram: Send,
+  email: Mail
+};
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const { settings } = useSettings();
+  
+  // Generate social links from settings, fallback to defaults if not loaded
+  const socialLinks = settings?.socialLinks ? [
+    settings.socialLinks.github && { 
+      icon: socialIcons.github, 
+      href: settings.socialLinks.github, 
+      label: "GitHub" 
+    },
+    settings.socialLinks.linkedin && { 
+      icon: socialIcons.linkedin, 
+      href: settings.socialLinks.linkedin, 
+      label: "LinkedIn" 
+    },
+    settings.socialLinks.telegram && { 
+      icon: socialIcons.telegram, 
+      href: settings.socialLinks.telegram, 
+      label: "Telegram" 
+    },
+    settings.socialLinks.email && { 
+      icon: socialIcons.email, 
+      href: `mailto:${settings.socialLinks.email}`, 
+      label: "Email" 
+    }
+  ].filter(Boolean) as Array<{icon: React.FC<any>, href: string, label: string}> : [
+    { icon: socialIcons.github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
+    { icon: socialIcons.linkedin, href: "https://www.linkedin.com/in/pamod-madubashana-886b621a2", label: "LinkedIn" },
+    { icon: socialIcons.telegram, href: "https://t.me/pamod_madubashana", label: "Telegram" },
+    { icon: socialIcons.email, href: "mailto:pamod.main@gmail.com", label: "Email" }
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -57,11 +89,11 @@ export const Navbar = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto px-4 navbar-container">
+      <div className="container mx-auto px-4 navbar-container transform3d">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <Link to="/" className="relative group">
-            <span className="text-xl md:text-2xl font-bold text-gradient">
+            <span className="text-xl md:text-2xl font-bold text-foreground/70">
               P A M O D
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
@@ -113,11 +145,29 @@ export const Navbar = () => {
                 </a>
               ))}
             </div>
-            <Link to="/#contact">
-              <Button variant="default" size="sm" className="neon-glow">
-                Contact
-              </Button>
-            </Link>
+            {/* Only show contact button if contact section is enabled */}
+            {settings?.siteSections.showContact && (
+              <button 
+                onClick={() => {
+                  // First try hash navigation
+                  const contactElement = document.getElementById('contact');
+                  if (contactElement) {
+                    contactElement.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  } else {
+                    // Fallback: navigate to home with hash
+                    window.location.hash = 'contact';
+                  }
+                }}
+                className="neon-glow"
+              >
+                <Button variant="default" size="sm" className="neon-glow">
+                  Contact
+                </Button>
+              </button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -135,16 +185,18 @@ export const Navbar = () => {
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0, y: -20 }}
-            animate={{ opacity: 1, height: "auto", y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -20 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 30,
-              duration: 0.3 
+              duration: 0.2
             }}
-            className="md:hidden glass-strong border-t border-border"
+            className="md:hidden glass-strong border-t border-border overflow-hidden"
+            style={{
+              maxHeight: isOpen ? "300px" : "0",
+              overflow: "hidden",
+              transition: "max-height 0.25s ease-in-out"
+            }}
           >
             <div className="container mx-auto px-4 py-4">
               <div className="flex flex-col gap-2">
@@ -171,15 +223,34 @@ export const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
-                <Link to="/#contact" onClick={() => {
-                        // Close menu with slight delay for better UX
-                        setTimeout(() => setIsOpen(false), 150);
-                      }}>
-                <Button variant="default" className="mt-4 neon-glow">
-                  Contact
-                </Button>
-                </Link>
-              </div>
+              {/* Only show contact button if contact section is enabled */}
+              {settings?.siteSections.showContact && (
+                <button 
+                  onClick={() => {
+                    // Close menu first
+                    setTimeout(() => setIsOpen(false), 150);
+                    // Then scroll to contact
+                    setTimeout(() => {
+                      const contactElement = document.getElementById('contact');
+                      if (contactElement) {
+                        contactElement.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'start'
+                        });
+                      } else {
+                        // Fallback
+                        window.location.hash = 'contact';
+                      }
+                    }, 200);
+                  }}
+                  className="w-full"
+                >
+                  <Button variant="default" className="mt-4 neon-glow w-full">
+                    Contact
+                  </Button>
+                </button>
+              )}
+            </div>
             </div>
           </motion.div>
         )}

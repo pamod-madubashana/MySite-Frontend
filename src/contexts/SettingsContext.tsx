@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { settingsApi } from '@/api/settingsApi';
 
 interface Settings {
   aboutContent: string;
@@ -17,16 +18,38 @@ interface Settings {
   socialLinks: {
     github?: string;
     linkedin?: string;
-    twitter?: string;
+    telegram?: string;
     email?: string;
   };
 }
+
+const DEFAULT_SETTINGS: Settings = {
+  aboutContent: 'Welcome to my portfolio website. I am a passionate developer with expertise in creating modern web applications.',
+  featuredRepos: [],
+  themeOptions: {
+    primaryColor: '#6366f1',
+    secondaryColor: '#8b5cf6',
+    fontFamily: 'Inter, sans-serif',
+  },
+  siteSections: {
+    showAbout: true,
+    showProjects: true,
+    showArticles: true,
+    showContact: true,
+  },
+  socialLinks: {
+    github: 'https://github.com/pamod-madubashana',
+    linkedin: 'https://www.linkedin.com/in/pamod-madubashana-886b621a2',
+    telegram: 'https://t.me/pamod_madubashana',
+    email: 'pamod.main@gmail.com',
+  },
+};
 
 interface SettingsContextType {
   settings: Settings | null;
   loading: boolean;
   error: string | null;
-  refreshSettings: () => Promise<void>;
+  refreshSettings: (forceRefresh?: boolean) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -39,6 +62,8 @@ export const useSettings = () => {
   return context;
 };
 
+export { DEFAULT_SETTINGS };
+
 interface SettingsProviderProps {
   children: ReactNode;
 }
@@ -48,36 +73,49 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSettings = async () => {
+  const fetchSettings = async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/settings');
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to fetch settings: ${response.status} - ${errorText}`);
-      }
+      // Set up timeout promise
+      const timeoutPromise = new Promise<Settings>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Settings loading timed out after 5 seconds'));
+        }, 5000); // 5 seconds timeout
+      });
       
-      const data = await response.json();
+      // Race between API call and timeout
+      const data = await Promise.race([
+        settingsApi.getSettings(forceRefresh),
+        timeoutPromise
+      ]);
+      
       setSettings(data);
     } catch (err: any) {
-      setError(err.message || 'Error fetching settings');
-      console.error('Error fetching settings:', err);
+      if (err.message.includes('timed out')) {
+        // Use default settings on timeout
+        setSettings(DEFAULT_SETTINGS);
+        setError('Settings loading timed out, using default settings');
+        console.warn('Settings loading timed out, using default settings:', err);
+      } else {
+        setError(err.message || 'Error fetching settings');
+        console.error('Error fetching settings:', err);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchSettings();
+    fetchSettings(false); // Initial load, can use cache
   }, []);
 
   const value = {
     settings,
     loading,
     error,
-    refreshSettings: fetchSettings
+    refreshSettings: (forceRefresh = true) => fetchSettings(forceRefresh)
   };
 
   return (

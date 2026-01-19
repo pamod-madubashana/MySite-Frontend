@@ -128,7 +128,8 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-family, system-ui, sans-serif);
   }
 
   /* Removed global scroll-behavior: smooth to prevent navbar jumping */
@@ -214,6 +215,13 @@
     backface-visibility: hidden;
     perspective: 1000px;
   }
+
+  .transform3d {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }

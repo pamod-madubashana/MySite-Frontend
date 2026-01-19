@@ -18,7 +18,7 @@ export const ContactSection = () => {
               Get in Touch
             </span>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              Let's Work <span className="text-gradient">Together</span>
+              <span className="text-foreground/70">Let's Work</span> <span className="text-gradient">Together</span>
             </h2>
             <p className="text-muted-foreground max-w-xl mx-auto">
               Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your ideas to life.
@@ -36,13 +36,13 @@ export const ContactSection = () => {
               {
                 icon: Mail,
                 title: "Email",
-                value: "hello@alexchen.dev",
-                href: "mailto:hello@alexchen.dev",
+                value: "pamod.main@gmail.com",
+                href: "mailto:pamod.main@gmail.com",
               },
               {
                 icon: MapPin,
                 title: "Location",
-                value: "San Francisco, CA",
+                value: "Ampara, Sri Lanka",
                 href: "#",
               },
               {
