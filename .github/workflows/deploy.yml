@@ -68,7 +68,7 @@ jobs:
           git commit -m "Deploy build files from $GITHUB_REPOSITORY@$GITHUB_SHA [ci skip]"
           
           # Push to fronthost repository
-          git remote set-url origin "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@pamod-madubashana/pamod-madubashana.github.io.git"
+          git remote set-url origin "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/pamod-madubashana/pamod-madubashana.github.io.git"
           git push
           echo "Changes pushed successfully!"
         else
