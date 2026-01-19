@@ -47,7 +47,7 @@ jobs:
         git config --global url."https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/".insteadOf "https://github.com/"
         
         # Clone the target repository
-        git clone "https://github.com/pamod-madubashana/fronthost.git" deployment
+        git clone "https://github.com/pamod-madubashana/pamod-madubashana.github.io.git" deployment
         cd deployment
         
         # Clean the target directory
@@ -57,9 +57,10 @@ jobs:
         cp -r ../dist/* ./
         
         # Configure git
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
+        # Configure git
+        git config --local user.email "pamod.main@gmail.com"
+        git config --local user.name "pamod-madubashana"
+
         # Check if there are changes
         if [[ -n $(git status --porcelain) ]]; then
           echo "Committing changes..."
@@ -67,7 +68,7 @@ jobs:
           git commit -m "Deploy build files from $GITHUB_REPOSITORY@$GITHUB_SHA [ci skip]"
           
           # Push to fronthost repository
-          git remote set-url origin "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/pamod-madubashana/fronthost.git"
+          git remote set-url origin "https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@pamod-madubashana/pamod-madubashana.github.io.git"
           git push
           echo "Changes pushed successfully!"
         else
