@@ -64,10 +64,10 @@ jobs:
           git commit -m "Deploy build files from $GITHUB_REPOSITORY@$GITHUB_SHA [ci skip]"
           
           # Push to fronthost repository
-          git push "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/pamod-madubashana/fronthost.git"
+          git push "https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/pamod-madubashana/fronthost.git"
           echo "Changes pushed successfully!"
         else
           echo "No changes to commit"
         fi
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
