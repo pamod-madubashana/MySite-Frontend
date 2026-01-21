@@ -82,7 +82,7 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
       const timeoutPromise = new Promise<Settings>((_, reject) => {
         setTimeout(() => {
           reject(new Error('Settings loading timed out after 5 seconds'));
-        }, 5000); // 5 seconds timeout
+        }, 12000); // 12 seconds timeout
       });
       
       // Race between API call and timeout
