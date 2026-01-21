@@ -56,6 +56,12 @@ jobs:
         # Copy built files to deployment directory
         cp -r ../dist/* ./
         
+        # Copy static files from public directory (including hidden directories)
+        cp -r ../public/.well-known ./ 2>/dev/null || true
+        cp ../public/CNAME ./ 2>/dev/null || true
+        cp ../public/robots.txt ./ 2>/dev/null || true
+        cp ../public/sitemap.xml ./ 2>/dev/null || true
+        
         # Configure git
         # Configure git
         git config --local user.email "pamod.main@gmail.com"
