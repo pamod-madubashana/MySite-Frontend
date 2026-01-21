@@ -48,5 +48,7 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
+    // Include dot directories like .well-known
+    assetsInclude: ['**/.*/**'],
   },
 }));
