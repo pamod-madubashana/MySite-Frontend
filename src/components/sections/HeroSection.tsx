@@ -88,8 +88,8 @@ export const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
         >
-          I craft beautiful, performant web experiences with modern technologies.
-          Passionate about clean code, great UX, and pushing the boundaries of what's possible.
+          I build fast, reliable web applications with modern tools. I care about clean architecture, 
+          thoughtful UX, and shipping features that scale
         </motion.p>
 
         <motion.div
