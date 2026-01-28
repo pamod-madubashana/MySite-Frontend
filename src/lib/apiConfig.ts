@@ -5,26 +5,46 @@
 
 // Determine the API base URL based on environment
 const getApiBaseUrl = (): string => {
-  // In development, we might want to use a direct URL or fall back to proxy
+  // Client-side (browser) environment
   if (typeof window !== 'undefined') {
-    // Client-side (browser) environment
-    const envBaseUrl = import.meta.env.VITE_API_BASE_URL;
+    const isDev = import.meta.env.DEV;
+    const devUrl = import.meta.env.VITE_API_BASE_URL;
+    const prodUrl = import.meta.env.VITE_API_BASE_URL_PROD;
     
-    if (envBaseUrl) {
-      // Ensure the URL ends with '/api' for our backend routes
-      return envBaseUrl.endsWith('/api') ? envBaseUrl : `${envBaseUrl}/api`;
+    if (isDev && devUrl) {
+      return devUrl;
     }
     
-    // Fallback for development when VITE_API_BASE_URL is not set
-    // Use the production backend URL instead of current hostname
-    return 'https://crucial-berti-premiumqtrust-83e7436c.koyeb.app/api';
+    if (!isDev && prodUrl) {
+      return prodUrl;
+    }
+    
+    // Fallback
+    if (devUrl) {
+      return devUrl;
+    }
+    
+    throw new Error('API base URL environment variable is not defined');
   } else {
     // Server-side environment (SSR, etc.) - though unlikely for this app
-    const envBaseUrl = process.env.VITE_API_BASE_URL;
-    if (envBaseUrl) {
-      return envBaseUrl.endsWith('/api') ? envBaseUrl : `${envBaseUrl}/api`;
+    const isDev = process.env.NODE_ENV === 'development';
+    const devUrl = process.env.VITE_API_BASE_URL;
+    const prodUrl = process.env.VITE_API_BASE_URL_PROD;
+    
+    if (isDev && devUrl) {
+      return devUrl;
     }
-    return 'https://crucial-berti-premiumqtrust-83e7436c.koyeb.app/api';
+    
+    if (!isDev && prodUrl) {
+      return prodUrl;
+    }
+    
+    // Fallback
+    if (devUrl) {
+      return devUrl;
+    }
+    
+    throw new Error('API base URL environment variable is not defined');
   }
 };
 
