@@ -41,7 +41,7 @@ const DEFAULT_SETTINGS: Settings = {
     github: 'https://github.com/pamod-madubashana',
     linkedin: 'https://www.linkedin.com/in/pamod-madubashana-886b621a2',
     telegram: 'https://t.me/pamod_madubashana',
-    email: 'pamod.main@gmail.com',
+    email: 'contact@pamod.is-a.dev',
   },
 };
 

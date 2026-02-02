@@ -52,7 +52,7 @@ export const Navbar = () => {
     { icon: socialIcons.github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
     { icon: socialIcons.linkedin, href: "https://www.linkedin.com/in/pamod-madubashana-886b621a2", label: "LinkedIn" },
     { icon: socialIcons.telegram, href: "https://t.me/pamod_madubashana", label: "Telegram" },
-    { icon: socialIcons.email, href: "mailto:pamod.main@gmail.com", label: "Email" }
+    { icon: socialIcons.email, href: "mailto:contact@pamod.is-a.dev", label: "Email" }
   ];
 
   useEffect(() => {
