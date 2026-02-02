@@ -1,6 +1,13 @@
-# Pamod Madubashana
+<p align="center">
+  <h1 align="center">Pamod Madubashana</h1>
+</p>
 
-Full-stack developer passionate about creating modern web applications with clean code and exceptional user experiences.
+<p align="center">
+  <img src="assets/favicon.png" alt="Pamod Madubashana" width="120" height="120" />
+</p>
+
+<p align="center">Full-stack developer passionate about creating modern web applications with clean code and exceptional user experiences.</p>
+
 
 ## 🛠️ Skills
 
