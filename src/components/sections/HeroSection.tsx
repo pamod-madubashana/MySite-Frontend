@@ -23,12 +23,12 @@ export const HeroSection = () => {
       <div className="relative z-10 container mx-auto px-4 pt-10 pb-20">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
           {/* Portrait */}
-          <div className="order-1 lg:order-2 flex items-center justify-center">
+          <div className="order-1 lg:order-1 w-full lg:w-[58%] flex justify-center lg:justify-start">
             <HeroPortrait />
           </div>
           
           {/* Text content */}
-          <div className="order-2 lg:order-1 text-center lg:text-left max-w-2xl">
+          <div className="order-2 lg:order-2 w-full lg:w-[42%] text-center lg:text-left max-w-xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
               <span className="text-foreground">Hi, I'm </span>
               <span className="bg-gradient-to-r from-primary via-teal-accent to-secondary bg-clip-text text-transparent">

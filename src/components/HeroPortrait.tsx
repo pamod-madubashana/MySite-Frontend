@@ -2,7 +2,7 @@ import heroPortrait from "@/assets/hero-portrait.png";
 
 const HeroPortrait = () => {
   return (
-    <div className="hero-portrait relative w-80 h-80 md:w-96 md:h-96 lg:w-[32rem] lg:h-[32rem] xl:w-[36rem] xl:h-[36rem]">
+    <div className="hero-portrait relative w-80 h-80 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[42rem] xl:h-[42rem] scale-[1.15] lg:scale-[1.25]">
       <img
         src={heroPortrait}
         alt="Pamod Madubashana"
