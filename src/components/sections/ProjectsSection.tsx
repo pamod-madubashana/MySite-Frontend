@@ -159,12 +159,12 @@ export const ProjectsSection = () => {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center mt-12"
         >
-          <Button asChild variant="outline" size="lg" className="group">
+          <Button asChild variant="outline" size="lg" className="group border border-primary/40 bg-transparent text-primary hover:bg-primary/5 hover:border-primary/60 hover:text-primary dark:border-primary/50 dark:text-primary dark:hover:bg-primary/10 dark:hover:border-primary/70 font-semibold px-8 transition-all duration-300">
             <Link to="/projects">
-              <Code className="w-5 h-5 mr-2 text-foreground/70" />
-              <span className="text-foreground/70">View All Projects</span>
+              <Code className="w-5 h-5 mr-2 text-primary group-hover:text-primary" />
+              <span className="text-primary group-hover:text-primary">View All Projects</span>
               <motion.span
-                className="ml-2 text-foreground/70"
+                className="ml-2 text-primary group-hover:text-primary"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
