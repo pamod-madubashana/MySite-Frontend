@@ -2,6 +2,7 @@ import { Code, Zap, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedWaves from "@/components/AnimatedWaves";
 import HeroPortrait from "@/components/HeroPortrait";
+import { Link } from "react-router-dom";
 
 export const HeroSection = () => {
   return (
@@ -47,19 +48,26 @@ export const HeroSection = () => {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
+                asChild
                 size="lg"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 transition-all duration-300 hover:scale-105"
               >
-                <Code className="w-5 h-5 mr-2" />
-                View Projects
+                <Link to="/projects" className="inline-flex items-center gap-2 whitespace-nowrap">
+                  <Code className="w-5 h-5" />
+                  <span>View Projects</span>
+                </Link>
               </Button>
+
               <Button
+                asChild
                 size="lg"
                 variant="outline"
                 className="border border-primary/40 bg-transparent text-primary hover:bg-primary/5 hover:border-primary/60 hover:text-primary dark:border-primary/50 dark:text-primary dark:hover:bg-primary/10 dark:hover:border-primary/70 font-semibold px-8 transition-all duration-300"
               >
-                <Zap className="w-5 h-5 mr-2" />
-                Learn More
+                <Link to="/projects" className="inline-flex items-center gap-2 whitespace-nowrap">
+                  <Zap className="w-5 h-5" />
+                  <span>Learn More</span>
+                </Link>
               </Button>
             </div>
           </div>
