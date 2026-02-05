@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Code2, Palette, Zap, Globe } from "lucide-react";
 import { useState, useEffect } from 'react';
 import { API_BASE_URL } from '@/lib/apiConfig';
+import { aboutApi } from '@/api/aboutApi';
 
 const skills = [
   {
@@ -44,6 +45,30 @@ export const AboutSection = () => {
   useEffect(() => {
     const fetchTechSkills = async () => {
       try {
+        // First check if we have cached about data
+        const cachedData = aboutApi.getCachedAboutData();
+        
+        if (cachedData && cachedData.techCategories.length > 0) {
+          // Use cached tech categories data
+          console.log('Using cached tech data in AboutSection');
+          
+          // Flatten all skills from categories to create tech stack
+          const allSkills = cachedData.techCategories.flatMap((category: any) => 
+            category.skills.map((skill: string) => ({
+              name: skill,
+              level: Math.floor(Math.random() * 40) + 60 // Generate random level between 60-100
+            }))
+          );
+          
+          if (allSkills.length > 0) {
+            setTechStack(allSkills.slice(0, 6)); // Take first 6 skills
+          }
+          setLoading(false);
+          return;
+        }
+        
+        // Fallback to direct API call
+        console.log('No cached data, fetching tech skills directly');
         const response = await fetch(`${API_BASE_URL}/tech-stack-categories/public`);
         if (response.ok) {
           const techStackCategories = await response.json();

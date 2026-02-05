@@ -9,6 +9,7 @@ import {
 import { useState, useEffect } from 'react';
 import { timelineApi, TimelineItem } from '@/api/timelineApi';
 import { API_BASE_URL } from '@/lib/apiConfig';
+import { aboutApi, AboutPageData } from '@/api/aboutApi';
 
 // Icon mapping for dynamic icon rendering
 const iconMap = {
@@ -61,6 +62,48 @@ const About = () => {
   useEffect(() => {
     const fetchAllData = async () => {
       try {
+        // First check if we have cached data from home page pre-fetch
+        const cachedData = aboutApi.getCachedAboutData();
+        
+        if (cachedData) {
+          // Use cached data - no loading time!
+          console.log('Using cached about page data');
+          
+          // Process timeline data
+          const mappedTimeline = cachedData.timeline.map((item: TimelineItem) => ({
+            ...item,
+            icon: iconMap[item.icon as keyof typeof iconMap] || Briefcase
+          }));
+          setTimeline(mappedTimeline);
+          
+          // Process tech categories data
+          const formattedTechCategories = cachedData.techCategories.map((category: any) => ({
+            title: category.title,
+            icon: iconMap[category.icon as keyof typeof iconMap] || iconMap['Terminal'],
+            skills: category.skills,
+          }));
+          
+          if (formattedTechCategories.length > 0) {
+            setTechCategories(formattedTechCategories);
+          }
+          
+          // Process interests data
+          const formattedInterests = cachedData.interests.map((interest: any) => ({
+            ...interest,
+            icon: iconMap[interest.icon as keyof typeof iconMap] || Code2
+          }));
+          
+          if (formattedInterests.length > 0) {
+            setInterests(formattedInterests);
+          }
+          
+          setLoading(false);
+          return;
+        }
+        
+        // Fallback to individual API calls if no cached data
+        console.log('No cached data found, fetching from APIs');
+        
         // Fetch timeline data
         const timelineData = await timelineApi.getTimeline();
         // Map the API data to match the expected format

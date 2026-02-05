@@ -5,9 +5,17 @@ import { AboutSection } from "@/components/sections/AboutSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useEffect } from 'react';
+import { aboutApi } from '@/api/aboutApi';
 
 const Index = () => {
   const { settings, loading } = useSettings();
+  
+  // Pre-fetch about page data when home page loads
+  useEffect(() => {
+    // Start pre-fetching in background without blocking UI
+    aboutApi.prefetchAboutData();
+  }, []);
   
   if (loading) {
     return (
