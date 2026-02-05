@@ -1,124 +1,73 @@
-import { motion } from "framer-motion";
-import { ArrowDown, Sparkles, Code2, Zap } from "lucide-react";
+import { Code, Zap, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import heroBg from "@/assets/hero-bg.jpg";
+import AnimatedWaves from "@/components/AnimatedWaves";
+import HeroPortrait from "@/components/HeroPortrait";
 
 export const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Hero Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-30"
-        style={{ backgroundImage: `url(${heroBg})` }}
-      />
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
       
-      {/* Animated Background */}
-      <div className="absolute inset-0 grid-pattern opacity-20" />
+      {/* Animated waves */}
+      <AnimatedWaves />
       
-      {/* Floating Orbs */}
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/20 blur-3xl"
-        animate={{
-          x: [0, 50, 0],
-          y: [0, -30, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-secondary/20 blur-3xl"
-        animate={{
-          x: [0, -40, 0],
-          y: [0, 40, 0],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute top-1/2 right-1/3 w-48 h-48 rounded-full bg-accent/15 blur-3xl"
-        animate={{
-          x: [0, 30, 0],
-          y: [0, 50, 0],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
+      {/* Noise texture overlay */}
+      <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1Ii8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2EpIi8+PC9zdmc+')]" />
+      
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
-
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6"
-        >
-          <span className="text-foreground">Hi, I'm </span>
-          <span className="text-gradient">Pamod Madubashana</span>
-          <br />
-          <span className="text-foreground">Full-Stack Developer</span>
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10"
-        >
-          I build fast, reliable web applications with modern tools. I care about clean architecture, 
-          thoughtful UX, and shipping features that scale
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
-        >
-          <Button asChild size="lg" className="group neon-glow">
-            <Link to="/projects">
-              <Code2 className="w-5 h-5 mr-2 transition-transform group-hover:rotate-12" />
-              View Projects
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="group text-foreground border-foreground/40 hover:border-foreground/70 hover:bg-foreground/10 hover:text-foreground font-medium shadow-sm hover:shadow-md transition-all duration-300">
-            <Link to="/about">
-              <Zap className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
-              Learn More
-            </Link>
-          </Button>
-        </motion.div>
-
+      <div className="relative z-10 container mx-auto px-4 pt-20">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
+          {/* Portrait */}
+          <div className="order-1 lg:order-2">
+            <HeroPortrait />
+          </div>
+          
+          {/* Text content */}
+          <div className="order-2 lg:order-1 text-center lg:text-left max-w-2xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+              <span className="text-foreground">Hi, I'm </span>
+              <span className="bg-gradient-to-r from-primary via-teal-accent to-secondary bg-clip-text text-transparent">
+                Pamod Madubashana
+              </span>
+            </h1>
+            
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold text-foreground mb-6">
+              Full-Stack Developer
+            </h2>
+            
+            <p className="text-muted-foreground text-lg md:text-xl mb-8 leading-relaxed">
+              I build fast, reliable web applications with modern tools. I care about clean architecture, 
+              thoughtful UX, and shipping features that scale
+            </p>
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button
+                size="lg"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8"
+              >
+                <Code className="w-5 h-5 mr-2" />
+                View Projects
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-muted-foreground/30 hover:border-primary hover:text-primary font-semibold px-8"
+              >
+                <Zap className="w-5 h-5 mr-2" />
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground animate-bounce">
+          <span className="text-sm font-medium tracking-wider">SCROLL</span>
+          <ChevronDown className="w-5 h-5" />
+        </div>
       </div>
-
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex flex-col items-center gap-2 text-muted-foreground"
-        >
-          <span className="text-xs uppercase tracking-wider">Scroll</span>
-          <ArrowDown className="w-4 h-4" />
-        </motion.div>
-      </motion.div>
     </section>
   );
 };
