@@ -48,7 +48,7 @@ export const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
                 size="lg"
-                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 transition-all duration-300 hover:scale-105"
               >
                 <Code className="w-5 h-5 mr-2" />
                 View Projects
@@ -56,7 +56,7 @@ export const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-muted-foreground/30 hover:border-primary hover:text-primary font-semibold px-8"
+                className="border border-primary/40 bg-transparent text-primary hover:bg-primary/5 hover:border-primary/60 hover:text-primary dark:border-primary/50 dark:text-primary dark:hover:bg-primary/10 dark:hover:border-primary/70 font-semibold px-8 transition-all duration-300"
               >
                 <Zap className="w-5 h-5 mr-2" />
                 Learn More
