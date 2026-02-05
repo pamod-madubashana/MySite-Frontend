@@ -64,7 +64,7 @@ export const HeroSection = () => {
                 variant="outline"
                 className="border border-primary/40 bg-transparent text-primary hover:bg-primary/5 hover:border-primary/60 hover:text-primary dark:border-primary/50 dark:text-primary dark:hover:bg-primary/10 dark:hover:border-primary/70 font-semibold px-8 transition-all duration-300"
               >
-                <Link to="/projects" className="inline-flex items-center gap-2 whitespace-nowrap">
+                <Link to="/about" className="inline-flex items-center gap-2 whitespace-nowrap">
                   <Zap className="w-5 h-5" />
                   <span>Learn More</span>
                 </Link>
