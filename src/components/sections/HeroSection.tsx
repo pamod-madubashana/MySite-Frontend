@@ -16,10 +16,10 @@ export const HeroSection = () => {
       <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1Ii8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2EpIi8+PC9zdmc+')]" />
       
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 pt-20">
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20">
+      <div className="relative z-10 container mx-auto px-4 pt-10 pb-20">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16">
           {/* Portrait */}
-          <div className="order-1 lg:order-2">
+          <div className="order-1 lg:order-2 flex items-center justify-center">
             <HeroPortrait />
           </div>
           

@@ -13,16 +13,17 @@ const HeroPortrait = () => {
       <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-spin" style={{ animationDuration: "20s" }} />
       <div className="absolute inset-2 rounded-full border border-secondary/20 animate-spin" style={{ animationDuration: "15s", animationDirection: "reverse" }} />
       
-      {/* Portrait image */}
-     <div className="relative w-full h-full flex items-center justify-center z-10 bg-transparent">
+      {/* Portrait image with better blending */}
+      <div className="relative w-full h-full flex items-center justify-center z-10">
         <img
           src={heroPortrait}
           alt="Pamod Madubashana"
-         className="w-full h-full object-contain drop-shadow-[0_0_30px_rgba(0,200,200,0.5)] mix-blend-normal"
-         style={{ 
-           background: 'transparent',
-           imageRendering: 'auto'
-         }}
+          className="w-full h-full object-contain rounded-full border border-white/10 backdrop-blur-sm bg-transparent"
+          style={{ 
+            boxShadow: '0 0 60px rgba(0, 200, 200, 0.3)',
+            maskImage: 'radial-gradient(circle, black 70%, transparent 90%)',
+            WebkitMaskImage: 'radial-gradient(circle, black 70%, transparent 90%)',
+          }}
         />
       </div>
       
