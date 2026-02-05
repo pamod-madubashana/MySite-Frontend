@@ -151,6 +151,38 @@
     will-change: transform;
   }
 
+  .hero-portrait {
+    position: relative;
+  }
+
+  .hero-portrait::before {
+    content: "";
+    position: absolute;
+    inset: -25%;
+    z-index: -1;
+    /* background: radial-gradient(circle at 55% 45%,
+      rgba(64,196,255,0.14),
+      rgba(160,90,255,0.10),
+      rgba(0,0,0,0) 70%); */
+    filter: blur(22px);
+    opacity: 0.9;
+  }
+
+  .hero-portrait::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+
+    /* background:
+      radial-gradient(circle at 25% 25%, rgba(64,196,255,0.18), rgba(0,0,0,0) 55%),
+      radial-gradient(circle at 80% 60%, rgba(160,90,255,0.16), rgba(0,0,0,0) 60%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0 1px, rgba(255,255,255,0) 1px 3px); */
+
+    mix-blend-mode: soft-light;
+    opacity: 0.14;
+  }
+
   .neon-glow {
     box-shadow: var(--glow-cyan);
   }
@@ -219,6 +251,10 @@
   .transform3d {
     transform: translateZ(0);
     will-change: transform;
+  }
+
+  .bg-radial-gradient {
+    background: radial-gradient(circle, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 60%, transparent 100%);
   }
 
 

@@ -9,6 +9,9 @@ export const HeroSection = () => {
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
       
+      {/* Subtle darkening behind portrait for natural transition */}
+      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-radial-gradient(circle, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.02) 60%, transparent 100%)" />
+      
       {/* Animated waves */}
       <AnimatedWaves />
       
