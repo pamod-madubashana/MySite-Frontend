@@ -226,37 +226,36 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
       transition={{ duration: 0.45 }}
       className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40"
     >
-      <div className="relative space-y-7">
-        <div className="px-6 pt-6 md:px-10 md:pt-10">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-          <ChevronRight className="h-4 w-4" />
-          <Link to="/projects" className="hover:text-primary transition-colors">Projects</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="truncate text-foreground/80">{project.title}</span>
-        </nav>
+      <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/60 bg-black/40 md:h-[460px]">
+        <img
+          src={thumbnailSrc}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-40"
+        />
+
+        <div className="absolute inset-x-0 top-0 z-20 px-6 pt-6 md:px-10 md:pt-10">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-foreground/75 md:text-sm">
+            <Link to="/" className="transition-colors hover:text-primary">Home</Link>
+            <ChevronRight className="h-4 w-4" />
+            <Link to="/projects" className="transition-colors hover:text-primary">Projects</Link>
+            <ChevronRight className="h-4 w-4" />
+            <span className="truncate text-foreground/90">{project.slug || project._id}</span>
+          </nav>
         </div>
 
-        <div className="relative h-[320px] md:h-[460px] overflow-hidden rounded-xl border border-border/60 bg-black/40">
+        <div className="relative z-10 flex h-full items-center justify-center px-6">
           <img
             src={thumbnailSrc}
-            alt=""
-            aria-hidden
-            className="absolute inset-0 h-full w-full scale-[1.25] object-cover blur-[32px] opacity-40"
+            alt={`${project.title} thumbnail`}
+            className="max-h-[85%] max-w-[92%] object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)]"
           />
-          <div className="relative z-10 flex h-full items-center justify-center px-6">
-            <img
-              src={thumbnailSrc}
-              alt={`${project.title} thumbnail`}
-              className="max-h-[85%] max-w-[92%] object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)]"
-            />
-          </div>
         </div>
 
-        <div className="px-6 pb-6 md:px-10 md:pb-10">
+        <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-6 md:px-10 md:pb-10">
           <div className="max-w-3xl rounded-lg border border-border/50 bg-background/30 p-4 backdrop-blur-md md:p-5">
-            <p className="text-sm font-medium tracking-[0.18em] uppercase text-gradient">Project Showcase</p>
-            <h1 className="my-3 text-3xl md:text-5xl font-bold leading-tight text-foreground/95">{project.title}</h1>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-gradient">Project Showcase</p>
+            <h1 className="my-3 text-3xl font-bold leading-tight text-foreground/95 md:text-5xl">{project.title}</h1>
           </div>
         </div>
       </div>
