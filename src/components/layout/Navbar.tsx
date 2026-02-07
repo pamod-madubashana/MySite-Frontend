@@ -99,10 +99,28 @@ export const Navbar = () => {
     
     // Also close mobile menu when route changes
     setIsOpen(false);
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
+
+  useEffect(() => {
+    const body = document.body;
+    const root = document.documentElement;
+
+    if (isContactModalOpen) {
+      body.classList.add("contact-open");
+      root.classList.add("contact-open");
+    } else {
+      body.classList.remove("contact-open");
+      root.classList.remove("contact-open");
+    }
+
+    return () => {
+      body.classList.remove("contact-open");
+      root.classList.remove("contact-open");
+    };
+  }, [isContactModalOpen]);
 
   return (
     <motion.nav
