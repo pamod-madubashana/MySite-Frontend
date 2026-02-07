@@ -174,7 +174,7 @@ export const ContactSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                className="p-6 rounded-xl glass hover-lift text-center group"
+                className="p-6 rounded-xl border border-border/60 bg-background/45 backdrop-blur-xl shadow-xl shadow-black/30 hover-lift text-center group"
               >
                 <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center group-hover:shadow-glow transition-shadow duration-300">
                   <item.icon className="w-6 h-6 text-primary" />
@@ -190,7 +190,7 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="p-8 rounded-2xl glass"
+            className="p-8 rounded-2xl border border-border/60 bg-background/55 backdrop-blur-xl shadow-2xl shadow-black/35"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
               <div className="grid md:grid-cols-2 gap-6">
@@ -208,7 +208,7 @@ export const ContactSection = () => {
                     autoComplete="name"
                     maxLength={80}
                     aria-invalid={Boolean(formErrors.name)}
-                    className="h-12 border-border bg-transparent text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
                   />
                   {formErrors.name && <p className="mt-2 text-sm text-destructive">{formErrors.name}</p>}
                 </div>
@@ -226,7 +226,7 @@ export const ContactSection = () => {
                     autoComplete="email"
                     maxLength={254}
                     aria-invalid={Boolean(formErrors.email)}
-                    className="h-12 border-border bg-transparent text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
                   />
                   {formErrors.email && (
                     <p className="mt-2 text-sm text-destructive">{formErrors.email}</p>
@@ -257,7 +257,7 @@ export const ContactSection = () => {
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
                   aria-invalid={Boolean(formErrors.message)}
-                  className="resize-none border-border bg-background/70 text-foreground placeholder:text-muted-foreground"
+                  className="resize-none border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
                 />
                 {formErrors.message && (
                   <p className="mt-2 text-sm text-destructive">{formErrors.message}</p>

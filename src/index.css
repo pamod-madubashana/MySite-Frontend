@@ -241,6 +241,17 @@
     animation: gradient-shift 8s ease infinite;
   }
 
+  .contact-modal-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .contact-modal-scroll::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
   .grid-pattern {
     background-image: 
       linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
