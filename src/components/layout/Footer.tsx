@@ -12,7 +12,11 @@ const footerLinks = [
 ];
 
 export const Footer = () => {
+  const firstPublishedYear = 2026;
   const currentYear = new Date().getFullYear();
+  const copyrightYears = currentYear > firstPublishedYear
+    ? `${firstPublishedYear}-${currentYear}`
+    : `${firstPublishedYear}`;
   const { settings } = useSettings();
   
   const socialLinks = settings?.socialLinks ? [
@@ -105,7 +109,7 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground flex items-center gap-1">
-            © {currentYear} Pamod Madubashana. All rights reserved.
+            © {copyrightYears} Pamod Madubashana. All rights reserved.
           </p>
           <div className="flex gap-4">
             <Link
