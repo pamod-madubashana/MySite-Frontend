@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { CSSProperties, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Github, Linkedin, Send, Mail } from "lucide-react";
@@ -22,12 +22,43 @@ const socialIcons = {
   email: Mail
 };
 
+interface ContactDialogOrigin {
+  x: string;
+  y: string;
+}
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [contactDialogOrigin, setContactDialogOrigin] = useState<ContactDialogOrigin>({
+    x: "50vw",
+    y: "50vh",
+  });
   const location = useLocation();
   const { settings } = useSettings();
+
+  const getContactDialogOrigin = (element: HTMLElement | null): ContactDialogOrigin => {
+    if (!element) {
+      return { x: "50vw", y: "50vh" };
+    }
+
+    const rect = element.getBoundingClientRect();
+    return {
+      x: `${rect.left + rect.width / 2}px`,
+      y: `${rect.top + rect.height / 2}px`,
+    };
+  };
+
+  const openContactModal = (origin: ContactDialogOrigin) => {
+    setContactDialogOrigin(origin);
+    setIsContactModalOpen(true);
+  };
+
+  const contactDialogStyle = {
+    "--contact-origin-x": contactDialogOrigin.x,
+    "--contact-origin-y": contactDialogOrigin.y,
+  } as CSSProperties;
   
   // Generate social links from settings, fallback to defaults if not loaded
   const socialLinks = settings?.socialLinks ? [
@@ -153,7 +184,7 @@ export const Navbar = () => {
                 variant="default"
                 size="sm"
                 className="neon-glow"
-                onClick={() => setIsContactModalOpen(true)}
+                onClick={(event) => openContactModal(getContactDialogOrigin(event.currentTarget))}
               >
                 Contact
               </Button>
@@ -217,9 +248,10 @@ export const Navbar = () => {
                 <Button
                   variant="default"
                   className="mt-4 neon-glow w-full"
-                  onClick={() => {
+                  onClick={(event) => {
+                    const origin = getContactDialogOrigin(event.currentTarget);
                     setTimeout(() => setIsOpen(false), 150);
-                    setTimeout(() => setIsContactModalOpen(true), 180);
+                    setTimeout(() => openContactModal(origin), 180);
                   }}
                 >
                   Contact
@@ -233,8 +265,9 @@ export const Navbar = () => {
 
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
         <DialogContent
+          style={contactDialogStyle}
           overlayClassName="bg-transparent backdrop-blur-[2px]"
-          className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-border/60 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 duration-300 ease-out data-[state=open]:slide-in-from-top-[50%] data-[state=closed]:slide-out-to-top-[50%] data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
+          className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-border/60 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 contact-dialog-content"
         >
           <DialogHeader className="px-6 pt-6 pb-2 border-b border-border/60 bg-background/40">
             <DialogTitle className="text-foreground/80">Contact Me</DialogTitle>
