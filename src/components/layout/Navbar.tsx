@@ -145,24 +145,11 @@ export const Navbar = () => {
                 </a>
               ))}
             </div>
-            <Button
-              variant="default"
-              size="sm"
-              className="neon-glow"
-              onClick={() => {
-                const contactElement = document.getElementById('contact');
-                if (contactElement) {
-                  contactElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
-                } else {
-                  window.location.hash = 'contact';
-                }
-              }}
-            >
-              Contact
-            </Button>
+            {settings?.siteSections.showContact !== false && (
+              <Button asChild variant="default" size="sm" className="neon-glow">
+                <Link to="/contact">Contact</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -218,26 +205,18 @@ export const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
-              <Button
-                variant="default"
-                className="mt-4 neon-glow w-full"
-                onClick={() => {
-                  setTimeout(() => setIsOpen(false), 150);
-                  setTimeout(() => {
-                    const contactElement = document.getElementById('contact');
-                    if (contactElement) {
-                      contactElement.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                      });
-                    } else {
-                      window.location.hash = 'contact';
-                    }
-                  }, 200);
-                }}
-              >
-                Contact
-              </Button>
+              {settings?.siteSections.showContact !== false && (
+                <Button asChild variant="default" className="mt-4 neon-glow w-full">
+                  <Link
+                    to="/contact"
+                    onClick={() => {
+                      setTimeout(() => setIsOpen(false), 150);
+                    }}
+                  >
+                    Contact
+                  </Link>
+                </Button>
+              )}
             </div>
             </div>
           </motion.div>

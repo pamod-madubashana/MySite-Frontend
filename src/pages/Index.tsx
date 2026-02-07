@@ -3,7 +3,6 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
-import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useEffect } from 'react';
 import { aboutApi } from '@/api/aboutApi';
@@ -35,7 +34,6 @@ const Index = () => {
         <HeroSection />
         <AboutSection />
         {settings?.siteSections.showProjects && <ProjectsSection />}
-        <ContactSection />
       </main>
       <Footer />
     </div>
