@@ -253,9 +253,21 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
         </div>
 
         <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-6 md:px-10 md:pb-10">
-          <div className="max-w-3xl rounded-lg border border-border/50 bg-background/30 p-4 backdrop-blur-md md:p-5">
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-gradient">Project Showcase</p>
-            <h1 className="my-3 text-3xl font-bold leading-tight text-foreground/95 md:text-5xl">{project.title}</h1>
+          <div className="inline-flex max-w-full flex-col items-start gap-2">
+            <p className="relative inline-block px-1 text-sm font-medium uppercase tracking-[0.18em] text-gradient">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-full bg-background/35 blur-xl"
+              />
+              Project Showcase
+            </p>
+            <h1 className="relative inline-block max-w-3xl px-1 text-3xl font-bold leading-tight text-foreground/95 md:text-5xl">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute -inset-x-5 -inset-y-3 -z-10 rounded-full bg-background/30 blur-2xl"
+              />
+              {project.title}
+            </h1>
           </div>
         </div>
       </div>
