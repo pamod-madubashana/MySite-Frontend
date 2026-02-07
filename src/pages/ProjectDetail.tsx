@@ -226,12 +226,12 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
       transition={{ duration: 0.45 }}
       className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40"
     >
-      <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/60 bg-black/40 md:h-[460px]">
+      <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/60 bg-black/10 md:h-[460px]">
         <img
           src={thumbnailSrc}
           alt=""
           aria-hidden
-          className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-40"
+          className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80"
         />
 
         <div className="absolute inset-x-0 top-0 z-20 px-6 pt-6 md:px-10 md:pt-10">
@@ -642,7 +642,12 @@ const ProjectDetail = () => {
                       title="README"
                       index={1}
                       action={project.githubUrl ? (
-                        <Button asChild variant="outline" size="sm" className="gap-2 border-border/60 bg-background/50">
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="gap-2 border-border/60 bg-card/70 text-foreground hover:bg-card hover:text-foreground"
+                        >
                           <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                             <Github className="h-4 w-4" />
                             View on GitHub
