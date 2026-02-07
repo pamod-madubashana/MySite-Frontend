@@ -100,7 +100,22 @@ const stripReadmeImagesAndSections = (markdown: string) => {
     cleanedLines.push(withoutDivTags);
   }
 
-  return cleanedLines.join("\n").replace(/\n{3,}/g, "\n\n");
+  const cleanedMarkdown = cleanedLines.join("\n").replace(/\n{3,}/g, "\n\n");
+
+  return cleanedMarkdown
+    .replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, "\n# $1\n")
+    .replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, "\n## $1\n")
+    .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, "\n### $1\n")
+    .replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, "\n#### $1\n")
+    .replace(/<h5[^>]*>([\s\S]*?)<\/h5>/gi, "\n##### $1\n")
+    .replace(/<h6[^>]*>([\s\S]*?)<\/h6>/gi, "\n###### $1\n")
+    .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, "\n$1\n")
+    .replace(/<br\s*\/?\s*>/gi, "\n")
+    .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, "\n- $1")
+    .replace(/<\/ul>|<\/ol>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 };
 
 const decodeBase64Utf8 = (base64Content: string) => {
@@ -228,18 +243,20 @@ const ProjectHero = ({ project }: ProjectHeroProps) => (
         <span className="truncate text-foreground/80">{project.title}</span>
       </nav>
 
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-background/20">
+      <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background/20">
         <img
           src={project.thumbnail || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&h=900&fit=crop"}
           alt={`${project.title} thumbnail`}
-          className="aspect-[16/7] w-full object-cover"
+          className="aspect-[16/8] w-full object-cover md:aspect-[16/7]"
         />
-      </div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/45 to-transparent" />
 
-      <div className="max-w-3xl">
-        <p className="text-sm font-medium tracking-[0.18em] uppercase text-gradient">Project Showcase</p>
-        <h1 className="my-4 text-4xl md:my-5 md:text-5xl lg:text-6xl font-bold leading-tight text-foreground/90">{project.title}</h1>
-        <p className="mt-4 text-base md:text-lg text-muted-foreground line-clamp-2">{project.description}</p>
+        <div className="absolute inset-x-0 bottom-0 p-4 md:p-6">
+          <div className="max-w-3xl rounded-lg border border-border/50 bg-background/30 p-4 backdrop-blur-md md:p-5">
+            <p className="text-sm font-medium tracking-[0.18em] uppercase text-gradient">Project Showcase</p>
+            <h1 className="my-3 text-3xl md:text-5xl font-bold leading-tight text-foreground/95">{project.title}</h1>
+          </div>
+        </div>
       </div>
     </div>
   </motion.section>
