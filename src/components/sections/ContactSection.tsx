@@ -179,8 +179,8 @@ export const ContactSection = () => {
                 <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center group-hover:shadow-glow transition-shadow duration-300">
                   <item.icon className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold mb-1">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.value}</p>
+                <h3 className="font-semibold text-foreground/95 mb-1">{item.title}</h3>
+                <p className="text-sm text-foreground/75">{item.value}</p>
               </motion.a>
             ))}
           </motion.div>
