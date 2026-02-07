@@ -11,6 +11,7 @@ import { ProjectCard } from "@/components/ui/ProjectCard";
 export const ProjectsSection = () => {
   const [projects, setProjects] = useState<{
     _id: string;
+    slug?: string;
     title: string;
     description: string;
     tags: string[];

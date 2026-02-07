@@ -1,11 +1,14 @@
+import { type KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { Star, GitFork, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { languageColors } from "@/lib/languageColors";
+import { Link, useNavigate } from "react-router-dom";
 
 interface ProjectCardProps {
   project: {
     _id: string;
+    slug?: string;
     title: string;
     description: string;
     tags: string[];
@@ -30,12 +33,26 @@ export const ProjectCard = ({
   githubStats,
   showLanguages = true 
 }: ProjectCardProps) => {
+  const navigate = useNavigate();
+  const projectPath = `/projects/${project.slug || project._id}`;
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      navigate(projectPath);
+    }
+  };
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group rounded-xl overflow-hidden glass hover-lift"
+      className="group relative rounded-xl overflow-hidden glass hover-lift cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+      onClick={() => navigate(projectPath)}
+      onKeyDown={handleCardKeyDown}
+      role="link"
+      tabIndex={0}
     >
       {/* Featured Badge - Top Left */}
       {project.featured && (
@@ -49,15 +66,17 @@ export const ProjectCard = ({
       
       {/* Image */}
       <div className="relative aspect-video overflow-hidden">
-        <img
-          src={project.thumbnail || `https://images.unsplash.com/photo-${index + 1}?w=800&h=600&fit=crop`}
-          alt={project.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+        <Link to={projectPath} onClick={(event) => event.stopPropagation()}>
+          <img
+            src={project.thumbnail || `https://images.unsplash.com/photo-${index + 1}?w=800&h=600&fit=crop`}
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </Link>
         <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 gap-2">
           {project.liveUrl && (
             <Button size="sm" variant="secondary" className="gap-1" asChild>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
                 <ExternalLink className="w-4 h-4" />
                 Live
               </a>
@@ -65,7 +84,7 @@ export const ProjectCard = ({
           )}
           {project.githubUrl && (
             <Button size="sm" variant="outline" className="gap-1" asChild>
-              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
                 <Github className="w-4 h-4 text-foreground/70" />
                 <span className="text-foreground/70">Code</span>
               </a>
@@ -76,9 +95,11 @@ export const ProjectCard = ({
 
       {/* Content */}
       <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2 text-foreground/70 group-hover:text-primary transition-colors">
-          {project.title}
-        </h3>
+        <Link to={projectPath} onClick={(event) => event.stopPropagation()} className="inline-block">
+          <h3 className="text-xl font-semibold mb-2 text-foreground/70 group-hover:text-primary transition-colors">
+            {project.title}
+          </h3>
+        </Link>
 
         <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
           {project.description}

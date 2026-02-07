@@ -3,6 +3,7 @@ import { apiCache, cacheKeys } from '../lib/cache';
 
 interface Project {
   _id: string;
+  slug?: string;
   title: string;
   description: string;
   tags: string[];
@@ -104,6 +105,26 @@ export const projectApi = {
     return data;
   },
 
+  getProjectBySlug: async (slug: string): Promise<Project> => {
+    const cacheKey = cacheKeys.projects.bySlug(slug);
+    const cachedData = apiCache.get<Project>(cacheKey);
+
+    if (cachedData) {
+      return cachedData;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/projects/slug/${slug}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch project by slug: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    apiCache.set(cacheKey, data);
+
+    return data;
+  },
+
   createProject: async (token: string, projectData: Omit<Project, '_id' | 'createdAt' | 'updatedAt'>): Promise<{ message: string; project: Project }> => {
     const response = await fetch(`${API_BASE_URL}/projects`, {
       method: 'POST',
@@ -123,6 +144,7 @@ export const projectApi = {
     
     // Invalidate cache after creating a project
     apiCache.invalidate('projects:*');
+    apiCache.invalidate('project:*');
     
     return result;
   },
@@ -148,6 +170,7 @@ export const projectApi = {
     
     // Invalidate cache after creating a project
     apiCache.invalidate('projects:*');
+    apiCache.invalidate('project:*');
     
     return result;
   },
@@ -172,6 +195,7 @@ export const projectApi = {
     // Invalidate cache after updating a project
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
+    apiCache.invalidate('project:*');
     
     return result;
   },
@@ -199,6 +223,7 @@ export const projectApi = {
     // Invalidate cache after updating a project
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
+    apiCache.invalidate('project:*');
     
     return result;
   },
@@ -221,6 +246,7 @@ export const projectApi = {
     // Invalidate cache after deleting a project
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
+    apiCache.invalidate('project:*');
     
     return result;
   },

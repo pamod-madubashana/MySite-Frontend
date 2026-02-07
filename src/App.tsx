@@ -10,6 +10,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import Articles from "./pages/Articles";
 import NotFound from "./pages/NotFound";
 import Dashboard from './pages/Admin/Dashboard';
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/projects" element={<Projects />} />
+              <Route path="/projects/:slug" element={<ProjectDetail />} />
               <Route path="/articles" element={<Articles />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

@@ -111,6 +111,7 @@ export const cacheKeys = {
       return `projects:all${paramStr}`;
     },
     byId: (id: string) => `project:${id}`,
+    bySlug: (slug: string) => `project:slug:${slug}`,
   },
   settings: () => 'settings:current',
   timeline: () => 'timeline:all',
