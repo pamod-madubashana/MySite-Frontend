@@ -149,13 +149,13 @@
 
 @layer components {
   .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50;
+    @apply bg-transparent backdrop-blur-xl border border-border/50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
 
   .glass-strong {
-    @apply bg-card/90 backdrop-blur-2xl border border-border/60;
+    @apply bg-transparent backdrop-blur-2xl border border-border/60;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
@@ -254,17 +254,17 @@
   #contact textarea:-webkit-autofill,
   #contact textarea:-webkit-autofill:hover,
   #contact textarea:-webkit-autofill:focus {
-    -webkit-text-fill-color: rgb(241 245 249);
-    caret-color: rgb(241 245 249);
-    box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.7) inset;
-    -webkit-box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.7) inset;
+    -webkit-text-fill-color: hsl(var(--foreground));
+    caret-color: hsl(var(--foreground));
+    box-shadow: 0 0 0 1000px hsl(var(--background) / 0.7) inset;
+    -webkit-box-shadow: 0 0 0 1000px hsl(var(--background) / 0.7) inset;
     transition: background-color 9999s ease-in-out 0s;
   }
 
   #contact input:-moz-autofill,
   #contact textarea:-moz-autofill {
-    color: rgb(241 245 249);
-    box-shadow: 0 0 0 1000px rgb(15 23 42 / 0.7) inset;
+    color: hsl(var(--foreground));
+    box-shadow: 0 0 0 1000px hsl(var(--background) / 0.7) inset;
   }
 }
 

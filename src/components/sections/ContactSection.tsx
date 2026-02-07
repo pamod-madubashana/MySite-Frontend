@@ -208,7 +208,7 @@ export const ContactSection = () => {
                     autoComplete="name"
                     maxLength={80}
                     aria-invalid={Boolean(formErrors.name)}
-                    className="h-12 border-slate-700 bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
+                    className="h-12 border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                   />
                   {formErrors.name && <p className="mt-2 text-sm text-destructive">{formErrors.name}</p>}
                 </div>
@@ -226,7 +226,7 @@ export const ContactSection = () => {
                     autoComplete="email"
                     maxLength={254}
                     aria-invalid={Boolean(formErrors.email)}
-                    className="h-12 border-slate-700 bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
+                    className="h-12 border-border bg-transparent text-foreground placeholder:text-muted-foreground"
                   />
                   {formErrors.email && (
                     <p className="mt-2 text-sm text-destructive">{formErrors.email}</p>
@@ -257,7 +257,7 @@ export const ContactSection = () => {
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
                   aria-invalid={Boolean(formErrors.message)}
-                  className="resize-none border-slate-700 bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
+                  className="resize-none border-border bg-background/70 text-foreground placeholder:text-muted-foreground"
                 />
                 {formErrors.message && (
                   <p className="mt-2 text-sm text-destructive">{formErrors.message}</p>

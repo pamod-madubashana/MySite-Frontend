@@ -232,8 +232,8 @@ export const Navbar = () => {
       </AnimatePresence>
 
       <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
-        <DialogContent className="w-[95vw] max-w-5xl h-[90vh] p-0 glass-strong bg-card/75 backdrop-blur-2xl border border-border/60">
-          <DialogHeader className="px-6 pt-6 pb-2 border-b border-border/50">
+        <DialogContent className="dark w-[95vw] max-w-5xl h-[90vh] p-0 glass border border-primary/30 bg-card/90 backdrop-blur-xl shadow-2xl">
+          <DialogHeader className="px-6 pt-6 pb-2 border-b border-border/60 bg-muted/30">
             <DialogTitle className="text-foreground/80">Contact Me</DialogTitle>
           </DialogHeader>
           <div className="h-[calc(90vh-72px)] overflow-y-auto">
