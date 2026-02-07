@@ -2,10 +2,59 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
-import { Calendar, Clock, ArrowRight, Tag, Loader2 } from "lucide-react";
+import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { articleApi, Article } from "@/api/articleApi";
+
+interface ArticlesPageCache {
+  timestamp: number;
+  articles: Article[];
+}
+
+const ARTICLES_PAGE_CACHE_KEY = "articles:page:cache:v1";
+const ARTICLES_PAGE_CACHE_TTL = 15 * 60 * 1000;
+
+const readArticlesPageCache = (): ArticlesPageCache | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const rawCache = window.localStorage.getItem(ARTICLES_PAGE_CACHE_KEY);
+  if (!rawCache) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(rawCache) as ArticlesPageCache;
+    if (typeof parsed.timestamp !== "number" || !Array.isArray(parsed.articles)) {
+      window.localStorage.removeItem(ARTICLES_PAGE_CACHE_KEY);
+      return null;
+    }
+
+    if (Date.now() - parsed.timestamp > ARTICLES_PAGE_CACHE_TTL) {
+      window.localStorage.removeItem(ARTICLES_PAGE_CACHE_KEY);
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    window.localStorage.removeItem(ARTICLES_PAGE_CACHE_KEY);
+    return null;
+  }
+};
+
+const writeArticlesPageCache = (articles: Article[]) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const payload: ArticlesPageCache = {
+    timestamp: Date.now(),
+    articles
+  };
+
+  window.localStorage.setItem(ARTICLES_PAGE_CACHE_KEY, JSON.stringify(payload));
+};
 
 
 
@@ -38,20 +87,44 @@ const Articles = () => {
   const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
+    const cachedData = readArticlesPageCache();
+    if (cachedData) {
+      setArticles(cachedData.articles);
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
     const fetchArticles = async () => {
       try {
         setLoading(true);
         const response = await articleApi.getPublishedArticles();
+        if (!isActive) {
+          return;
+        }
+
         setArticles(response.articles);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load articles');
-        console.error('Error fetching articles:', err);
+        writeArticlesPageCache(response.articles);
+      } catch (err) {
+        if (!isActive) {
+          return;
+        }
+
+        const message = err instanceof Error ? err.message : "Failed to load articles";
+        setError(message);
       } finally {
-        setLoading(false);
+        if (isActive) {
+          setLoading(false);
+        }
       }
     };
     
     fetchArticles();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
   
   const featuredArticle = articles.find((a) => a.status === 'published');

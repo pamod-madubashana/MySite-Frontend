@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { API_BASE_URL } from '@/lib/apiConfig';
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -7,6 +6,7 @@ import { Filter, Search, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/contexts/SettingsContext";
 import { ProjectCard } from "@/components/ui/ProjectCard";
+import { projectApi } from "@/api/projectApi";
 
 const languages = [
   "All",
@@ -50,6 +50,79 @@ interface GithubStats {
   };
 }
 
+interface ProjectsPageCache {
+  timestamp: number;
+  projects: Project[];
+  githubStats: GithubStats;
+}
+
+const PROJECTS_PAGE_CACHE_KEY = "projects:page:cache:v1";
+const PROJECTS_PAGE_CACHE_TTL = 15 * 60 * 1000;
+
+const getRepoFromGithubUrl = (url: string): { owner: string; repo: string } | null => {
+  const sanitizedUrl = url.replace("https://github.com/", "").replace("http://github.com/", "");
+  const urlParts = sanitizedUrl.split("/");
+
+  if (urlParts.length < 2) {
+    return null;
+  }
+
+  return {
+    owner: urlParts[0],
+    repo: urlParts[1].replace(".git", "")
+  };
+};
+
+const readProjectsPageCache = (): ProjectsPageCache | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const rawCache = window.localStorage.getItem(PROJECTS_PAGE_CACHE_KEY);
+  if (!rawCache) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(rawCache) as ProjectsPageCache;
+    if (typeof parsed.timestamp !== "number") {
+      window.localStorage.removeItem(PROJECTS_PAGE_CACHE_KEY);
+      return null;
+    }
+
+    const cacheAge = Date.now() - parsed.timestamp;
+
+    if (cacheAge > PROJECTS_PAGE_CACHE_TTL) {
+      window.localStorage.removeItem(PROJECTS_PAGE_CACHE_KEY);
+      return null;
+    }
+
+    if (!Array.isArray(parsed.projects) || typeof parsed.githubStats !== "object" || parsed.githubStats === null) {
+      window.localStorage.removeItem(PROJECTS_PAGE_CACHE_KEY);
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    window.localStorage.removeItem(PROJECTS_PAGE_CACHE_KEY);
+    return null;
+  }
+};
+
+const writeProjectsPageCache = (projects: Project[], githubStats: GithubStats) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const cachePayload: ProjectsPageCache = {
+    timestamp: Date.now(),
+    projects,
+    githubStats
+  };
+
+  window.localStorage.setItem(PROJECTS_PAGE_CACHE_KEY, JSON.stringify(cachePayload));
+};
+
 const Projects = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
@@ -61,60 +134,78 @@ const Projects = () => {
   const { settings, loading: settingsLoading } = useSettings();
   
   useEffect(() => {
+    const cachedData = readProjectsPageCache();
+    if (cachedData) {
+      setProjects(cachedData.projects);
+      setGithubStats(cachedData.githubStats);
+      setLoading(false);
+      return;
+    }
+
+    let isActive = true;
+
     const fetchProjectsAndStats = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/projects`);
-        const data = await response.json();
-        
-        if (response.ok) {
-          const fetchedProjects = data.projects || [];
-          setProjects(fetchedProjects);
-          
-          // Fetch GitHub stats for each project with a GitHub URL
-          const stats: GithubStats = {};
-          for (const project of fetchedProjects) {
-            if (project.githubUrl) {
-              try {
-                // Extract owner and repo from GitHub URL
-                const urlParts = project.githubUrl.replace('https://github.com/', '').split('/');
-                if (urlParts.length >= 2) {
-                  const owner = urlParts[0];
-                  const repo = urlParts[1].split('/')[0]; // Get just the repo name, remove any additional path
-                  
-                  let githubResponse;
-                  try {
-                    githubResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-                  } catch (fetchErr) {
-                    // If fetch fails (network error), continue to next project
-                    continue;
-                  }
-                  
-                  if (githubResponse && githubResponse.ok) {
-                    const githubData = await githubResponse.json();
-                    stats[project._id] = {
-                      stars: githubData.stargazers_count,
-                      forks: githubData.forks_count
-                    };
-                  }
-                }
-              } catch (err) {
-                // Silently ignore GitHub API errors to avoid console spam
-              }
-            }
-          }
-          setGithubStats(stats);
-        } else {
-          setError(data.error || 'Failed to fetch projects');
+        const data = await projectApi.getProjects();
+        const fetchedProjects = data.projects || [];
+
+        if (!isActive) {
+          return;
         }
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch projects');
-        console.error('Error fetching projects:', err);
+
+        setProjects(fetchedProjects);
+
+        const stats: GithubStats = {};
+        for (const project of fetchedProjects) {
+          if (!project.githubUrl) {
+            continue;
+          }
+
+          const repoDetails = getRepoFromGithubUrl(project.githubUrl);
+          if (!repoDetails) {
+            continue;
+          }
+
+          try {
+            const githubResponse = await fetch(`https://api.github.com/repos/${repoDetails.owner}/${repoDetails.repo}`);
+
+            if (!githubResponse.ok) {
+              continue;
+            }
+
+            const githubData = await githubResponse.json();
+            stats[project._id] = {
+              stars: githubData.stargazers_count ?? 0,
+              forks: githubData.forks_count ?? 0
+            };
+          } catch {
+            continue;
+          }
+        }
+
+        if (!isActive) {
+          return;
+        }
+
+        setGithubStats(stats);
+        writeProjectsPageCache(fetchedProjects, stats);
+      } catch (err) {
+        if (isActive) {
+          const message = err instanceof Error ? err.message : "Failed to fetch projects";
+          setError(message);
+        }
       } finally {
-        setLoading(false);
+        if (isActive) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProjectsAndStats();
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   // Get unique tags from all projects for dynamic filtering

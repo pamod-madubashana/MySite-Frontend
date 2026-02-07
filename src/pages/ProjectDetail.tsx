@@ -49,7 +49,111 @@ interface GithubReadmeResponse {
   encoding: string;
 }
 
+interface ProjectDetailCachePayload {
+  timestamp: number;
+  project: Project;
+  githubStats: RepoStats | null;
+}
+
+interface ReadmeCachePayload {
+  timestamp: number;
+  content: string | null;
+}
+
 const readmeCache = new Map<string, string | null>();
+
+const PROJECT_DETAIL_CACHE_TTL = 15 * 60 * 1000;
+const README_CACHE_TTL = 6 * 60 * 60 * 1000;
+
+const getProjectDetailCacheKey = (slug: string) => `project:detail:${slug}`;
+const getReadmeCacheKey = (repoKey: string) => `project:readme:${repoKey}`;
+
+const readProjectDetailCache = (slug: string): ProjectDetailCachePayload | null => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const key = getProjectDetailCacheKey(slug);
+  const rawCache = window.localStorage.getItem(key);
+  if (!rawCache) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(rawCache) as ProjectDetailCachePayload;
+    if (typeof parsed.timestamp !== "number" || !parsed.project || typeof parsed.project !== "object") {
+      window.localStorage.removeItem(key);
+      return null;
+    }
+
+    if (Date.now() - parsed.timestamp > PROJECT_DETAIL_CACHE_TTL) {
+      window.localStorage.removeItem(key);
+      return null;
+    }
+
+    return parsed;
+  } catch {
+    window.localStorage.removeItem(key);
+    return null;
+  }
+};
+
+const writeProjectDetailCache = (slug: string, project: Project, githubStats: RepoStats | null) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const payload: ProjectDetailCachePayload = {
+    timestamp: Date.now(),
+    project,
+    githubStats
+  };
+
+  window.localStorage.setItem(getProjectDetailCacheKey(slug), JSON.stringify(payload));
+};
+
+const readPersistedReadme = (repoKey: string): string | null | undefined => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const key = getReadmeCacheKey(repoKey);
+  const rawCache = window.localStorage.getItem(key);
+  if (!rawCache) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(rawCache) as ReadmeCachePayload;
+    if (typeof parsed.timestamp !== "number" || !(typeof parsed.content === "string" || parsed.content === null)) {
+      window.localStorage.removeItem(key);
+      return undefined;
+    }
+
+    if (Date.now() - parsed.timestamp > README_CACHE_TTL) {
+      window.localStorage.removeItem(key);
+      return undefined;
+    }
+
+    return parsed.content;
+  } catch {
+    window.localStorage.removeItem(key);
+    return undefined;
+  }
+};
+
+const writePersistedReadme = (repoKey: string, content: string | null) => {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  const payload: ReadmeCachePayload = {
+    timestamp: Date.now(),
+    content
+  };
+
+  window.localStorage.setItem(getReadmeCacheKey(repoKey), JSON.stringify(payload));
+};
 
 const formatDate = (dateValue: string) => {
   const date = new Date(dateValue);
@@ -428,6 +532,15 @@ const ProjectDetail = () => {
 
       setLoading(true);
       setError(null);
+
+      const cachedProjectDetails = readProjectDetailCache(slug);
+      if (cachedProjectDetails) {
+        setProject(cachedProjectDetails.project);
+        setGithubStats(cachedProjectDetails.githubStats);
+        setLoading(false);
+        return;
+      }
+
       setProject(null);
       setGithubStats(null);
 
@@ -451,6 +564,8 @@ const ProjectDetail = () => {
 
         setProject(fetchedProject);
 
+        let resolvedGithubStats: RepoStats | null = null;
+
         if (fetchedProject.githubUrl) {
           try {
             const repoDetails = extractRepoFromUrl(fetchedProject.githubUrl);
@@ -460,17 +575,20 @@ const ProjectDetail = () => {
 
               if (response.ok && isActive) {
                 const data = await response.json();
-                setGithubStats({
+                resolvedGithubStats = {
                   stars: data.stargazers_count ?? 0,
                   forks: data.forks_count ?? 0
-                });
+                };
               }
             }
           } catch {
-            if (isActive) {
-              setGithubStats(null);
-            }
+            resolvedGithubStats = null;
           }
+        }
+
+        if (isActive) {
+          setGithubStats(resolvedGithubStats);
+          writeProjectDetailCache(slug, fetchedProject, resolvedGithubStats);
         }
       } catch {
         if (isActive) {
@@ -551,6 +669,14 @@ const ProjectDetail = () => {
         return;
       }
 
+      const persistedReadme = readPersistedReadme(repoKey);
+      if (persistedReadme !== undefined) {
+        readmeCache.set(repoKey, persistedReadme);
+        setReadme(persistedReadme);
+        setReadmeLoading(false);
+        return;
+      }
+
       setReadme(null);
       setReadmeLoading(true);
 
@@ -576,14 +702,17 @@ const ProjectDetail = () => {
 
         if (parsedReadme) {
           readmeCache.set(repoKey, parsedReadme);
+          writePersistedReadme(repoKey, parsedReadme);
           setReadme(parsedReadme);
         } else {
           readmeCache.set(repoKey, null);
+          writePersistedReadme(repoKey, null);
           setReadme(null);
         }
       } catch {
         if (isActive) {
           readmeCache.set(repoKey, null);
+          writePersistedReadme(repoKey, null);
           setReadme(null);
         }
       } finally {
