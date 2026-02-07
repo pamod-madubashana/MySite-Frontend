@@ -128,8 +128,17 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased select-none;
     font-family: var(--font-family, system-ui, sans-serif);
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"],
+  .select-text,
+  .allow-select {
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   /* Removed global scroll-behavior: smooth to prevent navbar jumping */

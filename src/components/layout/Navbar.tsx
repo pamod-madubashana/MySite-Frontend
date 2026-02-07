@@ -83,7 +83,7 @@ export const Navbar = () => {
         damping: 25,
         mass: 0.5
       }}
-      className={`fixed top-0 left-0 right-0 z-50 ${
+      className={`fixed top-0 left-0 right-0 z-50 select-none ${
         scrolled
           ? "glass-strong shadow-lg"
           : "bg-transparent"

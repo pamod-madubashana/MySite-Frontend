@@ -1,6 +1,15 @@
 import { API_BASE_URL } from "@/lib/apiConfig";
 
-export type ContactMessageStatus = "new" | "read";
+export type ContactMessageStatus = "new" | "read" | "replied";
+
+export interface ContactMessageReply {
+  subject: string;
+  body: string;
+  includeOriginal: boolean;
+  sentAt: string;
+  sentBy: "admin";
+  toEmail: string;
+}
 
 export interface SubmitContactPayload {
   name: string;
@@ -17,8 +26,16 @@ export interface ContactMessage {
   status: ContactMessageStatus;
   ip: string;
   userAgent: string;
+  lastRepliedAt: string | null;
+  replies: ContactMessageReply[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SendReplyPayload {
+  subject: string;
+  body: string;
+  includeOriginal?: boolean;
 }
 
 interface ContactApiErrorResponse {
@@ -90,6 +107,29 @@ export const contactApi = {
 
     if (!response.ok || !data?.ok || !data.message) {
       throw new Error(getErrorMessage("Failed to update message status.", data));
+    }
+
+    return data.message;
+  },
+
+  sendReply: async (
+    token: string,
+    id: string,
+    payload: SendReplyPayload,
+  ): Promise<ContactMessage> => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/messages/${id}/reply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data?.ok || !data.message) {
+      throw new Error(getErrorMessage("Failed to send reply.", data));
     }
 
     return data.message;
