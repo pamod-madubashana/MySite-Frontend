@@ -48,25 +48,29 @@ export const HeroSection = () => {
                 thoughtful UX, and shipping features that scale.
               </p>
 
-              <div className="mt-6 flex flex-col items-stretch gap-3 sm:items-center md:items-start">
+              <div className="mt-6 grid w-full grid-cols-2 gap-3">
                 <Button
                   asChild
                   size="lg"
-                  className="h-11 w-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:w-auto sm:text-base"
+                  className="h-11 w-full min-w-0 bg-primary px-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:px-5 sm:text-base"
                 >
-                  <Link to="/projects" className="inline-flex items-center gap-2 whitespace-nowrap">
+                  <Link to="/projects" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
                     <Code className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>View Projects</span>
                   </Link>
                 </Button>
 
-                <a
-                  href="#about"
-                  className="inline-flex items-center justify-center gap-1 text-sm font-medium tracking-wide text-muted-foreground transition-colors hover:text-primary"
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="h-11 w-full min-w-0 border-primary/40 bg-transparent px-3 text-sm font-semibold text-primary transition-all duration-300 hover:scale-[1.02] hover:bg-primary/10 hover:text-primary sm:px-5 sm:text-base"
                 >
-                  <span>Learn More</span>
-                  <ChevronDown className="h-4 w-4" />
-                </a>
+                  <Link to="/about" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
+                    <span>Learn More</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
             </div>
           </div>
