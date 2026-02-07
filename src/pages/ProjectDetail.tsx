@@ -216,51 +216,53 @@ interface ProjectHeroProps {
   project: Project;
 }
 
-const ProjectHero = ({ project }: ProjectHeroProps) => (
-  <motion.section
-    initial={{ opacity: 0, y: 22 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.45 }}
-    className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40 p-6 md:p-10"
-  >
-    <div className="pointer-events-none absolute inset-0">
-      <img
-        src={project.thumbnail || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&h=900&fit=crop"}
-        alt=""
-        aria-hidden
-        className="h-full w-full object-cover opacity-20 blur-xl"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/75 to-background" />
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/8 via-transparent to-secondary/10" />
-    </div>
+const ProjectHero = ({ project }: ProjectHeroProps) => {
+  const thumbnailSrc = project.thumbnail || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&h=900&fit=crop";
 
-    <div className="relative space-y-7">
-      <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-        <ChevronRight className="h-4 w-4" />
-        <Link to="/projects" className="hover:text-primary transition-colors">Projects</Link>
-        <ChevronRight className="h-4 w-4" />
-        <span className="truncate text-foreground/80">{project.title}</span>
-      </nav>
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45 }}
+      className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40"
+    >
+      <div className="relative space-y-7">
+        <div className="px-6 pt-6 md:px-10 md:pt-10">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <ChevronRight className="h-4 w-4" />
+          <Link to="/projects" className="hover:text-primary transition-colors">Projects</Link>
+          <ChevronRight className="h-4 w-4" />
+          <span className="truncate text-foreground/80">{project.title}</span>
+        </nav>
+        </div>
 
-      <div className="relative overflow-hidden rounded-xl border border-border/60 bg-background/20">
-        <img
-          src={project.thumbnail || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&h=900&fit=crop"}
-          alt={`${project.title} thumbnail`}
-          className="aspect-[16/8] w-full object-cover md:aspect-[16/7]"
-        />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/90 via-background/45 to-transparent" />
+        <div className="relative h-[320px] md:h-[460px] overflow-hidden rounded-xl border border-border/60 bg-black/40">
+          <img
+            src={thumbnailSrc}
+            alt=""
+            aria-hidden
+            className="absolute inset-0 h-full w-full scale-[1.25] object-cover blur-[32px] opacity-40"
+          />
+          <div className="relative z-10 flex h-full items-center justify-center px-6">
+            <img
+              src={thumbnailSrc}
+              alt={`${project.title} thumbnail`}
+              className="max-h-[85%] max-w-[92%] object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)]"
+            />
+          </div>
+        </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-4 md:p-6">
+        <div className="px-6 pb-6 md:px-10 md:pb-10">
           <div className="max-w-3xl rounded-lg border border-border/50 bg-background/30 p-4 backdrop-blur-md md:p-5">
             <p className="text-sm font-medium tracking-[0.18em] uppercase text-gradient">Project Showcase</p>
             <h1 className="my-3 text-3xl md:text-5xl font-bold leading-tight text-foreground/95">{project.title}</h1>
           </div>
         </div>
       </div>
-    </div>
-  </motion.section>
-);
+    </motion.section>
+  );
+};
 
 interface ProjectSidebarProps {
   project: Project;
