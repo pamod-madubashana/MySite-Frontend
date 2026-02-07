@@ -24,6 +24,7 @@ import TimelineManager from './pages/Admin/TimelineManager';
 import TechSkillsManager from './pages/Admin/TechSkillsManager';
 import InterestsManager from './pages/Admin/InterestsManager';
 import TechStackManager from './pages/Admin/TechStackManager';
+import MessagesManager from './pages/Admin/MessagesManager';
 
 const queryClient = new QueryClient();
 
@@ -123,6 +124,16 @@ const App = () => (
                     </AdminLayout>
                   </ProtectedRoute>
                 } 
+              />
+              <Route
+                path="/admin/messages"
+                element={
+                  <ProtectedRoute adminOnly={true}>
+                    <AdminLayout>
+                      <MessagesManager />
+                    </AdminLayout>
+                  </ProtectedRoute>
+                }
               />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

@@ -35,7 +35,7 @@ const Index = () => {
         <HeroSection />
         <AboutSection />
         {settings?.siteSections.showProjects && <ProjectsSection />}
-        {settings?.siteSections.showContact && <ContactSection />}
+        <ContactSection />
       </main>
       <Footer />
     </div>

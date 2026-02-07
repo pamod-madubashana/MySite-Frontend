@@ -14,7 +14,8 @@ import {
   Shield,
   Calendar,
   Code,
-  Heart
+  Heart,
+  Mail
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -71,6 +72,11 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       title: 'Interests',
       path: '/admin/interests',
       icon: Heart
+    },
+    {
+      title: 'Messages',
+      path: '/admin/messages',
+      icon: Mail
     },
     {
       title: 'Settings',
