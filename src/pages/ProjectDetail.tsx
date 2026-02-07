@@ -15,7 +15,6 @@ import {
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ReactMarkdown from "react-markdown";
@@ -200,10 +199,9 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
 
 interface ProjectHeroProps {
   project: Project;
-  githubStats: RepoStats | null;
 }
 
-const ProjectHero = ({ project, githubStats }: ProjectHeroProps) => (
+const ProjectHero = ({ project }: ProjectHeroProps) => (
   <motion.section
     initial={{ opacity: 0, y: 22 }}
     animate={{ opacity: 1, y: 0 }}
@@ -240,48 +238,8 @@ const ProjectHero = ({ project, githubStats }: ProjectHeroProps) => (
 
       <div className="max-w-3xl">
         <p className="text-sm font-medium tracking-[0.18em] uppercase text-gradient">Project Showcase</p>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-foreground/90">{project.title}</h1>
+        <h1 className="my-4 text-4xl md:my-5 md:text-5xl lg:text-6xl font-bold leading-tight text-foreground/90">{project.title}</h1>
         <p className="mt-4 text-base md:text-lg text-muted-foreground line-clamp-2">{project.description}</p>
-      </div>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        {project.liveUrl && (
-          <Button asChild className="gap-2 hover-lift">
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-4 w-4" />
-              Live Demo
-            </a>
-          </Button>
-        )}
-        {project.githubUrl && (
-          <Button asChild variant="outline" className="gap-2 border-border/60 bg-background/50 hover:bg-background/80">
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-              <Github className="h-4 w-4" />
-              GitHub
-            </a>
-          </Button>
-        )}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/60 pt-5 text-sm text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <Star className="h-4 w-4" />
-          {githubStats?.stars ?? 0}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <GitFork className="h-4 w-4" />
-          {githubStats?.forks ?? 0}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Clock3 className="h-4 w-4" />
-          Updated {formatDate(project.updatedAt)}
-        </span>
-        <Badge
-          variant="outline"
-          className={project.status === "published" ? "border-emerald-500/40 text-emerald-400" : "border-amber-500/40 text-amber-300"}
-        >
-          {project.status === "published" ? "Published" : "Draft"}
-        </Badge>
       </div>
     </div>
   </motion.section>
@@ -325,7 +283,7 @@ const ProjectSidebar = ({ project, githubStats }: ProjectSidebarProps) => {
               </Button>
             )}
             {project.githubUrl && (
-              <Button asChild variant="outline" className="w-full justify-start gap-2 border-border/60 bg-background/50">
+              <Button asChild variant="outline" className="w-full justify-start gap-2 border-border/60 bg-card/60 text-foreground hover:bg-card/80 hover:text-foreground">
                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                   <Github className="h-4 w-4" />
                   Source Code
@@ -364,7 +322,7 @@ const ProjectSidebar = ({ project, githubStats }: ProjectSidebarProps) => {
 
         <div className="border-t border-border/60 pt-5">
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Share</h3>
-          <Button type="button" variant="outline" onClick={copyLink} className="w-full justify-start gap-2 border-border/60 bg-background/50">
+          <Button type="button" variant="outline" onClick={copyLink} className="w-full justify-start gap-2 border-border/60 bg-card/60 text-foreground hover:bg-card/80 hover:text-foreground">
             <Share2 className="h-4 w-4" />
             {copied ? "Link copied" : "Copy project link"}
             <Copy className="ml-auto h-4 w-4" />
@@ -642,7 +600,7 @@ const ProjectDetail = () => {
           <section className="py-8 md:py-12">
             <div className="container mx-auto px-4">
               <article className="mx-auto max-w-6xl space-y-8">
-                <ProjectHero project={project} githubStats={githubStats} />
+                <ProjectHero project={project} />
 
                 <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
                   <div className="space-y-8">
