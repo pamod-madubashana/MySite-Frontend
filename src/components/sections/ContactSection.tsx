@@ -195,7 +195,7 @@ export const ContactSection = () => {
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-foreground/90 mb-2">
                     Name
                   </label>
                   <Input
@@ -213,7 +213,7 @@ export const ContactSection = () => {
                   {formErrors.name && <p className="mt-2 text-sm text-destructive">{formErrors.name}</p>}
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-foreground/90 mb-2">
                     Email
                   </label>
                   <Input
@@ -245,7 +245,7 @@ export const ContactSection = () => {
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-sm font-medium mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-foreground/90 mb-2">
                   Message
                 </label>
                 <Textarea
