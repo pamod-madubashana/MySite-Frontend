@@ -152,12 +152,12 @@ const ProjectSection = ({ title, children, index, action }: ProjectSectionProps)
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.35, delay: 0.12 + index * 0.08 }}
-    className="glass rounded-2xl p-6 md:p-8"
+    className="glass min-w-0 rounded-2xl p-6 md:p-8"
   >
-    <div className="mb-5 flex items-center gap-4 border-b border-border/60 pb-4">
-      <h2 className="text-xl md:text-2xl font-semibold text-foreground/90">{title}</h2>
-      <div className="h-px flex-1 bg-gradient-to-r from-border/80 to-transparent" />
-      {action}
+    <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-border/60 pb-4">
+      <h2 className="text-lg font-semibold text-foreground/90 sm:text-xl md:text-2xl">{title}</h2>
+      <div className="hidden h-px flex-1 bg-gradient-to-r from-border/80 to-transparent sm:block" />
+      {action ? <div className="w-full sm:w-auto sm:shrink-0">{action}</div> : null}
     </div>
     {children}
   </motion.section>
@@ -226,7 +226,7 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
       transition={{ duration: 0.45 }}
       className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40"
     >
-      <div className="relative h-[320px] overflow-hidden rounded-xl border border-border/60 bg-black/10 md:h-[460px]">
+      <div className="relative min-h-[360px] overflow-hidden rounded-xl border border-border/60 bg-black/10 md:h-[460px] md:min-h-0">
         <img
           src={thumbnailSrc}
           alt=""
@@ -234,8 +234,8 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80"
         />
 
-        <div className="absolute inset-x-0 top-0 z-20 px-6 pt-6 md:px-10 md:pt-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-foreground/75 md:text-sm">
+        <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10 md:pt-10">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-foreground/75 sm:gap-2 sm:text-xs md:text-sm">
             <Link to="/" className="transition-colors hover:text-primary">Home</Link>
             <ChevronRight className="h-4 w-4" />
             <Link to="/projects" className="transition-colors hover:text-primary">Projects</Link>
@@ -244,24 +244,24 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           </nav>
         </div>
 
-        <div className="relative z-10 flex h-full items-center justify-center px-6">
+        <div className="relative z-10 flex min-h-[360px] items-center justify-center px-4 pb-28 pt-16 sm:px-6 sm:pb-32 sm:pt-20 md:h-full md:min-h-0 md:px-6 md:pb-0 md:pt-0">
           <img
             src={thumbnailSrc}
             alt={`${project.title} thumbnail`}
-            className="max-h-[85%] max-w-[92%] object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)]"
+            className="max-h-[190px] max-w-full object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)] sm:max-h-[240px] md:max-h-[85%] md:max-w-[92%]"
           />
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-20 px-6 pb-6 md:px-10 md:pb-10">
+        <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 sm:px-6 sm:pb-6 md:px-10 md:pb-10">
           <div className="inline-flex max-w-full flex-col items-start gap-2">
-            <p className="relative inline-block px-1 text-sm font-medium uppercase tracking-[0.18em] text-gradient">
+            <p className="relative inline-block px-1 text-[10px] font-medium uppercase tracking-[0.14em] text-gradient sm:text-xs sm:tracking-[0.18em] md:text-sm">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-full bg-background/35 blur-xl"
               />
               Project Showcase
             </p>
-            <h1 className="relative inline-block max-w-3xl px-1 text-3xl font-bold leading-tight text-foreground/95 md:text-5xl">
+            <h1 className="relative inline-block max-w-3xl break-words px-1 text-xl font-bold leading-tight text-foreground/95 sm:text-2xl md:text-5xl">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-5 -inset-y-3 -z-10 rounded-full bg-background/30 blur-2xl"
@@ -633,9 +633,9 @@ const ProjectDetail = () => {
                 <ProjectHero project={project} />
 
                 <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-                  <div className="space-y-8">
+                  <div className="min-w-0 space-y-8">
                     <ProjectSection title="Overview" index={0}>
-                      <p className="whitespace-pre-line text-base leading-relaxed text-muted-foreground">{project.description}</p>
+                      <p className="whitespace-pre-line break-words text-base leading-relaxed text-muted-foreground">{project.description}</p>
                     </ProjectSection>
 
                     <ProjectSection
@@ -646,7 +646,7 @@ const ProjectDetail = () => {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="gap-2 border-border/60 bg-card/70 text-foreground hover:bg-card hover:text-foreground"
+                          className="w-full gap-2 border-border/60 bg-card/70 text-foreground hover:bg-card hover:text-foreground sm:w-auto"
                         >
                           <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                             <Github className="h-4 w-4" />
@@ -665,7 +665,7 @@ const ProjectDetail = () => {
                             <Skeleton className="h-28 w-full" />
                           </div>
                         ) : readme ? (
-                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-border/60 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:my-4 [&_p]:leading-relaxed [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-border/60 [&_table]:my-5 [&_table]:w-full [&_table]:overflow-hidden [&_table]:rounded-lg [&_table]:border [&_table]:border-border/60 [&_th]:bg-muted/30 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-border/50 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-black/40 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
+                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-border/60 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:my-4 [&_p]:break-words [&_p]:leading-relaxed [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:break-words [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-border/60 [&_table]:my-5 [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-border/60 [&_table]:whitespace-nowrap [&_th]:bg-muted/30 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-border/50 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-black/40 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:break-words [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {readme}
                             </ReactMarkdown>
