@@ -1,12 +1,8 @@
 import { Link } from "react-router-dom";
 import { Github, Linkedin, Send, Mail, Heart } from "lucide-react";
+import { useSettings } from "@/contexts/SettingsContext";
 
-const socialLinks = [
-  { icon: Github, href: "https://github.com", label: "GitHub" },
-  { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-  { icon: Send, href: "https://t.me/", label: "Telegram" },
-  { icon: Mail, href: "mailto:hello@example.com", label: "Email" },
-];
+
 
 const footerLinks = [
   { name: "Home", path: "/" },
@@ -17,6 +13,35 @@ const footerLinks = [
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { settings } = useSettings();
+  
+  const socialLinks = settings?.socialLinks ? [
+    settings.socialLinks.github && { 
+      icon: Github, 
+      href: settings.socialLinks.github, 
+      label: "GitHub" 
+    },
+    settings.socialLinks.linkedin && { 
+      icon: Linkedin, 
+      href: settings.socialLinks.linkedin, 
+      label: "LinkedIn" 
+    },
+    settings.socialLinks.telegram && { 
+      icon: Send, 
+      href: settings.socialLinks.telegram, 
+      label: "Telegram" 
+    },
+    settings.socialLinks.email && { 
+      icon: Mail, 
+      href: `mailto:${settings.socialLinks.email}`, 
+      label: "Email" 
+    }
+  ].filter(Boolean) as Array<{icon: React.FC<any>, href: string, label: string}> : [
+    { icon: Github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/pamod-madubashana-886b621a2", label: "LinkedIn" },
+    { icon: Send, href: "https://t.me/pamod_madubashana", label: "Telegram" },
+    { icon: Mail, href: "mailto:contact@pamod.is-a.dev", label: "Email" }
+  ];
 
   return (
     <footer className="relative border-t border-border bg-card/50 backdrop-blur-sm">
