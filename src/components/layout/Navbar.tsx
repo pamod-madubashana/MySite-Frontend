@@ -3,6 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Github, Linkedin, Send, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
 
 const navLinks = [
@@ -23,6 +25,7 @@ const socialIcons = {
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const location = useLocation();
   const { settings } = useSettings();
   
@@ -146,8 +149,13 @@ export const Navbar = () => {
               ))}
             </div>
             {settings?.siteSections.showContact !== false && (
-              <Button asChild variant="default" size="sm" className="neon-glow">
-                <Link to="/contact">Contact</Link>
+              <Button
+                variant="default"
+                size="sm"
+                className="neon-glow"
+                onClick={() => setIsContactModalOpen(true)}
+              >
+                Contact
               </Button>
             )}
           </div>
@@ -206,15 +214,15 @@ export const Navbar = () => {
                 </motion.div>
               ))}
               {settings?.siteSections.showContact !== false && (
-                <Button asChild variant="default" className="mt-4 neon-glow w-full">
-                  <Link
-                    to="/contact"
-                    onClick={() => {
-                      setTimeout(() => setIsOpen(false), 150);
-                    }}
-                  >
-                    Contact
-                  </Link>
+                <Button
+                  variant="default"
+                  className="mt-4 neon-glow w-full"
+                  onClick={() => {
+                    setTimeout(() => setIsOpen(false), 150);
+                    setTimeout(() => setIsContactModalOpen(true), 180);
+                  }}
+                >
+                  Contact
                 </Button>
               )}
             </div>
@@ -222,6 +230,17 @@ export const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+        <DialogContent className="w-[95vw] max-w-5xl h-[90vh] p-0 glass-strong bg-card/75 backdrop-blur-2xl border border-border/60">
+          <DialogHeader className="px-6 pt-6 pb-2 border-b border-border/50">
+            <DialogTitle className="text-foreground/80">Contact Me</DialogTitle>
+          </DialogHeader>
+          <div className="h-[calc(90vh-72px)] overflow-y-auto">
+            <ContactSection />
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.nav>
   );
 };
