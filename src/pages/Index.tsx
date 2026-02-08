@@ -21,7 +21,7 @@ const Index = () => {
     return (
       <>
         <PageSeo
-          title="Pamod Madubashana | Full-Stack Developer"
+          title="Pamod Madubashana"
           description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
           path="/"
         />
@@ -38,7 +38,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageSeo
-        title="Pamod Madubashana | Full-Stack Developer"
+        title="Pamod Madubashanar"
         description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
         path="/"
       />
