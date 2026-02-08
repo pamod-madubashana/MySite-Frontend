@@ -191,7 +191,7 @@ const About = () => {
   return (
     <div className="min-h-screen bg-background">
       <PageSeo
-        title="About Pamod Madubashana | Full-Stack Developer"
+        title="About | Pamod Madubashana"
         description="Learn about Pamod Madubashana's journey, technical background, and professional interests as a full-stack developer."
         path="/about"
       />
