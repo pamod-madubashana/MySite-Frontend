@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { timelineApi, TimelineItem } from '@/api/timelineApi';
 import { API_BASE_URL } from '@/lib/apiConfig';
 import { aboutApi, AboutPageData } from '@/api/aboutApi';
+import PageSeo from "@/components/seo/PageSeo";
 
 // Icon mapping for dynamic icon rendering
 const iconMap = {
@@ -189,6 +190,11 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSeo
+        title="About Pamod Madubashana | Full-Stack Developer"
+        description="Learn about Pamod Madubashana's journey, technical background, and professional interests as a full-stack developer."
+        path="/about"
+      />
       <Navbar />
       <main className="pt-24 pb-20">
         {/* Hero Section */}

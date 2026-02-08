@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/contexts/SettingsContext";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projectApi } from "@/api/projectApi";
+import PageSeo from "@/components/seo/PageSeo";
 
 const languages = [
   "All",
@@ -221,6 +222,11 @@ const Projects = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSeo
+        title="Projects | Pamod Madubashana"
+        description="Browse software projects built by Pamod Madubashana, including full-stack applications, experiments, and open-source work."
+        path="/projects"
+      />
       <Navbar />
       <main className="pt-24 pb-20">
         {/* Hero Section */}

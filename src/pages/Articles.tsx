@@ -5,6 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Calendar, ArrowRight, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { articleApi, Article } from "@/api/articleApi";
+import PageSeo from "@/components/seo/PageSeo";
 
 interface ArticlesPageCache {
   timestamp: number;
@@ -149,6 +150,11 @@ const Articles = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageSeo
+        title="Articles | Pamod Madubashana"
+        description="Read articles by Pamod Madubashana on web development, software engineering practices, and lessons from building real-world applications."
+        path="/articles"
+      />
       <Navbar />
       <main className="pt-24 pb-20">
         {/* Hero Section */}

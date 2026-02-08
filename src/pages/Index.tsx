@@ -6,6 +6,7 @@ import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useEffect } from 'react';
 import { aboutApi } from '@/api/aboutApi';
+import PageSeo from "@/components/seo/PageSeo";
 
 const Index = () => {
   const { settings, loading } = useSettings();
@@ -18,17 +19,29 @@ const Index = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading...</p>
+      <>
+        <PageSeo
+          title="Pamod Madubashana | Full-Stack Developer"
+          description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
+          path="/"
+        />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
   
   return (
     <div className="min-h-screen bg-background">
+      <PageSeo
+        title="Pamod Madubashana | Full-Stack Developer"
+        description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
+        path="/"
+      />
       <Navbar />
       <main>
         <HeroSection />
