@@ -621,7 +621,7 @@ const ProjectDetail = () => {
       return;
     }
 
-    document.title = `${project.title} | Projects | Pamod`;
+    document.title = `${project.title} | Pamod Madubashana`;
     const metaDescription = project.description.slice(0, 160);
     const meta = document.querySelector('meta[name="description"]');
     if (meta) {
