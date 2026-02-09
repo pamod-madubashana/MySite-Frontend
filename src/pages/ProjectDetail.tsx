@@ -746,8 +746,9 @@ const ProjectDetail = () => {
         description: seoDescription,
         url: `https://pamod.is-a.dev${detailPath}`,
         codeRepository: project.githubUrl,
-        programmingLanguage: project.languages,
-        keywords: project.tags,
+        programmingLanguage: project.languages.join(", "),
+        keywords: project.tags.join(", "),
+        inLanguage: "en",
         dateCreated: project.createdAt,
         dateModified: project.updatedAt,
         author: {
@@ -775,6 +776,7 @@ const ProjectDetail = () => {
       />
       <Navbar />
       <main className="relative z-10 pt-24 pb-20">
+        <h1 className="sr-only">{project?.title ? `${project.title} Project Details` : "Project Details"}</h1>
         {loading ? (
           <ProjectDetailSkeleton />
         ) : error || !project ? (

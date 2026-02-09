@@ -99,7 +99,9 @@
       "/",
       "/about",
       "/projects",
-      "/articles"
+      "/articles",
+      "/login",
+      "/register"
     ],
     "crawl": false,
     "skipThirdPartyRequests": true,

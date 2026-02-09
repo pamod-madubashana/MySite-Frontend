@@ -113,6 +113,8 @@ const PageSeo = ({
       <meta name="robots" content={robotsContent} />
       <meta name="author" content={SITE_NAME} />
       <link rel="canonical" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="en" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
 
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={canonicalUrl} />
