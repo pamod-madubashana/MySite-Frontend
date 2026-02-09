@@ -7,6 +7,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { useEffect } from 'react';
 import { aboutApi } from '@/api/aboutApi';
 import PageSeo from "@/components/seo/PageSeo";
+import DynamicPageBackground from "@/components/DynamicPageBackground";
 
 const Index = () => {
   const { settings, loading } = useSettings();
@@ -25,10 +26,13 @@ const Index = () => {
           description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
           path="/"
         />
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading...</p>
+        <div className="relative min-h-screen bg-background">
+          <DynamicPageBackground />
+          <div className="relative z-10 flex min-h-screen items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Loading...</p>
+            </div>
           </div>
         </div>
       </>
@@ -36,19 +40,22 @@ const Index = () => {
   }
   
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <DynamicPageBackground />
       <PageSeo
         title="Pamod Madubashanar"
         description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
         path="/"
       />
       <Navbar />
-      <main>
+      <main className="relative z-10">
         <HeroSection />
         <AboutSection />
         {settings?.siteSections.showProjects && <ProjectsSection />}
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };

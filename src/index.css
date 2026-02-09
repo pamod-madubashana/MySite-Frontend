@@ -260,7 +260,7 @@
   }
 
   .surface-card {
-    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-card/25 p-6 backdrop-blur-xl;
+    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-card/10 p-6 backdrop-blur-xl;
     box-shadow:
       0 22px 45px -28px hsl(var(--background) / 0.9),
       inset 0 1px 0 hsl(var(--border) / 0.75);
@@ -272,7 +272,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: hsl(var(--foreground) / 0.03);
+    background: hsl(var(--foreground) / 0.02);
     opacity: 1;
   }
 
