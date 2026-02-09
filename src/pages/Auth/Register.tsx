@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import PageSeo from '@/components/seo/PageSeo';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -23,8 +24,15 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-      <Card className="w-full max-w-md glass border border-primary/30">
+    <>
+      <PageSeo
+        title="Register | Pamod Madubashana"
+        description="Create an account to access the private portfolio management dashboard."
+        path="/register"
+        noIndex
+      />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+        <Card className="w-full max-w-md glass border border-primary/30">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
           <CardDescription>
@@ -84,8 +92,9 @@ const Register = () => {
             Return to Home
           </Link>
         </CardFooter>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 };
 

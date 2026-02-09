@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import PageSeo from '@/components/seo/PageSeo';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -29,8 +30,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-      <Card className="w-full max-w-md glass border border-primary/30">
+    <>
+      <PageSeo
+        title="Login | Pamod Madubashana"
+        description="Secure login page for Pamod Madubashana's portfolio management dashboard."
+        path="/login"
+        noIndex
+      />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+        <Card className="w-full max-w-md glass border border-primary/30">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
           <CardDescription>
@@ -98,8 +106,9 @@ const Login = () => {
             Return to Home
           </Link>
         </CardFooter>
-      </Card>
-    </div>
+        </Card>
+      </div>
+    </>
   );
 };
 

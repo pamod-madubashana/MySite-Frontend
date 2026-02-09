@@ -5,7 +5,14 @@ const HeroPortrait = () => {
     <div className="hero-portrait relative w-80 h-80 md:w-[28rem] md:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[42rem] xl:h-[42rem] scale-[1.15] lg:scale-[1.25]">
       <img
         src={heroPortrait}
+        srcSet={`${heroPortrait} 1x, ${heroPortrait} 2x`}
+        sizes="(max-width: 768px) 20rem, (max-width: 1280px) 28rem, 42rem"
         alt="Pamod Madubashana"
+        width={672}
+        height={672}
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         className="w-full h-full object-contain"
         style={{ 
           background: 'transparent',

@@ -193,9 +193,22 @@ const About = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="About | Pamod Madubashana"
-        description="Learn about Pamod Madubashana's journey, technical background, and professional interests as a full-stack developer."
+        title="About Pamod Madubashana | Full-Stack Developer"
+        description="Learn about Pamod Madubashana's development journey, technical experience, and product engineering approach across full-stack web projects."
         path="/about"
+        keywords={["About Pamod Madubashana", "developer journey", "software engineer", "full-stack experience"]}
+        structuredData={{
+          "@type": "ProfilePage",
+          "@id": "https://pamod.is-a.dev/about#profile",
+          url: "https://pamod.is-a.dev/about",
+          name: "About Pamod Madubashana",
+          mainEntity: {
+            "@type": "Person",
+            name: "Pamod Madubashana",
+            jobTitle: "Full-Stack Developer",
+            url: "https://pamod.is-a.dev/",
+          },
+        }}
       />
       <Navbar />
       <main className="relative z-10 pt-24 pb-20">

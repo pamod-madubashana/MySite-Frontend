@@ -143,9 +143,22 @@ const Articles = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="Articles | Pamod Madubashana"
-        description="Read articles by Pamod Madubashana on web development, software engineering practices, and lessons from building real-world applications."
+        title="Articles by Pamod Madubashana | Web Development"
+        description="Read practical articles by Pamod Madubashana on web development, frontend architecture, and software engineering lessons from real products."
         path="/articles"
+        keywords={["web development articles", "software engineering", "frontend architecture", "Pamod Madubashana"]}
+        structuredData={{
+          "@type": "Blog",
+          "@id": "https://pamod.is-a.dev/articles#blog",
+          url: "https://pamod.is-a.dev/articles",
+          name: "Pamod Madubashana Articles",
+          description: "Technical articles on web development and software engineering.",
+          publisher: {
+            "@type": "Person",
+            name: "Pamod Madubashana",
+            url: "https://pamod.is-a.dev/",
+          },
+        }}
       />
       <Navbar />
       <main className="relative z-10 pt-24 pb-20">
@@ -184,6 +197,8 @@ const Articles = () => {
                       alt={featuredArticle.title}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       onError={(e) => {
                         e.currentTarget.src = generatePlaceholderImage(featuredArticle.title);
                       }}
@@ -283,6 +298,8 @@ const Articles = () => {
                         alt={article.title}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
+                        decoding="async"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                         onError={(e) => {
                           e.currentTarget.src = generatePlaceholderImage(article.title);
                         }}

@@ -205,9 +205,17 @@ const Projects = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="Projects | Pamod Madubashana"
-        description="Browse software projects built by Pamod Madubashana, including full-stack applications, experiments, and open-source work."
+        title="Projects by Pamod Madubashana | Full-Stack Portfolio"
+        description="Browse full-stack projects by Pamod Madubashana, including production-ready web applications, experiments, and open-source engineering work."
         path="/projects"
+        keywords={["Pamod projects", "full-stack portfolio", "web applications", "open-source projects"]}
+        structuredData={{
+          "@type": "CollectionPage",
+          "@id": "https://pamod.is-a.dev/projects#collection",
+          url: "https://pamod.is-a.dev/projects",
+          name: "Projects by Pamod Madubashana",
+          description: "Portfolio collection of full-stack software projects.",
+        }}
       />
       <Navbar />
       <main className="relative z-10 pt-24 pb-20">

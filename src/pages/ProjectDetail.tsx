@@ -22,6 +22,7 @@ import remarkGfm from "remark-gfm";
 import { projectApi } from "@/api/projectApi";
 import { languageColors } from "@/lib/languageColors";
 import DynamicPageBackground from "@/components/DynamicPageBackground";
+import PageSeo from "@/components/seo/PageSeo";
 
 interface Project {
   _id: string;
@@ -170,6 +171,16 @@ const formatDate = (dateValue: string) => {
   });
 };
 
+const truncateMetaDescription = (value: string, maxLength = 158) => {
+  const normalized = value.replace(/\s+/g, " ").trim();
+
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, maxLength - 1).trimEnd()}...`;
+};
+
 const stripReadmeImagesAndSections = (markdown: string) => {
   const lines = markdown.split("\n");
   const cleanedLines: string[] = [];
@@ -295,6 +306,9 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
             <img
               src={shot}
               alt={`${projectTitle} screenshot ${shotIndex + 1}`}
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             />
           </motion.button>
@@ -308,6 +322,9 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
             <img
               src={activeImage}
               alt={`${projectTitle} expanded screenshot ${activeIndex + 1}`}
+              loading="eager"
+              decoding="async"
+              sizes="95vw"
               className="max-h-[80vh] w-full rounded-lg object-contain"
             />
           )}
@@ -340,6 +357,10 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           src={thumbnailSrc}
           alt=""
           aria-hidden
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          sizes="100vw"
           className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80"
         />
 
@@ -357,6 +378,10 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           <img
             src={thumbnailSrc}
             alt={`${project.title} thumbnail`}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            sizes="(max-width: 768px) 100vw, 92vw"
             className="max-h-[190px] max-w-full object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)] sm:max-h-[240px] md:max-h-[85%] md:max-w-[92%]"
           />
         </div>
@@ -614,35 +639,6 @@ const ProjectDetail = () => {
   }, [slug]);
 
   useEffect(() => {
-    const defaultTitle = "Projects | Pamod";
-    const defaultDescription = "Explore the project portfolio.";
-
-    if (!project) {
-      document.title = defaultTitle;
-      const meta = document.querySelector('meta[name="description"]');
-      if (meta) {
-        meta.setAttribute("content", defaultDescription);
-      }
-      return;
-    }
-
-    document.title = `${project.title} | Pamod Madubashana`;
-    const metaDescription = project.description.slice(0, 160);
-    const meta = document.querySelector('meta[name="description"]');
-    if (meta) {
-      meta.setAttribute("content", metaDescription);
-    }
-
-    return () => {
-      document.title = defaultTitle;
-      const resetMeta = document.querySelector('meta[name="description"]');
-      if (resetMeta) {
-        resetMeta.setAttribute("content", defaultDescription);
-      }
-    };
-  }, [project]);
-
-  useEffect(() => {
     let isActive = true;
 
     const fetchReadme = async () => {
@@ -735,10 +731,48 @@ const ProjectDetail = () => {
   }, [project]);
 
   const screenshots = project?.screenshots ?? [];
+  const detailPath = slug ? `/projects/${slug}` : "/projects";
+  const seoTitle = project
+    ? `${project.title} | Project by Pamod Madubashana`
+    : "Project Details | Pamod Madubashana";
+  const seoDescription = project
+    ? truncateMetaDescription(project.description)
+    : "Explore implementation details, architecture decisions, and technical highlights from this project by Pamod Madubashana.";
+  const projectStructuredData = project
+    ? {
+        "@type": "SoftwareSourceCode",
+        "@id": `https://pamod.is-a.dev${detailPath}#software`,
+        name: project.title,
+        description: seoDescription,
+        url: `https://pamod.is-a.dev${detailPath}`,
+        codeRepository: project.githubUrl,
+        programmingLanguage: project.languages,
+        keywords: project.tags,
+        dateCreated: project.createdAt,
+        dateModified: project.updatedAt,
+        author: {
+          "@type": "Person",
+          name: "Pamod Madubashana",
+          url: "https://pamod.is-a.dev/",
+        },
+      }
+    : undefined;
 
   return (
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
+      <PageSeo
+        title={seoTitle}
+        description={seoDescription}
+        path={detailPath}
+        ogType="article"
+        ogImage={project?.thumbnail || "/og.png"}
+        noIndex={!loading && (!!error || !project)}
+        publishedTime={project?.createdAt}
+        modifiedTime={project?.updatedAt}
+        keywords={project ? [project.title, ...project.tags] : ["project details", "full-stack project"]}
+        structuredData={projectStructuredData}
+      />
       <Navbar />
       <main className="relative z-10 pt-24 pb-20">
         {loading ? (

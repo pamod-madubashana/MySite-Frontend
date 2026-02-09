@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import PageSeo from '@/components/seo/PageSeo';
 
 interface NavItem {
   title: string;
@@ -98,8 +99,19 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return location.pathname.startsWith(path);
   };
 
+  const activeNavItem = navItems.find((item) => isActiveRoute(item.path));
+  const adminPageTitle = activeNavItem?.title
+    ? `${activeNavItem.title} | Admin Dashboard`
+    : 'Admin Dashboard | Pamod Madubashana';
+
   return (
     <div className="flex min-h-screen bg-background">
+      <PageSeo
+        title={adminPageTitle}
+        description="Secure admin dashboard for managing portfolio content and site settings."
+        path={location.pathname}
+        noIndex
+      />
       {/* Sidebar Overlay for Mobile */}
       <AnimatePresence>
         {sidebarOpen && (

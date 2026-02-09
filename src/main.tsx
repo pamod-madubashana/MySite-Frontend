@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App.tsx";
 import "./index.css";
+import { reportWebVitals } from "./lib/reportWebVitals";
 
 // Check if there's a redirect path stored in sessionStorage
 const redirectPath = sessionStorage.getItem('redirectPath');
@@ -20,3 +21,5 @@ createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </HelmetProvider>
 );
+
+reportWebVitals();

@@ -22,9 +22,10 @@ const Index = () => {
     return (
       <>
         <PageSeo
-          title="Pamod Madubashana"
-          description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
+          title="Pamod Madubashana | Full-Stack Developer Portfolio"
+          description="Explore the portfolio of Pamod Madubashana, a full-stack developer building scalable web applications with React, Node.js, clean architecture, and high-performance UX."
           path="/"
+          keywords={["Pamod Madubashana", "full-stack developer", "React developer", "Node.js", "portfolio"]}
         />
         <div className="relative min-h-screen bg-background">
           <DynamicPageBackground />
@@ -43,9 +44,10 @@ const Index = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="Pamod Madubashanar"
-        description="Pamod Madubashana is a full-stack developer building fast, reliable web apps with clean architecture, performance, and great UX."
+        title="Pamod Madubashana | Full-Stack Developer Portfolio"
+        description="Explore the portfolio of Pamod Madubashana, a full-stack developer building scalable web applications with React, Node.js, clean architecture, and high-performance UX."
         path="/"
+        keywords={["Pamod Madubashana", "full-stack developer", "React developer", "Node.js", "portfolio"]}
       />
       <Navbar />
       <main className="relative z-10">
