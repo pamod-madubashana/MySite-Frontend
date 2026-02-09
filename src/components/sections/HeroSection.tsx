@@ -67,7 +67,7 @@ export const HeroSection = () => {
                   className="h-11 w-full min-w-0 border-primary/40 bg-transparent px-3 text-sm font-semibold text-primary transition-all duration-300 hover:scale-[1.02] hover:bg-primary/10 hover:text-primary sm:px-5 sm:text-base"
                 >
                   <Link to="/about" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
-                    <span>Learn More</span>
+                    <span>About Me</span>
                     <ChevronDown className="h-4 w-4" />
                   </Link>
                 </Button>
