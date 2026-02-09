@@ -66,9 +66,11 @@ const readmeCache = new Map<string, string | null>();
 
 const PROJECT_DETAIL_CACHE_TTL = 15 * 60 * 1000;
 const README_CACHE_TTL = 6 * 60 * 60 * 1000;
+const MONGODB_OBJECT_ID_REGEX = /^[a-f\d]{24}$/i;
 
 const getProjectDetailCacheKey = (slug: string) => `project:detail:${slug}`;
 const getReadmeCacheKey = (repoKey: string) => `project:readme:${repoKey}`;
+const isMongoObjectId = (value: string) => MONGODB_OBJECT_ID_REGEX.test(value);
 
 const readProjectDetailCache = (slug: string): ProjectDetailCachePayload | null => {
   if (typeof window === "undefined") {
@@ -580,6 +582,10 @@ const ProjectDetail = () => {
         try {
           fetchedProject = await projectApi.getProjectBySlug(slug);
         } catch {
+          if (!isMongoObjectId(slug)) {
+            throw new Error("Project not found");
+          }
+
           fetchedProject = await projectApi.getProject(slug);
         }
 
