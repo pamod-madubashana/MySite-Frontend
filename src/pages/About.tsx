@@ -241,7 +241,7 @@ const About = () => {
               </motion.h2>
 
               <div className="relative mx-auto max-w-5xl">
-                <div className="absolute bottom-0 left-8 top-0 w-px bg-gradient-to-b from-primary/50 via-secondary/45 to-transparent md:left-1/2" />
+                <div className="absolute bottom-0 left-8 top-0 w-px bg-primary md:left-1/2" />
 
                 {timeline.map((item, index) => {
                   const isLeft = index % 2 === 0;
