@@ -104,24 +104,6 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
 
-  useEffect(() => {
-    const body = document.body;
-    const root = document.documentElement;
-
-    if (isContactModalOpen) {
-      body.classList.add("contact-open");
-      root.classList.add("contact-open");
-    } else {
-      body.classList.remove("contact-open");
-      root.classList.remove("contact-open");
-    }
-
-    return () => {
-      body.classList.remove("contact-open");
-      root.classList.remove("contact-open");
-    };
-  }, [isContactModalOpen]);
-
   return (
     <motion.nav
       initial={false}
@@ -135,7 +117,7 @@ export const Navbar = () => {
         damping: 25,
         mass: 0.5
       }}
-      className={`fixed top-0 left-0 right-0 z-50 select-none ${
+      className={`fixed top-0 left-0 right-0 z-50 select-none width-before-scroll-bar ${
         scrolled
           ? "glass-strong shadow-lg"
           : "bg-transparent"

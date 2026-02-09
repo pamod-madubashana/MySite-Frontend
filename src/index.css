@@ -135,19 +135,9 @@
     background-image: none;
   }
 
-  html.contact-open,
-  body.contact-open {
-    overflow-y: hidden;
-    overscroll-behavior: none;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  html.contact-open::-webkit-scrollbar,
-  body.contact-open::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
+  body[data-scroll-locked][data-scroll-locked] {
+    margin-right: 0 !important;
+    padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
   }
 
   input,
