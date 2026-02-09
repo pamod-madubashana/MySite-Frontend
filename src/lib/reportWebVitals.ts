@@ -17,6 +17,10 @@ const reportMetric = (metric: Metric) => {
 };
 
 export const reportWebVitals = () => {
+  if (typeof Array.prototype.at !== "function") {
+    return;
+  }
+
   onCLS(reportMetric);
   onINP(reportMetric);
   onFCP(reportMetric);

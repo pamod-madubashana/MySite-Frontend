@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist',
+    target: 'es2018',
     sourcemap: true,
     rollupOptions: {
       output: {
