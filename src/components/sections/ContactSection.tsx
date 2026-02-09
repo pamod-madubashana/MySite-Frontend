@@ -24,10 +24,29 @@ const INITIAL_FORM_STATE: ContactFormState = {
   name: "",
   email: "",
   message: "",
-  company: "",
+  company: ""
 };
 
 const isValidEmail = (value: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+
+const contactCards = [
+  {
+    icon: Mail,
+    title: "Email",
+    value: "contact@pamod.is-a.dev",
+    href: "mailto:contact@pamod.is-a.dev"
+  },
+  {
+    icon: MapPin,
+    title: "Location",
+    value: "Ampara, Sri Lanka"
+  },
+  {
+    icon: Calendar,
+    title: "Availability",
+    value: "Open to projects"
+  }
+];
 
 export const ContactSection = () => {
   const { toast } = useToast();
@@ -94,7 +113,7 @@ export const ContactSection = () => {
         name: formData.name.trim(),
         email: formData.email.trim(),
         message: formData.message.trim(),
-        company: formData.company,
+        company: formData.company
       });
 
       setFormData(INITIAL_FORM_STATE);
@@ -102,7 +121,7 @@ export const ContactSection = () => {
       setSubmitSuccess("Your message was sent successfully.");
       toast({
         title: "Message sent",
-        description: "Your message was sent successfully.",
+        description: "Your message was sent successfully."
       });
     } catch (error) {
       const errorMessage =
@@ -111,7 +130,7 @@ export const ContactSection = () => {
       toast({
         title: "Message not sent",
         description: errorMessage,
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
@@ -119,24 +138,24 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-32 relative">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+    <section id="contact" className="section-shell section-shell-muted">
+      <div aria-hidden className="pointer-events-none absolute -right-20 top-0 h-48 w-48 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft" />
+
+      <div className="section-inner">
+        <div className="mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="mb-12 text-center"
           >
-            <span className="inline-block px-4 py-1 text-sm font-medium text-accent bg-accent/10 rounded-full mb-4">
-              Get in Touch
-            </span>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              <span className="text-foreground/70">Let's Work</span> <span className="text-gradient">Together</span>
+            <span className="section-pill">Get in Touch</span>
+            <h2 className="section-title">
+              <span className="text-foreground/75">Let&apos;s Work</span> <span className="text-gradient">Together</span>
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your ideas to life.
+            <p className="section-copy mx-auto mt-4 max-w-xl">
+              Have a project in mind? I&apos;d love to hear about it and plan the next release with you.
             </p>
           </motion.div>
 
@@ -145,44 +164,50 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="grid md:grid-cols-3 gap-6 mb-12"
+            className="mb-10 grid gap-6 md:grid-cols-3"
           >
-            {[
-              {
-                icon: Mail,
-                title: "Email",
-                value: "contact@pamod.is-a.dev",
-                href: "mailto:contact@pamod.is-a.dev",
-              },
-              {
-                icon: MapPin,
-                title: "Location",
-                value: "Ampara, Sri Lanka",
-                href: "#",
-              },
-              {
-                icon: Calendar,
-                title: "Availability",
-                value: "Open to projects",
-                href: "#",
-              },
-            ].map((item, index) => (
-              <motion.a
-                key={item.title}
-                href={item.href}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                className="p-6 rounded-xl border border-border/60 bg-background/45 backdrop-blur-xl shadow-xl shadow-black/30 hover-lift text-center group"
-              >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-lg bg-primary/10 flex items-center justify-center group-hover:shadow-glow transition-shadow duration-300">
-                  <item.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground/95 mb-1">{item.title}</h3>
-                <p className="text-sm text-foreground/75">{item.value}</p>
-              </motion.a>
-            ))}
+            {contactCards.map((item, index) => {
+              const content = (
+                <>
+                  <div className="mx-auto mb-4 w-fit">
+                    <motion.div
+                      className="surface-icon"
+                      animate={{ rotate: [0, 2, -2, 0] }}
+                      transition={{ duration: 4.5, repeat: Infinity, delay: index * 0.25, ease: "easeInOut" }}
+                    >
+                      <item.icon className="h-6 w-6" />
+                    </motion.div>
+                  </div>
+                  <h3 className="mb-1 font-semibold text-foreground">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.value}</p>
+                </>
+              );
+
+              return item.href ? (
+                <motion.a
+                  key={item.title}
+                  href={item.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                  className="surface-card text-center"
+                >
+                  {content}
+                </motion.a>
+              ) : (
+                <motion.div
+                  key={item.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
+                  className="surface-card text-center"
+                >
+                  {content}
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           <motion.div
@@ -190,12 +215,12 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="p-8 rounded-2xl border border-border/60 bg-background/55 backdrop-blur-xl shadow-2xl shadow-black/35"
+            className="surface-card"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-foreground/90 mb-2">
+                  <label htmlFor="name" className="mb-2 block text-sm font-medium text-foreground/90">
                     Name
                   </label>
                   <Input
@@ -208,12 +233,13 @@ export const ContactSection = () => {
                     autoComplete="name"
                     maxLength={80}
                     aria-invalid={Boolean(formErrors.name)}
-                    className="h-12 border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
                   />
                   {formErrors.name && <p className="mt-2 text-sm text-destructive">{formErrors.name}</p>}
                 </div>
+
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-foreground/90 mb-2">
+                  <label htmlFor="email" className="mb-2 block text-sm font-medium text-foreground/90">
                     Email
                   </label>
                   <Input
@@ -226,13 +252,12 @@ export const ContactSection = () => {
                     autoComplete="email"
                     maxLength={254}
                     aria-invalid={Boolean(formErrors.email)}
-                    className="h-12 border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
                   />
-                  {formErrors.email && (
-                    <p className="mt-2 text-sm text-destructive">{formErrors.email}</p>
-                  )}
+                  {formErrors.email && <p className="mt-2 text-sm text-destructive">{formErrors.email}</p>}
                 </div>
               </div>
+
               <div className="hidden" aria-hidden="true">
                 <label htmlFor="company">Company</label>
                 <Input
@@ -244,8 +269,9 @@ export const ContactSection = () => {
                   tabIndex={-1}
                 />
               </div>
+
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground/90 mb-2">
+                <label htmlFor="message" className="mb-2 block text-sm font-medium text-foreground/90">
                   Message
                 </label>
                 <Textarea
@@ -257,26 +283,26 @@ export const ContactSection = () => {
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
                   aria-invalid={Boolean(formErrors.message)}
-                  className="resize-none border-border/80 bg-background/70 text-foreground placeholder:text-muted-foreground"
+                  className="resize-none border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
                 />
-                {formErrors.message && (
-                  <p className="mt-2 text-sm text-destructive">{formErrors.message}</p>
-                )}
+                {formErrors.message && <p className="mt-2 text-sm text-destructive">{formErrors.message}</p>}
               </div>
+
               <div className="space-y-2">
                 {submitSuccess && <p className="text-sm text-green-500">{submitSuccess}</p>}
                 {submitError && <p className="text-sm text-destructive">{submitError}</p>}
               </div>
+
               <Button
                 type="submit"
                 size="lg"
-                className="w-full md:w-auto neon-glow group"
+                className="group w-full bg-gradient-to-r from-primary to-secondary font-semibold text-primary-foreground shadow-glow hover:opacity-95 md:w-auto"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5 mr-2 transition-transform group-hover:translate-x-1" />
+                  <Send className="mr-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 )}
                 {isSubmitting ? "Sending..." : "Send Message"}
               </Button>

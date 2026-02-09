@@ -21,6 +21,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { projectApi } from "@/api/projectApi";
 import { languageColors } from "@/lib/languageColors";
+import DynamicPageBackground from "@/components/DynamicPageBackground";
 
 interface Project {
   _id: string;
@@ -256,7 +257,7 @@ const ProjectSection = ({ title, children, index, action }: ProjectSectionProps)
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.35, delay: 0.12 + index * 0.08 }}
-    className="glass min-w-0 rounded-2xl p-6 md:p-8"
+    className="surface-card min-w-0 p-6 backdrop-blur-2xl md:p-8"
   >
     <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-border/60 pb-4">
       <h2 className="text-lg font-semibold text-foreground/90 sm:text-xl md:text-2xl">{title}</h2>
@@ -328,8 +329,12 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
       initial={{ opacity: 0, y: 22 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45 }}
-      className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/40"
+      className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/30 backdrop-blur-2xl shadow-[0_38px_70px_-46px_hsl(var(--primary)/0.6)]"
     >
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/18 via-transparent to-secondary/20" />
+      <div aria-hidden className="pointer-events-none absolute -left-20 top-0 h-52 w-52 rounded-full bg-primary/20 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -right-20 bottom-0 h-52 w-52 rounded-full bg-secondary/22 blur-3xl" />
+
       <div className="relative min-h-[360px] overflow-hidden rounded-xl border border-border/60 bg-black/10 md:h-[460px] md:min-h-0">
         <img
           src={thumbnailSrc}
@@ -402,7 +407,7 @@ const ProjectSidebar = ({ project, githubStats }: ProjectSidebarProps) => {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: 0.22 }}
-      className="glass rounded-2xl p-6 xl:sticky xl:top-28"
+      className="surface-card rounded-2xl p-6 backdrop-blur-2xl xl:sticky xl:top-28"
     >
       <div className="space-y-6">
         <div>
@@ -471,7 +476,7 @@ const ProjectDetailSkeleton = () => (
   <section className="py-8 md:py-12">
     <div className="container mx-auto px-4">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="glass rounded-2xl p-6 md:p-10">
+        <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-10">
           <Skeleton className="mb-6 h-4 w-56" />
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="mt-3 h-5 w-full max-w-2xl" />
@@ -489,18 +494,18 @@ const ProjectDetailSkeleton = () => (
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
           <div className="space-y-8">
-            <div className="glass rounded-2xl p-6 md:p-8">
+            <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-8">
               <Skeleton className="mb-5 h-7 w-40" />
               <Skeleton className="h-4 w-full" />
               <Skeleton className="mt-2 h-4 w-5/6" />
               <Skeleton className="mt-2 h-4 w-4/6" />
             </div>
-            <div className="glass rounded-2xl p-6 md:p-8">
+            <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-8">
               <Skeleton className="mb-5 h-7 w-52" />
               <Skeleton className="h-48 w-full" />
             </div>
           </div>
-          <div className="glass rounded-2xl p-6">
+          <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl">
             <Skeleton className="h-6 w-32" />
             <Skeleton className="mt-3 h-10 w-full" />
             <Skeleton className="mt-2 h-10 w-full" />
@@ -732,9 +737,10 @@ const ProjectDetail = () => {
   const screenshots = project?.screenshots ?? [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <DynamicPageBackground />
       <Navbar />
-      <main className="pt-24 pb-20">
+      <main className="relative z-10 pt-24 pb-20">
         {loading ? (
           <ProjectDetailSkeleton />
         ) : error || !project ? (
@@ -743,7 +749,7 @@ const ProjectDetail = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mx-auto max-w-2xl rounded-xl p-10 text-center glass"
+                className="page-glass-strip mx-auto max-w-2xl rounded-xl p-10 text-center"
               >
                 <h1 className="mb-4 text-3xl font-bold text-foreground/80 md:text-4xl">Project not found</h1>
                 <p className="mb-8 text-muted-foreground">
@@ -826,7 +832,9 @@ const ProjectDetail = () => {
           </section>
         )}
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { type KeyboardEvent } from "react";
+import { KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { Star, GitFork, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ interface ProjectCardProps {
     githubUrl?: string;
     liveUrl?: string;
     featured: boolean;
-    status: 'draft' | 'published';
+    status: "draft" | "published";
     thumbnail?: string;
   };
   index: number;
@@ -27,14 +27,21 @@ interface ProjectCardProps {
   showLanguages?: boolean;
 }
 
-export const ProjectCard = ({ 
-  project, 
-  index, 
+const fallbackGradients = [
+  "from-primary/45 via-secondary/20 to-accent/35",
+  "from-secondary/45 via-primary/20 to-accent/35",
+  "from-accent/45 via-primary/20 to-secondary/35"
+];
+
+export const ProjectCard = ({
+  project,
+  index,
   githubStats,
-  showLanguages = true 
+  showLanguages = true
 }: ProjectCardProps) => {
   const navigate = useNavigate();
   const projectPath = `/projects/${project.slug || project._id}`;
+  const fallbackGradient = fallbackGradients[index % fallbackGradients.length];
 
   const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
@@ -45,100 +52,107 @@ export const ProjectCard = ({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 28 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative rounded-xl overflow-hidden glass hover-lift cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+      transition={{ duration: 0.45, delay: index * 0.08 }}
+      className="surface-card group relative flex h-full cursor-pointer flex-col overflow-hidden p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
       onClick={() => navigate(projectPath)}
       onKeyDown={handleCardKeyDown}
       role="link"
       tabIndex={0}
     >
-      {/* Featured Badge - Top Left */}
       {project.featured && (
-        <div className="absolute top-3 left-3 z-10">
-          <span className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-yellow-500 bg-yellow-800/20 backdrop-blur-sm rounded-full border border-yellow-500/30">
-            <Star className="w-3 h-3" />
+        <div className="absolute left-4 top-4 z-20">
+          <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/35 bg-yellow-400/10 px-2.5 py-1 text-xs font-semibold text-yellow-200">
+            <Star className="h-3 w-3" />
             Featured
           </span>
         </div>
       )}
-      
-      {/* Image */}
-      <div className="relative aspect-video overflow-hidden">
-        <Link to={projectPath} onClick={(event) => event.stopPropagation()}>
-          <img
-            src={project.thumbnail || `https://images.unsplash.com/photo-${index + 1}?w=800&h=600&fit=crop`}
-            alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-          />
+
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-border/60">
+        <Link to={projectPath} onClick={(event) => event.stopPropagation()} className="block h-full w-full">
+          {project.thumbnail ? (
+            <img
+              src={project.thumbnail}
+              alt={project.title}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className={`h-full w-full bg-gradient-to-br ${fallbackGradient}`} />
+          )}
         </Link>
-        <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4 gap-2">
+
+        <div className="absolute inset-0 bg-gradient-to-t from-background/92 via-background/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+        <div className="absolute inset-x-0 bottom-4 z-10 flex translate-y-2 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           {project.liveUrl && (
-            <Button size="sm" variant="secondary" className="gap-1" asChild>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="gap-1.5 border border-primary/20 bg-primary/85 text-primary-foreground hover:bg-primary"
+              asChild
+            >
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="h-4 w-4" />
                 Live
               </a>
             </Button>
           )}
+
           {project.githubUrl && (
-            <Button size="sm" variant="outline" className="gap-1" asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="brand-outline-btn gap-1.5"
+              asChild
+            >
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
-                <Github className="w-4 h-4 text-foreground/70" />
-                <span className="text-foreground/70">Code</span>
+                <Github className="h-4 w-4" />
+                Code
               </a>
             </Button>
           )}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-6">
         <Link to={projectPath} onClick={(event) => event.stopPropagation()} className="inline-block">
-          <h3 className="text-xl font-semibold mb-2 text-foreground/70 group-hover:text-primary transition-colors">
+          <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
             {project.title}
           </h3>
         </Link>
 
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
           {project.description}
         </p>
 
-        {/* Tech Stack */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {project.tags.slice(0, 3).map((tag: string) => (
-            <span
-              key={`tag-${tag}`}
-              className="px-2 py-1 text-xs font-mono bg-muted/50 text-foreground/50 rounded-md"
-            >
+        <div className="mt-4 flex flex-wrap gap-2">
+          {project.tags.slice(0, 3).map((tag) => (
+            <span key={`tag-${tag}`} className="chip-tag">
               {tag}
             </span>
           ))}
         </div>
-        
-        {/* Languages - Optional */}
+
         {showLanguages && project.languages && project.languages.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-border/50">
-            {project.languages.slice(0, 3).map((lang: string) => (
-              <div key={`lang-${lang}`} className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${languageColors[lang] || "bg-muted"}`} />
-                <span className="text-xs font-mono text-muted-foreground">
-                  {lang}
-                </span>
+          <div className="mt-5 flex flex-wrap gap-3 border-t border-border/60 pt-4">
+            {project.languages.slice(0, 3).map((lang) => (
+              <div key={`lang-${lang}`} className="inline-flex items-center gap-1.5">
+                <span className={`h-2 w-2 rounded-full ${languageColors[lang] || "bg-muted"}`} />
+                <span className="text-xs font-mono text-muted-foreground">{lang}</span>
               </div>
             ))}
           </div>
         )}
-        
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mt-4">
-          <span className="flex items-center gap-1">
-            <Star className="w-4 h-4" />
+
+        <div className="mt-4 flex items-center gap-4 border-t border-border/60 pt-4 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <Star className="h-4 w-4" />
             {githubStats?.stars ?? 0}
           </span>
-          <span className="flex items-center gap-1">
-            <GitFork className="w-4 h-4" />
+          <span className="inline-flex items-center gap-1.5">
+            <GitFork className="h-4 w-4" />
             {githubStats?.forks ?? 0}
           </span>
         </div>

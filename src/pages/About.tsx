@@ -9,8 +9,9 @@ import {
 import { useState, useEffect } from 'react';
 import { timelineApi, TimelineItem } from '@/api/timelineApi';
 import { API_BASE_URL } from '@/lib/apiConfig';
-import { aboutApi, AboutPageData } from '@/api/aboutApi';
+import { aboutApi } from '@/api/aboutApi';
 import PageSeo from "@/components/seo/PageSeo";
+import DynamicPageBackground from "@/components/DynamicPageBackground";
 
 // Icon mapping for dynamic icon rendering
 const iconMap = {
@@ -189,94 +190,91 @@ const About = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <DynamicPageBackground />
       <PageSeo
         title="About | Pamod Madubashana"
         description="Learn about Pamod Madubashana's journey, technical background, and professional interests as a full-stack developer."
         path="/about"
       />
       <Navbar />
-      <main className="pt-24 pb-20">
-        {/* Hero Section */}
-        <section className="py-16 md:py-24">
-          <div className="container mx-auto px-4">
+      <main className="relative z-10 pt-24 pb-20">
+        <section className="section-shell">
+          <div className="section-inner">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="max-w-4xl mx-auto text-center"
+              className="page-hero-panel mx-auto max-w-4xl"
             >
-              <span className="inline-block px-4 py-1 text-sm font-medium text-primary bg-primary/10 rounded-full mb-6">
-                About Me
-              </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-                <span className="text-foreground/70">Building the Future,</span>{" "}
+              <span className="section-pill">About Me</span>
+              <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
+                <span className="text-foreground/75">Building the Future,</span>{" "}
                 <span className="text-gradient">One Line at a Time</span>
               </h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                I'm a passionate full-stack developer with 5+ years of experience creating 
-                digital experiences that combine beautiful design with powerful functionality.
+              <p className="section-copy mx-auto mt-5 max-w-2xl">
+                I&apos;m a passionate full-stack developer with 5+ years of experience creating digital experiences that combine beautiful design with powerful functionality.
               </p>
             </motion.div>
           </div>
         </section>
 
-        {/* Timeline Section */}
         {loading ? (
-          <div className="py-16 flex justify-center items-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
+          <section className="section-shell section-shell-muted">
+            <div className="section-inner">
+              <div className="page-glass-strip mx-auto max-w-xl p-10 text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
+                <p className="mt-4 text-muted-foreground">Loading journey...</p>
+              </div>
+            </div>
+          </section>
         ) : (
-          <section className="py-16 bg-muted/20">
-            <div className="container mx-auto px-4">
+          <section className="section-shell section-shell-muted">
+            <div className="section-inner">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-3xl md:text-4xl font-bold text-center mb-16"
+                className="mb-16 text-center text-3xl font-bold md:text-4xl"
               >
-                <span className="text-foreground/70">My</span> <span className="text-gradient">Journey</span>
+                <span className="text-foreground/75">My</span> <span className="text-gradient">Journey</span>
               </motion.h2>
 
-              <div className="max-w-4xl mx-auto relative">
-                {/* Timeline Line */}
-                <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-border" />
+              <div className="relative mx-auto max-w-5xl">
+                <div className="absolute bottom-0 left-8 top-0 w-px bg-gradient-to-b from-primary/50 via-secondary/45 to-transparent md:left-1/2" />
 
                 {timeline.map((item, index) => {
                   const isLeft = index % 2 === 0;
                   return (
                     <motion.div
                       key={item._id || item.year}
-                      initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
+                      initial={{ opacity: 0, x: isLeft ? -24 : 24 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="relative mb-12 md:flex md:items-start"
+                      transition={{ duration: 0.45, delay: index * 0.08 }}
+                      className="relative mb-10 md:flex md:items-start"
                     >
-                      {/* Left Card (even index) */}
                       <div className={`hidden md:block md:w-1/2 md:pr-12 ${isLeft ? "" : "md:invisible"}`}>
                         {isLeft && (
-                          <div className="p-6 rounded-xl glass hover-lift text-right">
-                            <span className="text-sm font-mono text-primary">{item.year}</span>
-                            <h3 className="text-xl font-semibold mt-1 text-foreground/50">{item.role}</h3>
-                            <p className="text-sm text-muted-foreground mt-1">{item.company}</p>
-                            <p className="text-sm text-muted-foreground mt-3">{item.description}</p>
+                          <div className="surface-card p-5 text-right backdrop-blur-2xl md:p-6">
+                            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
+                            <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
+                            <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
+                            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
                           </div>
                         )}
                       </div>
 
-                      {/* Timeline Dot - Centered */}
-                      <div className="absolute z-10 left-8 md:left-1/2 -translate-x-1/2 top-0 w-12 h-12 rounded-full bg-card border-4 border-primary flex items-center justify-center shadow-glow">
-                        <item.icon className="w-5 h-5 text-primary" />
+                      <div className="absolute left-8 top-0 z-10 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border-4 border-primary/65 bg-card shadow-glow md:left-1/2">
+                        <item.icon className="h-5 w-5 text-primary" />
                       </div>
 
-                      {/* Right Card (odd index) - Shows on desktop and mobile */}
                       <div className={`ml-20 md:ml-0 md:w-1/2 md:pl-12 ${isLeft ? "md:hidden" : ""}`}>
-                        <div className="p-6 rounded-xl glass hover-lift text-left">
-                          <span className="text-sm font-mono text-primary">{item.year}</span>
-                          <h3 className="text-xl font-semibold mt-1 text-foreground/50">{item.role}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{item.company}</p>
-                          <p className="text-sm text-muted-foreground mt-3">{item.description}</p>
+                        <div className="surface-card p-5 text-left backdrop-blur-2xl md:p-6">
+                          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
+                          <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
+                          <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
+                          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
                         </div>
                       </div>
                     </motion.div>
@@ -287,38 +285,34 @@ const About = () => {
           </section>
         )}
 
-        {/* Tech Stack Section */}
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="section-shell">
+          <div className="section-inner">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-3xl md:text-4xl font-bold text-center mb-16"
+              className="mb-16 text-center text-3xl font-bold md:text-4xl"
             >
-              <span className="text-foreground/70">Tech</span> <span className="text-gradient">Stack</span>
+              <span className="text-foreground/75">Tech</span> <span className="text-gradient">Stack</span>
             </motion.h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
               {techCategories.map((category, index) => (
                 <motion.div
                   key={category.title}
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="p-6 rounded-xl glass hover-lift"
+                  transition={{ duration: 0.45, delay: index * 0.08 }}
+                  className="surface-card backdrop-blur-2xl"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                    <category.icon className="w-6 h-6 text-primary" />
+                  <div className="surface-icon mb-4">
+                    <category.icon className="h-6 w-6" />
                   </div>
-                  <h3 className="text-lg font-semibold mb-4 text-foreground/50">{category.title}</h3>
+                  <h3 className="mb-4 text-lg font-semibold text-foreground">{category.title}</h3>
                   <div className="flex flex-wrap gap-2">
                     {category.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-1 text-xs font-mono bg-muted/50 text-foreground/30 rounded-md"
-                      >
+                      <span key={skill} className="chip-tag">
                         {skill}
                       </span>
                     ))}
@@ -329,30 +323,29 @@ const About = () => {
           </div>
         </section>
 
-        {/* Interests Section */}
-        <section className="py-16 bg-muted/20">
-          <div className="container mx-auto px-4">
+        <section className="section-shell section-shell-muted">
+          <div className="section-inner">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto text-center"
+              className="mx-auto max-w-2xl text-center"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-8">
-                <span className="text-foreground/70">Beyond </span><span className="text-gradient">Code</span>
+              <h2 className="mb-8 text-3xl font-bold md:text-4xl">
+                <span className="text-foreground/75">Beyond</span> <span className="text-gradient">Code</span>
               </h2>
               <div className="flex flex-wrap justify-center gap-4">
                 {interests.map((interest, index) => (
                   <motion.div
                     key={interest.label}
-                    initial={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.92 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full glass"
+                    transition={{ duration: 0.3, delay: index * 0.08 }}
+                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/35 px-4 py-2 backdrop-blur-2xl"
                   >
-                    <interest.icon className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-foreground/50">{interest.label}</span>
+                    <interest.icon className="h-4 w-4 text-primary" />
+                    <span className="text-sm text-foreground/85">{interest.label}</span>
                   </motion.div>
                 ))}
               </div>
@@ -360,7 +353,9 @@ const About = () => {
           </div>
         </section>
       </main>
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };
