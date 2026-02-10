@@ -3,7 +3,9 @@ import { motion } from "framer-motion";
 import { Star, GitFork, ExternalLink, Github } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { languageColors } from "@/lib/languageColors";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { TransitionLink } from "@/components/TransitionLink";
+import { navigateWithTransition } from "@/lib/viewTransition";
 
 interface ProjectCardProps {
   project: {
@@ -46,7 +48,7 @@ export const ProjectCard = ({
   const handleCardKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      navigate(projectPath);
+      navigateWithTransition(navigate, projectPath);
     }
   };
 
@@ -56,7 +58,7 @@ export const ProjectCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: index * 0.08 }}
       className="surface-card group relative flex h-full cursor-pointer flex-col overflow-hidden p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
-      onClick={() => navigate(projectPath)}
+      onClick={() => navigateWithTransition(navigate, projectPath)}
       onKeyDown={handleCardKeyDown}
       role="link"
       tabIndex={0}
@@ -71,7 +73,7 @@ export const ProjectCard = ({
       )}
 
       <div className="relative aspect-[16/10] overflow-hidden border-b border-border/60">
-        <Link to={projectPath} onClick={(event) => event.stopPropagation()} className="block h-full w-full">
+        <TransitionLink to={projectPath} onClick={(event) => event.stopPropagation()} className="block h-full w-full">
           {project.thumbnail ? (
             <img
               src={project.thumbnail}
@@ -84,7 +86,7 @@ export const ProjectCard = ({
           ) : (
             <div className={`h-full w-full bg-gradient-to-br ${fallbackGradient}`} />
           )}
-        </Link>
+        </TransitionLink>
 
         <div className="absolute inset-0 bg-gradient-to-t from-background/92 via-background/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
@@ -120,11 +122,11 @@ export const ProjectCard = ({
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <Link to={projectPath} onClick={(event) => event.stopPropagation()} className="inline-block">
+        <TransitionLink to={projectPath} onClick={(event) => event.stopPropagation()} className="inline-block">
           <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
             {project.title}
           </h3>
-        </Link>
+        </TransitionLink>
 
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
           {project.description}

@@ -2,7 +2,7 @@ import { Code, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedWaves from "@/components/AnimatedWaves";
 import HeroPortrait from "@/components/HeroPortrait";
-import { Link } from "react-router-dom";
+import { TransitionLink } from "@/components/TransitionLink";
 
 export const HeroSection = () => {
   return (
@@ -54,10 +54,10 @@ export const HeroSection = () => {
                   size="lg"
                   className="h-11 w-full min-w-0 bg-primary px-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:px-5 sm:text-base"
                 >
-                  <Link to="/projects" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
+                  <TransitionLink to="/projects" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap">
                     <Code className="h-4 w-4 sm:h-5 sm:w-5" />
                     <span>View Projects</span>
-                  </Link>
+                  </TransitionLink>
                 </Button>
 
                 <Button
@@ -66,10 +66,10 @@ export const HeroSection = () => {
                   variant="outline"
                   className="h-11 w-full min-w-0 border-primary/40 bg-transparent px-3 text-sm font-semibold text-primary transition-all duration-300 hover:scale-[1.02] hover:bg-primary/10 hover:text-primary sm:px-5 sm:text-base"
                 >
-                  <Link to="/about" className="inline-flex items-center justify-center gap-2 whitespace-nowrap">
+                  <TransitionLink to="/about" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap">
                     <span>About Me</span>
                     <ChevronDown className="h-4 w-4" />
-                  </Link>
+                  </TransitionLink>
                 </Button>
               </div>
             </div>

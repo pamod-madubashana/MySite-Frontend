@@ -40,9 +40,14 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     target: 'es2018',
-    sourcemap: true,
+    sourcemap: false,
+    minify: 'esbuild',
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash][extname]',
         manualChunks: {
           vendor: ['react', 'react-dom'],
           ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],

@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
 import { Github, Linkedin, Send, Mail, Heart } from "lucide-react";
 import { useSettings } from "@/contexts/SettingsContext";
+import { TransitionLink } from "@/components/TransitionLink";
 
 
 
@@ -53,11 +53,11 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">
-            <Link to="/" className="inline-block">
+            <TransitionLink to="/" className="inline-flex min-h-11 items-center">
               <span className="text-2xl font-bold text-foreground/70">
                 P A M O D
               </span>
-            </Link>
+            </TransitionLink>
             <p className="text-sm text-muted-foreground max-w-xs">
               Building the future, one line of code at a time. Full-stack developer passionate about creating beautiful digital experiences.
             </p>
@@ -68,15 +68,15 @@ export const Footer = () => {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Quick Links
             </h4>
-            <nav className="flex flex-col gap-2">
+            <nav className="flex flex-col gap-2" aria-label="Footer links">
               {footerLinks.map((link) => (
-                <Link
+                <TransitionLink
                   key={link.path}
                   to={link.path}
-                  className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+                  className="inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors duration-200 hover:text-primary"
                 >
                   {link.name}
-                </Link>
+                </TransitionLink>
               ))}
             </nav>
           </div>
@@ -93,7 +93,7 @@ export const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all duration-200"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg bg-muted/50 text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary"
                   aria-label={social.label}
                 >
                   <social.icon className="w-5 h-5" />
@@ -112,18 +112,18 @@ export const Footer = () => {
             © {copyrightYears} Pamod Madubashana. All rights reserved.
           </p>
           <div className="flex gap-4">
-            <Link
+            <TransitionLink
               to="/privacy"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
             >
               Privacy Policy
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               to="/terms"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex min-h-11 items-center text-base text-muted-foreground transition-colors hover:text-foreground"
             >
               Terms of Service
-            </Link>
+            </TransitionLink>
           </div>
         </div>
       </div>

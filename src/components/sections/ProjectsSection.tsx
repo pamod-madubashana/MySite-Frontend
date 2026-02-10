@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Code, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { projectApi } from "@/api/projectApi";
 import { ProjectCard } from "@/components/ui/ProjectCard";
+import { TransitionLink } from "@/components/TransitionLink";
 
 interface Project {
   _id: string;
@@ -143,7 +143,7 @@ export const ProjectsSection = () => {
               className="mt-14 text-center"
             >
               <Button asChild variant="outline" size="lg" className="brand-outline-btn group px-8 font-semibold">
-                <Link to="/projects">
+                <TransitionLink to="/projects" className="inline-flex min-h-11 items-center">
                   <Code className="mr-2 h-5 w-5" />
                   View All Projects
                   <motion.span
@@ -153,7 +153,7 @@ export const ProjectsSection = () => {
                   >
                     {"->"}
                   </motion.span>
-                </Link>
+                </TransitionLink>
               </Button>
             </motion.div>
           </>

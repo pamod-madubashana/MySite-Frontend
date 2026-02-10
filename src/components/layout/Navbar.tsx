@@ -1,11 +1,13 @@
-import { CSSProperties, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Github, Linkedin, Send, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
+import { TransitionLink } from "@/components/TransitionLink";
+import { navigateWithTransition } from "@/lib/viewTransition";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -36,7 +38,10 @@ export const Navbar = () => {
     y: "50vh",
   });
   const location = useLocation();
+  const navigate = useNavigate();
   const { settings } = useSettings();
+  const mobileMenuRef = useRef<HTMLUListElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   const getContactDialogOrigin = (element: HTMLElement | null): ContactDialogOrigin => {
     if (!element) {
@@ -104,6 +109,49 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
 
+  useEffect(() => {
+    if (!isOpen || !mobileMenuRef.current) {
+      return;
+    }
+
+    const focusableSelectors =
+      'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    const focusableNodes = Array.from(mobileMenuRef.current.querySelectorAll<HTMLElement>(focusableSelectors));
+    const firstNode = focusableNodes[0];
+    const lastNode = focusableNodes[focusableNodes.length - 1];
+
+    firstNode?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsOpen(false);
+        menuButtonRef.current?.focus();
+        return;
+      }
+
+      if (event.key !== "Tab" || focusableNodes.length === 0) {
+        return;
+      }
+
+      if (event.shiftKey && document.activeElement === firstNode) {
+        event.preventDefault();
+        lastNode?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastNode) {
+        event.preventDefault();
+        firstNode?.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  const handleNavigate = (path: string) => {
+    navigateWithTransition(navigate, path);
+    setIsOpen(false);
+  };
+
   return (
     <motion.nav
       initial={false}
@@ -126,25 +174,25 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 navbar-container transform3d">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="relative group">
+          <TransitionLink to="/" className="relative group min-h-11 inline-flex items-center">
             <span className="text-xl md:text-2xl font-bold text-foreground/70">
               P A M O D
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
-          </Link>
+          </TransitionLink>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <ul className="hidden md:flex items-center gap-1" aria-label="Primary navigation">
             {navLinks.map((link) => (
-              <motion.div
+              <motion.li
                 key={link.path}
-                className="relative"
+                className="relative list-none"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link
+                <TransitionLink
                   to={link.path}
-                  className={`block px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                  className={`block min-h-11 px-4 py-2 text-base font-medium transition-colors duration-200 ${
                     location.pathname === link.path
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -158,10 +206,10 @@ export const Navbar = () => {
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
                     />
                   )}
-                </Link>
-              </motion.div>
+                </TransitionLink>
+              </motion.li>
             ))}
-          </div>
+          </ul>
 
           {/* Social Links & CTA */}
           <div className="hidden md:flex items-center gap-4">
@@ -172,7 +220,7 @@ export const Navbar = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-200 hover:text-primary"
                   aria-label={social.label}
                 >
                   <social.icon className="w-4 h-4" />
@@ -183,7 +231,7 @@ export const Navbar = () => {
               <Button
                 variant="default"
                 size="sm"
-                className="neon-glow"
+                className="neon-glow min-h-11"
                 onClick={(event) => openContactModal(getContactDialogOrigin(event.currentTarget))}
               >
                 Contact
@@ -193,9 +241,12 @@ export const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
+            ref={menuButtonRef}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-foreground"
+            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-foreground"
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
+            aria-controls="mobile-menu"
           >
             {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -220,44 +271,48 @@ export const Navbar = () => {
             }}
           >
             <div className="container mx-auto px-4 py-4">
-              <div className="flex flex-col gap-2">
+              <ul
+                id="mobile-menu"
+                ref={mobileMenuRef}
+                role="menu"
+                aria-label="Mobile navigation"
+                className="flex flex-col gap-2"
+              >
                 {navLinks.map((link) => (
-                  <motion.div
+                  <motion.li
                     key={link.path}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full"
+                    className="w-full list-none"
                   >
-                    <Link
-                      to={link.path}
-                      onClick={() => {
-                        // Close menu with slight delay for better UX
-                        setTimeout(() => setIsOpen(false), 150);
-                      }}
-                      className={`block w-full px-4 py-3 rounded-lg font-medium transition-colors duration-200 ${
+                    <button
+                      type="button"
+                      onClick={() => handleNavigate(link.path)}
+                      className={`block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-colors duration-200 ${
                         location.pathname === link.path
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       }`}
+                      role="menuitem"
                     >
                     {link.name}
-                  </Link>
-                </motion.div>
+                  </button>
+                </motion.li>
               ))}
+              </ul>
               {settings?.siteSections.showContact !== false && (
                 <Button
                   variant="default"
-                  className="mt-4 neon-glow w-full"
+                  className="mt-4 neon-glow min-h-11 w-full"
                   onClick={(event) => {
                     const origin = getContactDialogOrigin(event.currentTarget);
-                    setTimeout(() => setIsOpen(false), 150);
-                    setTimeout(() => openContactModal(origin), 180);
+                    setIsOpen(false);
+                    setTimeout(() => openContactModal(origin), 100);
                   }}
                 >
                   Contact
                 </Button>
               )}
-            </div>
             </div>
           </motion.div>
         )}
