@@ -8,6 +8,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import ProtectedRoute from "./components/RouteProtector";
 import ScrollToTop from "./components/ScrollToTop";
+import DynamicPageBackground from "./components/DynamicPageBackground";
 import Index from "./pages/Index";
 
 const About = lazy(() => import("./pages/About"));
@@ -31,10 +32,13 @@ const MessagesManager = lazy(() => import("./pages/Admin/MessagesManager"));
 const queryClient = new QueryClient();
 
 const RouteFallback = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
-    <div className="text-center">
-      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
-      <p className="mt-3 text-sm text-muted-foreground">Loading page...</p>
+  <div className="relative min-h-screen bg-background">
+    <DynamicPageBackground />
+    <div className="relative z-10 flex min-h-screen items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mx-auto"></div>
+        <p className="mt-3 text-sm text-muted-foreground">Loading page...</p>
+      </div>
     </div>
   </div>
 );

@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import PageSeo from '@/components/seo/PageSeo';
+import DynamicPageBackground from '@/components/DynamicPageBackground';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -37,76 +38,79 @@ const Login = () => {
         path="/login"
         noIndex
       />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-        <Card className="w-full max-w-md glass border border-primary/30">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-          <CardDescription>
-            Enter your credentials to access your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="transition-opacity duration-200"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="transition-opacity duration-200"
-                />
-              </div>
-              {error && (
-                <div className="transition-all duration-300 ease-in-out">
-                  <p className="text-red-500 text-sm animate-in slide-in-from-top-2 fade-in">{error}</p>
+      <div className="relative min-h-screen bg-background">
+        <DynamicPageBackground />
+        <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+          <Card className="w-full max-w-md glass border border-primary/30">
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+              <CardDescription>
+                Enter your credentials to access your account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      className="transition-opacity duration-200"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      className="transition-opacity duration-200"
+                    />
+                  </div>
+                  {error && (
+                    <div className="transition-all duration-300 ease-in-out">
+                      <p className="text-red-500 text-sm animate-in slide-in-from-top-2 fade-in">{error}</p>
+                    </div>
+                  )}
+                  <Button
+                    type="submit"
+                    className="w-full neon-glow transition-all duration-300"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Signing in...
+                      </>
+                    ) : (
+                      'Sign In'
+                    )}
+                  </Button>
                 </div>
-              )}
-              <Button 
-                type="submit" 
-                className="w-full neon-glow transition-all duration-300"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link to="/register" className="underline underline-offset-4 hover:text-primary">
-              Sign up
-            </Link>
-          </p>
-          <Link to="/" className="text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary">
-            Return to Home
-          </Link>
-        </CardFooter>
-        </Card>
+              </form>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+              <p className="text-center text-sm text-muted-foreground">
+                Don't have an account?{' '}
+                <Link to="/register" className="underline underline-offset-4 hover:text-primary">
+                  Sign up
+                </Link>
+              </p>
+              <Link to="/" className="text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary">
+                Return to Home
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </>
   );

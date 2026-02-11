@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import PageSeo from '@/components/seo/PageSeo';
+import DynamicPageBackground from '@/components/DynamicPageBackground';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -31,68 +32,71 @@ const Register = () => {
         path="/register"
         noIndex
       />
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
-        <Card className="w-full max-w-md glass border border-primary/30">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
-          <CardDescription>
-            Enter your information to create an account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="johndoe"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" className="w-full neon-glow">
-                Sign Up
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-4">
-          <p className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link to="/login" className="underline underline-offset-4 hover:text-primary">
-              Sign in
-            </Link>
-          </p>
-          <Link to="/" className="text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary">
-            Return to Home
-          </Link>
-        </CardFooter>
-        </Card>
+      <div className="relative min-h-screen bg-background">
+        <DynamicPageBackground />
+        <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+          <Card className="w-full max-w-md glass border border-primary/30">
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
+              <CardDescription>
+                Enter your information to create an account
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="johndoe"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="name@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
+                  <Button type="submit" className="w-full neon-glow">
+                    Sign Up
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account?{' '}
+                <Link to="/login" className="underline underline-offset-4 hover:text-primary">
+                  Sign in
+                </Link>
+              </p>
+              <Link to="/" className="text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-primary">
+                Return to Home
+              </Link>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
     </>
   );
