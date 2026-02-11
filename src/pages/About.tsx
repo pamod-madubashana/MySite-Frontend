@@ -269,7 +269,7 @@ const About = () => {
                     >
                       <div className={`hidden md:block md:w-1/2 md:pr-12 ${isLeft ? "" : "md:invisible"}`}>
                         {isLeft && (
-                          <div className="surface-card p-5 text-right backdrop-blur-2xl md:p-6">
+                          <div className="surface-card p-5 text-right backdrop-blur-sm md:p-6">
                             <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                             <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                             <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
@@ -283,7 +283,7 @@ const About = () => {
                       </div>
 
                       <div className={`ml-20 md:ml-0 md:w-1/2 md:pl-12 ${isLeft ? "md:hidden" : ""}`}>
-                        <div className="surface-card p-5 text-left backdrop-blur-2xl md:p-6">
+                        <div className="surface-card p-5 text-left backdrop-blur-sm md:p-6">
                           <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                           <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                           <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
@@ -317,7 +317,7 @@ const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: index * 0.08 }}
-                  className="surface-card backdrop-blur-2xl"
+                  className="surface-card backdrop-blur-sm"
                 >
                   <div className="surface-icon mb-4">
                     <category.icon className="h-6 w-6" />
@@ -355,7 +355,7 @@ const About = () => {
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.3, delay: index * 0.08 }}
-                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/35 px-4 py-2 backdrop-blur-2xl"
+                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/35 px-4 py-2 backdrop-blur-sm"
                   >
                     <interest.icon className="h-4 w-4 text-primary" />
                     <span className="text-sm text-foreground/85">{interest.label}</span>

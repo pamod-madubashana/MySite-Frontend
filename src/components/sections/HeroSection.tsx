@@ -31,7 +31,7 @@ export const HeroSection = () => {
 
           {/* Text content */}
           <div className="order-1 w-full max-w-xl text-center md:order-2 md:w-[46%] md:text-left">
-            <div className="rounded-2xl border border-border/50 bg-card/35 p-5 backdrop-blur-md sm:p-6 md:border-border/40 md:bg-card/20 md:p-7">
+            <div className="rounded-2xl border border-border/50 bg-card/35 p-5 backdrop-blur-sm sm:p-6 md:border-border/40 md:bg-card/20 md:p-7">
               <h1 className="text-4xl font-bold leading-tight tracking-tight [text-wrap:balance] sm:text-[2.65rem] md:text-5xl lg:text-6xl">
                 <span className="text-foreground">Hi, I&apos;m </span>
                 <span className="block bg-gradient-to-r from-primary via-teal-accent to-secondary bg-clip-text text-transparent sm:inline">
