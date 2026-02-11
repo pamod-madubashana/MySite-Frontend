@@ -182,7 +182,7 @@ export const AboutSection = () => {
                     <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{tech.level}%</span>
                   </div>
 
-                  <div className="h-2.5 overflow-hidden rounded-full bg-muted/70">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-muted/20">
                     <motion.div
                       initial={{ width: 0 }}
                       whileInView={{ width: `${tech.level}%` }}
