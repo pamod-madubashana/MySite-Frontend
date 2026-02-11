@@ -18,19 +18,9 @@ import {
   Cpu
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { API_BASE_URL } from '@/lib/apiConfig';
+import { techSkillsApi, TechSkill } from '@/api/techSkillsApi';
 import { reorderItemsForInsertion, reorderItemsForUpdate, reorderItemsForDeletion, reorderAllItemsContiguously } from '@/lib/orderUtils';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-
-interface TechSkill {
-  _id: string;
-  name: string;
-  level: number; // 0-100 percentage
-  category?: string; // Not used but kept for compatibility
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const TechSkillsManager = () => {
   const { token } = useAuth();
@@ -52,27 +42,25 @@ const TechSkillsManager = () => {
     type: ''
   });
 
+  const loadTechSkills = async (forceRefresh = false) => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await techSkillsApi.getAllTechSkills(token, forceRefresh);
+      setTechSkills(data);
+    } catch (error) {
+      console.error('Error fetching tech skills:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Fetch tech skills
   useEffect(() => {
-    const fetchTechSkills = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/tech-skills`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setTechSkills(data);
-        }
-      } catch (error) {
-        console.error('Error fetching tech skills:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTechSkills();
+    loadTechSkills();
   }, [token]);
 
   // Filter tech skills based on search term
@@ -90,73 +78,49 @@ const TechSkillsManager = () => {
   }, [searchTerm, techSkills]);
 
   const handleCreateSkill = async () => {
+    if (!token) return;
+
     try {
       // Reorder items for insertion
       await reorderItemsForInsertion(techSkills, newSkill.order, '/tech-skills', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-skills`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(newSkill)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-skills`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechSkills(refreshedData);
-        setNewSkill({
-          name: '',
-          level: 50,
-          order: 0
-        });
-        setIsDialogOpen(false);
-      }
+      await techSkillsApi.createTechSkill(token, newSkill);
+      await loadTechSkills(true);
+
+      setNewSkill({
+        name: '',
+        level: 50,
+        order: 0
+      });
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('Error creating tech skill:', error);
     }
   };
 
   const handleUpdateSkill = async () => {
-    if (!editingSkill) return;
+    if (!editingSkill || !token) return;
 
     try {
       // Reorder items for update
       await reorderItemsForUpdate(techSkills, editingSkill._id, editingSkill.order, '/tech-skills', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-skills/${editingSkill._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(editingSkill)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-skills`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechSkills(refreshedData);
-        setEditingSkill(null);
-      }
+      await techSkillsApi.updateTechSkill(token, editingSkill._id, {
+        name: editingSkill.name,
+        level: editingSkill.level,
+        order: editingSkill.order,
+        category: editingSkill.category,
+      });
+      await loadTechSkills(true);
+      setEditingSkill(null);
     } catch (error) {
       console.error('Error updating tech skill:', error);
     }
   };
 
   const handleDeleteSkill = async (id: string) => {
+    if (!token) return;
+
     try {
       // Find the deleted item to get its order
       const deletedSkill = techSkills.find(skill => skill._id === id);
@@ -164,24 +128,9 @@ const TechSkillsManager = () => {
       
       // Reorder items for deletion
       await reorderItemsForDeletion(techSkills, deletedSkill.order, '/tech-skills', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-skills/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-skills`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechSkills(refreshedData);
-      }
+      await techSkillsApi.deleteTechSkill(token, id);
+      await loadTechSkills(true);
     } catch (error) {
       console.error('Error deleting tech skill:', error);
     }

@@ -114,12 +114,21 @@ export const cacheKeys = {
     bySlug: (slug: string) => `project:slug:${slug}`,
   },
   settings: () => 'settings:current',
+  about: () => 'about:all-data',
   timeline: () => 'timeline:all',
   techSkills: () => 'techskills:all',
   interests: () => 'interests:all',
+  techStack: {
+    all: () => 'techstack:all',
+    public: () => 'techstack:public',
+  },
   dashboard: {
     stats: (token: string) => `dashboard:stats:${token.substring(0, 8)}...`,
     analytics: (token: string) => `dashboard:analytics:${token.substring(0, 8)}...`,
+    enhanced: (token: string) => `dashboard:enhanced:${token.substring(0, 8)}...`,
+  },
+  contact: {
+    messages: (token: string) => `contact:messages:${token.substring(0, 8)}...`,
   },
   github: {
     repos: (username: string) => `github:repos:${username}`,

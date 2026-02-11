@@ -17,12 +17,13 @@ export interface TechSkillsResponse {
 }
 
 export const techSkillsApi = {
-  getTechSkills: async (): Promise<TechSkill[]> => {
+  getTechSkills: async (forceRefresh = false): Promise<TechSkill[]> => {
     const cacheKey = cacheKeys.techSkills();
-    const cachedData = apiCache.get<TechSkill[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<TechSkill[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/enhanced-dashboard/tech-skills`);
@@ -38,12 +39,13 @@ export const techSkillsApi = {
     return data;
   },
 
-  getAllTechSkills: async (token: string): Promise<TechSkill[]> => {
+  getAllTechSkills: async (token: string, forceRefresh = false): Promise<TechSkill[]> => {
     const cacheKey = cacheKeys.techSkills();
-    const cachedData = apiCache.get<TechSkill[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<TechSkill[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/tech-skills`, {
@@ -82,6 +84,7 @@ export const techSkillsApi = {
     
     // Invalidate cache after creating a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -105,6 +108,7 @@ export const techSkillsApi = {
     
     // Invalidate cache after updating a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -124,5 +128,6 @@ export const techSkillsApi = {
     
     // Invalidate cache after deleting a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('dashboard:*');
   }
 };

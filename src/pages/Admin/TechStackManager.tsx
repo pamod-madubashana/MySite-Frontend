@@ -17,19 +17,9 @@ import {
   Cpu
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { API_BASE_URL } from '@/lib/apiConfig';
+import { techStackCategoryApi, TechStackCategory } from '@/api/techStackCategoryApi';
 import { reorderItemsForInsertion, reorderItemsForUpdate, reorderItemsForDeletion, reorderAllItemsContiguously } from '@/lib/orderUtils';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-
-interface TechStackCategory {
-  _id: string;
-  title: string;
-  icon: string; // e.g., 'frontend', 'backend', 'database', 'devops', 'general'
-  skills: string[];
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const TechStackManager = () => {
   const { token } = useAuth();
@@ -52,27 +42,25 @@ const TechStackManager = () => {
     type: ''
   });
 
+  const loadTechStackCategories = async (forceRefresh = false) => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await techStackCategoryApi.getAllCategories(token, forceRefresh);
+      setTechStackCategories(data);
+    } catch (error) {
+      console.error('Error fetching tech stack categories:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Fetch tech stack categories
   useEffect(() => {
-    const fetchTechStackCategories = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/tech-stack-categories`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setTechStackCategories(data);
-        }
-      } catch (error) {
-        console.error('Error fetching tech stack categories:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTechStackCategories();
+    loadTechStackCategories();
   }, [token]);
 
   // Filter tech stack categories based on search term
@@ -91,80 +79,53 @@ const TechStackManager = () => {
   }, [searchTerm, techStackCategories]);
 
   const handleCreateCategory = async () => {
+    if (!token) return;
+
     try {
       // Reorder items for insertion
       await reorderItemsForInsertion(techStackCategories, newCategory.order, '/tech-stack-categories', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-stack-categories`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...newCategory,
-          skills: newCategory.skills.filter(skill => skill.trim() !== '') // Remove empty skills
-        })
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-stack-categories`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechStackCategories(refreshedData);
-        setNewCategory({
-          title: '',
-          icon: 'Cpu',
-          skills: [''],
-          order: 0
-        });
-        setIsDialogOpen(false);
-      }
+      await techStackCategoryApi.createCategory(token, {
+        ...newCategory,
+        skills: newCategory.skills.filter(skill => skill.trim() !== ''),
+      });
+      await loadTechStackCategories(true);
+
+      setNewCategory({
+        title: '',
+        icon: 'Cpu',
+        skills: [''],
+        order: 0
+      });
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('Error creating tech stack category:', error);
     }
   };
 
   const handleUpdateCategory = async () => {
-    if (!editingCategory) return;
+    if (!editingCategory || !token) return;
 
     try {
       // Reorder items for update
       await reorderItemsForUpdate(techStackCategories, editingCategory._id, editingCategory.order, '/tech-stack-categories', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-stack-categories/${editingCategory._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...editingCategory,
-          skills: editingCategory.skills.filter(skill => skill.trim() !== '') // Remove empty skills
-        })
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-stack-categories`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechStackCategories(refreshedData);
-        setEditingCategory(null);
-      }
+      await techStackCategoryApi.updateCategory(token, editingCategory._id, {
+        title: editingCategory.title,
+        icon: editingCategory.icon,
+        skills: editingCategory.skills.filter(skill => skill.trim() !== ''),
+        order: editingCategory.order,
+      });
+      await loadTechStackCategories(true);
+      setEditingCategory(null);
     } catch (error) {
       console.error('Error updating tech stack category:', error);
     }
   };
 
   const handleDeleteCategory = async (id: string) => {
+    if (!token) return;
+
     try {
       // Find the deleted item to get its order
       const deletedCategory = techStackCategories.find(cat => cat._id === id);
@@ -172,24 +133,9 @@ const TechStackManager = () => {
       
       // Reorder items for deletion
       await reorderItemsForDeletion(techStackCategories, deletedCategory.order, '/tech-stack-categories', token);
-      
-      const response = await fetch(`${API_BASE_URL}/tech-stack-categories/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/tech-stack-categories`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTechStackCategories(refreshedData);
-      }
+      await techStackCategoryApi.deleteCategory(token, id);
+      await loadTechStackCategories(true);
     } catch (error) {
       console.error('Error deleting tech stack category:', error);
     }

@@ -145,6 +145,7 @@ export const projectApi = {
     // Invalidate cache after creating a project
     apiCache.invalidate('projects:*');
     apiCache.invalidate('project:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -171,6 +172,7 @@ export const projectApi = {
     // Invalidate cache after creating a project
     apiCache.invalidate('projects:*');
     apiCache.invalidate('project:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -196,6 +198,7 @@ export const projectApi = {
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
     apiCache.invalidate('project:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -224,6 +227,7 @@ export const projectApi = {
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
     apiCache.invalidate('project:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -247,6 +251,7 @@ export const projectApi = {
     apiCache.delete(cacheKeys.projects.byId(id));
     apiCache.invalidate('projects:*');
     apiCache.invalidate('project:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },

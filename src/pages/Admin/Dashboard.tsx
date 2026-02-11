@@ -22,7 +22,6 @@ import {
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { dashboardApi } from '@/api/dashboardApi';
-import { API_BASE_URL } from '@/lib/apiConfig';
 
 interface StatCard {
   title: string;
@@ -88,17 +87,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/dashboard/enhanced/dashboard`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch dashboard data: ${response.status}`);
-        }
-        
-        const data = await response.json();
+        const data = await dashboardApi.getEnhancedDashboard(token);
         setDashboardData(data);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -110,6 +99,8 @@ const Dashboard = () => {
     
     if (token) {
       fetchDashboardData();
+    } else {
+      setLoading(false);
     }
   }, [token]);
   

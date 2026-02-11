@@ -1,9 +1,38 @@
 import { API_BASE_URL } from './apiConfig';
+import { apiCache } from './cache';
 
 interface OrderableItem {
   _id: string;
   order: number;
 }
+
+const invalidateCacheForEndpoint = (endpoint: string) => {
+  if (endpoint === '/timeline') {
+    apiCache.invalidate('timeline:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
+    return;
+  }
+
+  if (endpoint === '/interests') {
+    apiCache.invalidate('interests:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
+    return;
+  }
+
+  if (endpoint === '/tech-skills') {
+    apiCache.invalidate('techskills:*');
+    apiCache.invalidate('dashboard:*');
+    return;
+  }
+
+  if (endpoint === '/tech-stack-categories') {
+    apiCache.invalidate('techstack:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
+  }
+};
 
 /**
  * Reorders items when inserting a new item at a specific order position.
@@ -43,6 +72,8 @@ export const reorderItemsForInsertion = async (
       console.error(`Failed to update order for item ${item._id}:`, await response.text());
     }
   }
+
+  invalidateCacheForEndpoint(endpoint);
 };
 
 /**
@@ -85,6 +116,8 @@ export const reorderItemsForDeletion = async (
       }
     }
   }
+
+  invalidateCacheForEndpoint(endpoint);
 };
 
 /**
@@ -123,6 +156,8 @@ export const reorderAllItemsContiguously = async (
       }
     }
   }
+
+  invalidateCacheForEndpoint(endpoint);
 };
 
 /**
@@ -197,4 +232,6 @@ export const reorderItemsForUpdate = async (
       }
     }
   }
+
+  invalidateCacheForEndpoint(endpoint);
 };

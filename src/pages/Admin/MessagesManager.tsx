@@ -89,7 +89,7 @@ const MessagesManager = () => {
     [messages],
   );
 
-  const loadMessages = async () => {
+  const loadMessages = async (forceRefresh = false) => {
     if (!token) {
       setLoading(false);
       setError("Authentication is required to view contact messages.");
@@ -99,7 +99,7 @@ const MessagesManager = () => {
     try {
       setLoading(true);
       setError(null);
-      const fetched = await contactApi.getMessages(token);
+      const fetched = await contactApi.getMessages(token, forceRefresh);
       setMessages(fetched);
     } catch (fetchError) {
       setError(fetchError instanceof Error ? fetchError.message : "Failed to load messages.");
@@ -216,7 +216,7 @@ const MessagesManager = () => {
               {newMessageCount} new {newMessageCount === 1 ? "message" : "messages"}
             </p>
           </div>
-          <Button variant="outline" onClick={loadMessages} disabled={loading}>
+          <Button variant="outline" onClick={() => loadMessages(true)} disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>

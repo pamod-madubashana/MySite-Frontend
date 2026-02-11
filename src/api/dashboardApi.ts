@@ -49,6 +49,12 @@ export interface DashboardData {
   success: boolean;
 }
 
+export interface EnhancedDashboardData {
+  stats: DashboardStats;
+  recentActivity: RecentActivity[];
+  success?: boolean;
+}
+
 export interface AnalyticsData {
   monthlyData: {
     month: string;
@@ -110,5 +116,36 @@ export const dashboardApi = {
     apiCache.set(cacheKey, data, 300000); // 5 minute TTL for dashboard analytics
     
     return data;
-  }
+  },
+
+  getEnhancedDashboard: async (token: string, forceRefresh = false): Promise<EnhancedDashboardData> => {
+    const cacheKey = cacheKeys.dashboard.enhanced(token);
+
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<EnhancedDashboardData>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
+    }
+
+    const response = await fetch(`${API_BASE_URL}/dashboard/enhanced/dashboard`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch enhanced dashboard data: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    apiCache.set(cacheKey, data, 120000); // 2 minute TTL for enhanced dashboard
+
+    return data;
+  },
+
+  invalidateDashboardCache: () => {
+    apiCache.invalidate('dashboard:*');
+  },
 };

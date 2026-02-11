@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "@/lib/apiConfig";
+import { apiCache, cacheKeys } from "@/lib/cache";
 
 export type ContactMessageStatus = "new" | "read" | "replied";
 
@@ -73,7 +74,15 @@ export const contactApi = {
     return { ok: true };
   },
 
-  getMessages: async (token: string): Promise<ContactMessage[]> => {
+  getMessages: async (token: string, forceRefresh = false): Promise<ContactMessage[]> => {
+    const cacheKey = cacheKeys.contact.messages(token);
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<ContactMessage[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
+    }
+
     const response = await fetch(`${API_BASE_URL}/contact/messages`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -86,7 +95,10 @@ export const contactApi = {
       throw new Error(getErrorMessage("Failed to load contact messages.", data));
     }
 
-    return Array.isArray(data.messages) ? data.messages : [];
+    const messages = Array.isArray(data.messages) ? data.messages : [];
+    apiCache.set(cacheKey, messages, 2 * 60 * 1000);
+
+    return messages;
   },
 
   updateMessageStatus: async (
@@ -108,6 +120,8 @@ export const contactApi = {
     if (!response.ok || !data?.ok || !data.message) {
       throw new Error(getErrorMessage("Failed to update message status.", data));
     }
+
+    apiCache.invalidate('contact:messages:*');
 
     return data.message;
   },
@@ -131,6 +145,8 @@ export const contactApi = {
     if (!response.ok || !data?.ok || !data.message) {
       throw new Error(getErrorMessage("Failed to send reply.", data));
     }
+
+    apiCache.invalidate('contact:messages:*');
 
     return data.message;
   },

@@ -86,7 +86,9 @@ export const settingsApi = {
     const result = await response.json();
     
     // Invalidate cache after updating settings
-    apiCache.delete(cacheKeys.settings());
+    apiCache.invalidate('settings:*');
+    apiCache.invalidate('dashboard:*');
+    apiCache.set(cacheKeys.settings(), result.settings);
     
     return result;
   }

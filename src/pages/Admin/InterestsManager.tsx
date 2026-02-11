@@ -20,18 +20,9 @@ import {
   Music
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { API_BASE_URL } from '@/lib/apiConfig';
+import { interestsApi, Interest } from '@/api/interestsApi';
 import { reorderItemsForInsertion, reorderItemsForUpdate, reorderItemsForDeletion, reorderAllItemsContiguously } from '@/lib/orderUtils';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-
-interface Interest {
-  _id: string;
-  icon: string;
-  label: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const InterestsManager = () => {
   const { token } = useAuth();
@@ -53,27 +44,25 @@ const InterestsManager = () => {
     type: ''
   });
 
+  const loadInterests = async (forceRefresh = false) => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await interestsApi.getAllInterests(token, forceRefresh);
+      setInterests(data);
+    } catch (error) {
+      console.error('Error fetching interests:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Fetch interests
   useEffect(() => {
-    const fetchInterests = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/interests`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setInterests(data);
-        }
-      } catch (error) {
-        console.error('Error fetching interests:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchInterests();
+    loadInterests();
   }, [token]);
 
   // Filter interests based on search term
@@ -91,73 +80,48 @@ const InterestsManager = () => {
   }, [searchTerm, interests]);
 
   const handleCreateInterest = async () => {
+    if (!token) return;
+
     try {
       // Reorder items for insertion
       await reorderItemsForInsertion(interests, newInterest.order, '/interests', token);
-      
-      const response = await fetch(`${API_BASE_URL}/interests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(newInterest)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/interests`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setInterests(refreshedData);
-        setNewInterest({
-          icon: 'Heart',
-          label: '',
-          order: 0
-        });
-        setIsDialogOpen(false);
-      }
+      await interestsApi.createInterest(token, newInterest);
+      await loadInterests(true);
+
+      setNewInterest({
+        icon: 'Heart',
+        label: '',
+        order: 0
+      });
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('Error creating interest:', error);
     }
   };
 
   const handleUpdateInterest = async () => {
-    if (!editingInterest) return;
+    if (!editingInterest || !token) return;
 
     try {
       // Reorder items for update
       await reorderItemsForUpdate(interests, editingInterest._id, editingInterest.order, '/interests', token);
-      
-      const response = await fetch(`${API_BASE_URL}/interests/${editingInterest._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(editingInterest)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/interests`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setInterests(refreshedData);
-        setEditingInterest(null);
-      }
+      await interestsApi.updateInterest(token, editingInterest._id, {
+        icon: editingInterest.icon,
+        label: editingInterest.label,
+        order: editingInterest.order,
+      });
+      await loadInterests(true);
+      setEditingInterest(null);
     } catch (error) {
       console.error('Error updating interest:', error);
     }
   };
 
   const handleDeleteInterest = async (id: string) => {
+    if (!token) return;
+
     try {
       // Find the deleted item to get its order
       const deletedInterest = interests.find(interest => interest._id === id);
@@ -165,24 +129,9 @@ const InterestsManager = () => {
       
       // Reorder items for deletion
       await reorderItemsForDeletion(interests, deletedInterest.order, '/interests', token);
-      
-      const response = await fetch(`${API_BASE_URL}/interests/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/interests`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setInterests(refreshedData);
-      }
+      await interestsApi.deleteInterest(token, id);
+      await loadInterests(true);
     } catch (error) {
       console.error('Error deleting interest:', error);
     }

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { API_BASE_URL } from '@/lib/apiConfig';
 import { settingsApi } from '@/api/settingsApi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -105,32 +104,22 @@ const SettingsPage = () => {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!token) {
+      console.error('Authentication token is missing');
+      return;
+    }
+
     setSaving(true);
     
     try {
-      console.log('Sending settings to backend:', settings);
-      const response = await fetch(`${API_BASE_URL}/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(settings)
-      });
-      
-      const responseText = await response.text();
-      console.log('Response from backend:', response.status, responseText);
-
-      if (response.ok) {
-        setSavedSuccessfully(true);
-        // Refresh settings to apply changes immediately
-        await refreshSettings(true);
-        setTimeout(() => setSavedSuccessfully(false), 3000);
-      } else {
-        console.error('Error saving settings:', response.status, responseText);
-      }
+      await settingsApi.updateSettings(token, settings);
+      setSavedSuccessfully(true);
+      // Refresh settings to apply changes immediately
+      await refreshSettings(true);
+      setTimeout(() => setSavedSuccessfully(false), 3000);
     } catch (error) {
-      console.error('Network error saving settings:', error);
+      console.error('Error saving settings:', error);
     } finally {
       setSaving(false);
     }

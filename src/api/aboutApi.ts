@@ -12,7 +12,7 @@ export interface AboutPageData {
 export const aboutApi = {
   // Fetch all about page data in one call
   getAllAboutData: async (): Promise<AboutPageData> => {
-    const cacheKey = 'about:all-data';
+    const cacheKey = cacheKeys.about();
     const cachedData = apiCache.get<AboutPageData>(cacheKey);
     
     if (cachedData) {
@@ -74,12 +74,12 @@ export const aboutApi = {
   
   // Get cached about data (used on about page)
   getCachedAboutData: (): AboutPageData | null => {
-    const cacheKey = 'about:all-data';
+    const cacheKey = cacheKeys.about();
     return apiCache.get<AboutPageData>(cacheKey);
   },
   
   // Clear about page cache (useful when data is updated)
   clearCache: (): void => {
-    apiCache.delete('about:all-data');
+    apiCache.delete(cacheKeys.about());
   }
 };

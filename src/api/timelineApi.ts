@@ -19,12 +19,13 @@ export interface TimelineResponse {
 }
 
 export const timelineApi = {
-  getTimeline: async (): Promise<TimelineItem[]> => {
+  getTimeline: async (forceRefresh = false): Promise<TimelineItem[]> => {
     const cacheKey = cacheKeys.timeline();
-    const cachedData = apiCache.get<TimelineItem[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<TimelineItem[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/timeline/public`);
@@ -40,12 +41,13 @@ export const timelineApi = {
     return data;
   },
 
-  getAllTimeline: async (token: string): Promise<TimelineItem[]> => {
+  getAllTimeline: async (token: string, forceRefresh = false): Promise<TimelineItem[]> => {
     const cacheKey = cacheKeys.timeline();
-    const cachedData = apiCache.get<TimelineItem[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<TimelineItem[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/timeline`, {
@@ -84,6 +86,8 @@ export const timelineApi = {
     
     // Invalidate cache after creating a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -107,6 +111,8 @@ export const timelineApi = {
     
     // Invalidate cache after updating a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -126,5 +132,7 @@ export const timelineApi = {
     
     // Invalidate cache after deleting a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
   }
 };

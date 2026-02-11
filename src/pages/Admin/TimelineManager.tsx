@@ -18,21 +18,9 @@ import {
   Github
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { API_BASE_URL } from '@/lib/apiConfig';
+import { timelineApi, TimelineItem } from '@/api/timelineApi';
 import { reorderItemsForInsertion, reorderItemsForUpdate, reorderItemsForDeletion, reorderAllItemsContiguously } from '@/lib/orderUtils';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-
-interface TimelineItem {
-  _id: string;
-  year: string;
-  role: string;
-  company: string;
-  description: string;
-  icon: string;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const TimelineManager = () => {
   const { token } = useAuth();
@@ -57,27 +45,25 @@ const TimelineManager = () => {
     type: ''
   });
 
+  const loadTimelineItems = async (forceRefresh = false) => {
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const data = await timelineApi.getAllTimeline(token, forceRefresh);
+      setTimelineItems(data);
+    } catch (error) {
+      console.error('Error fetching timeline items:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Fetch timeline items
   useEffect(() => {
-    const fetchTimelineItems = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/dashboard/enhanced/timeline`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setTimelineItems(data);
-        }
-      } catch (error) {
-        console.error('Error fetching timeline items:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTimelineItems();
+    loadTimelineItems();
   }, [token]);
 
   // Filter timeline items based on search term
@@ -98,76 +84,54 @@ const TimelineManager = () => {
   }, [searchTerm, timelineItems]);
 
   const handleCreateItem = async () => {
+    if (!token) return;
+
     try {
       // Reorder items for insertion
       await reorderItemsForInsertion(timelineItems, newItem.order, '/timeline', token);
-      
-      const response = await fetch(`${API_BASE_URL}/timeline`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(newItem)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/timeline`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTimelineItems(refreshedData);
-        setNewItem({
-          year: '',
-          role: '',
-          company: '',
-          description: '',
-          icon: 'Briefcase',
-          order: 0
-        });
-        setIsDialogOpen(false);
-      }
+      await timelineApi.createTimeline(token, newItem);
+      await loadTimelineItems(true);
+
+      setNewItem({
+        year: '',
+        role: '',
+        company: '',
+        description: '',
+        icon: 'Briefcase',
+        order: 0
+      });
+      setIsDialogOpen(false);
     } catch (error) {
       console.error('Error creating timeline item:', error);
     }
   };
 
   const handleUpdateItem = async () => {
-    if (!editingItem) return;
+    if (!editingItem || !token) return;
 
     try {
       // Reorder items for update
       await reorderItemsForUpdate(timelineItems, editingItem._id, editingItem.order, '/timeline', token);
-      
-      const response = await fetch(`${API_BASE_URL}/timeline/${editingItem._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(editingItem)
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/timeline`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTimelineItems(refreshedData);
-        setEditingItem(null);
-      }
+      await timelineApi.updateTimeline(token, editingItem._id, {
+        year: editingItem.year,
+        role: editingItem.role,
+        company: editingItem.company,
+        description: editingItem.description,
+        icon: editingItem.icon,
+        order: editingItem.order,
+      });
+      await loadTimelineItems(true);
+      setEditingItem(null);
     } catch (error) {
       console.error('Error updating timeline item:', error);
     }
   };
 
   const handleDeleteItem = async (id: string) => {
+    if (!token) return;
+
     try {
       // Find the deleted item to get its order
       const deletedItem = timelineItems.find(item => item._id === id);
@@ -175,24 +139,9 @@ const TimelineManager = () => {
       
       // Reorder items for deletion
       await reorderItemsForDeletion(timelineItems, deletedItem.order, '/timeline', token);
-      
-      const response = await fetch(`${API_BASE_URL}/timeline/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
 
-      if (response.ok) {
-        // Refresh the list to get updated orders
-        const refreshResponse = await fetch(`${API_BASE_URL}/timeline`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        const refreshedData = await refreshResponse.json();
-        setTimelineItems(refreshedData);
-      }
+      await timelineApi.deleteTimeline(token, id);
+      await loadTimelineItems(true);
     } catch (error) {
       console.error('Error deleting timeline item:', error);
     }

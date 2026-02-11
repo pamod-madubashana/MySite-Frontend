@@ -16,12 +16,13 @@ export interface InterestsResponse {
 }
 
 export const interestsApi = {
-  getInterests: async (): Promise<Interest[]> => {
+  getInterests: async (forceRefresh = false): Promise<Interest[]> => {
     const cacheKey = cacheKeys.interests();
-    const cachedData = apiCache.get<Interest[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<Interest[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/enhanced-dashboard/interests`);
@@ -37,12 +38,13 @@ export const interestsApi = {
     return data;
   },
 
-  getAllInterests: async (token: string): Promise<Interest[]> => {
+  getAllInterests: async (token: string, forceRefresh = false): Promise<Interest[]> => {
     const cacheKey = cacheKeys.interests();
-    const cachedData = apiCache.get<Interest[]>(cacheKey);
-    
-    if (cachedData) {
-      return cachedData;
+    if (!forceRefresh) {
+      const cachedData = apiCache.get<Interest[]>(cacheKey);
+      if (cachedData) {
+        return cachedData;
+      }
     }
     
     const response = await fetch(`${API_BASE_URL}/interests`, {
@@ -81,6 +83,8 @@ export const interestsApi = {
     
     // Invalidate cache after creating an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -104,6 +108,8 @@ export const interestsApi = {
     
     // Invalidate cache after updating an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
     
     return result;
   },
@@ -123,5 +129,7 @@ export const interestsApi = {
     
     // Invalidate cache after deleting an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('about:*');
+    apiCache.invalidate('dashboard:*');
   }
 };
