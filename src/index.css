@@ -486,7 +486,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .glass {
-    @apply bg-transparent backdrop-blur-xl border border-border/50;
+    @apply bg-transparent backdrop-blur-sm border border-border/50;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
