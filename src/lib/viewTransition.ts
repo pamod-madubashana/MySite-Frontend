@@ -12,8 +12,10 @@ const prefersReducedMotion = () =>
 const supportsViewTransition = () =>
   typeof document !== "undefined" && typeof document.startViewTransition === "function";
 
+const ENABLE_NATIVE_VIEW_TRANSITIONS = false;
+
 export const runWithViewTransition = (update: () => void | Promise<void>) => {
-  if (!supportsViewTransition() || prefersReducedMotion()) {
+  if (!ENABLE_NATIVE_VIEW_TRANSITIONS || !supportsViewTransition() || prefersReducedMotion()) {
     return update();
   }
 

@@ -2,8 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useLocation } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Routes, Route, useLocation, useNavigationType } from "react-router-dom";
+import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import ProtectedRoute from "./components/RouteProtector";
@@ -31,6 +31,57 @@ const MessagesManager = lazy(() => import("./pages/Admin/MessagesManager"));
 
 const queryClient = new QueryClient();
 
+type RouteAxis = "horizontal" | "vertical";
+type RouteDirection = "forward" | "backward";
+
+interface RoutePattern {
+  regex: RegExp;
+  rank: number;
+}
+
+const PUBLIC_ROUTE_PATTERNS: RoutePattern[] = [
+  { regex: /^\/$/, rank: 0 },
+  { regex: /^\/about\/?$/, rank: 1 },
+  { regex: /^\/projects\/?$/, rank: 2 },
+  { regex: /^\/projects\/[^/]+\/?$/, rank: 2 },
+  { regex: /^\/articles\/?$/, rank: 3 },
+  { regex: /^\/articles\/[^/]+\/?$/, rank: 3 },
+  { regex: /^\/login\/?$/, rank: 4 },
+  { regex: /^\/register\/?$/, rank: 5 },
+];
+
+const ADMIN_ROUTE_PATTERNS: RoutePattern[] = [
+  { regex: /^\/admin\/?$/, rank: 0 },
+  { regex: /^\/admin\/articles\/?$/, rank: 1 },
+  { regex: /^\/admin\/projects\/?$/, rank: 2 },
+  { regex: /^\/admin\/timeline\/?$/, rank: 3 },
+  { regex: /^\/admin\/tech-skills\/?$/, rank: 4 },
+  { regex: /^\/admin\/tech-stack\/?$/, rank: 5 },
+  { regex: /^\/admin\/interests\/?$/, rank: 6 },
+  { regex: /^\/admin\/messages\/?$/, rank: 7 },
+  { regex: /^\/admin\/settings\/?$/, rank: 8 },
+];
+
+const getRouteRank = (pathname: string, patterns: RoutePattern[]): number | null => {
+  for (const pattern of patterns) {
+    if (pattern.regex.test(pathname)) {
+      return pattern.rank;
+    }
+  }
+
+  return null;
+};
+
+const getRouteAxis = (pathname: string): RouteAxis => {
+  return pathname.startsWith("/admin") ? "vertical" : "horizontal";
+};
+
+const getTransitionRank = (pathname: string, axis: RouteAxis): number | null => {
+  return axis === "vertical"
+    ? getRouteRank(pathname, ADMIN_ROUTE_PATTERNS)
+    : getRouteRank(pathname, PUBLIC_ROUTE_PATTERNS);
+};
+
 const RouteFallback = () => (
   <div className="relative min-h-screen bg-background">
     <DynamicPageBackground />
@@ -45,6 +96,93 @@ const RouteFallback = () => (
 
 const App = () => {
   const location = useLocation();
+  const navigationType = useNavigationType();
+  const previousPathRef = useRef(location.pathname);
+
+  const transitionMeta = useMemo(() => {
+    const currentPath = location.pathname;
+    const previousPath = previousPathRef.current;
+    const currentAxis = getRouteAxis(currentPath);
+    const previousAxis = getRouteAxis(previousPath);
+    const currentRank = getTransitionRank(currentPath, currentAxis);
+    const previousRank = getTransitionRank(previousPath, previousAxis);
+
+    let direction: RouteDirection = "forward";
+
+    if (previousPath !== currentPath && previousAxis === currentAxis) {
+      if (previousRank !== null && currentRank !== null && previousRank !== currentRank) {
+        direction = currentRank > previousRank ? "forward" : "backward";
+      } else if (navigationType === "POP") {
+        direction = "backward";
+      }
+    }
+
+    return {
+      axis: currentAxis,
+      direction,
+    };
+  }, [location.pathname, navigationType]);
+
+  useEffect(() => {
+    previousPathRef.current = location.pathname;
+  }, [location.pathname]);
+
+  useLayoutEffect(() => {
+    document.documentElement.dataset.routeAxis = transitionMeta.axis;
+    document.documentElement.dataset.routeDirection = transitionMeta.direction;
+  }, [transitionMeta.axis, transitionMeta.direction]);
+
+  useLayoutEffect(() => {
+    const contentNodes = Array.from(document.querySelectorAll<HTMLElement>(".route-transition-content"));
+    if (contentNodes.length === 0) {
+      return;
+    }
+
+    const directionOffset =
+      transitionMeta.axis === "horizontal"
+        ? transitionMeta.direction === "forward"
+          ? "translate3d(56px, 0, 0)"
+          : "translate3d(-56px, 0, 0)"
+        : transitionMeta.direction === "forward"
+          ? "translate3d(0, 42px, 0)"
+          : "translate3d(0, -42px, 0)";
+
+    contentNodes.forEach((node) => {
+      node.style.transition = "none";
+      node.style.transform = directionOffset;
+      node.style.willChange = "transform";
+    });
+
+    const frame = requestAnimationFrame(() => {
+      contentNodes.forEach((node) => {
+        node.style.transition = "transform 460ms cubic-bezier(0.16, 1, 0.3, 1)";
+        node.style.transform = "translate3d(0, 0, 0)";
+      });
+    });
+
+    const onTransitionEnd = (event: Event) => {
+      if (!(event.currentTarget instanceof HTMLElement)) {
+        return;
+      }
+
+      const node = event.currentTarget;
+      node.style.transition = "";
+      node.style.willChange = "";
+    };
+
+    contentNodes.forEach((node) => {
+      node.addEventListener("transitionend", onTransitionEnd, { once: true });
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      contentNodes.forEach((node) => {
+        node.style.transition = "";
+        node.style.willChange = "";
+        node.removeEventListener("transitionend", onTransitionEnd);
+      });
+    };
+  }, [location.pathname, transitionMeta.axis, transitionMeta.direction]);
 
   return (
   <SettingsProvider>
@@ -56,7 +194,10 @@ const App = () => {
             <Sonner />
             <ScrollToTop />
             <Suspense fallback={<RouteFallback />}>
-              <div key={location.pathname} className="route-fallback-enter">
+              <div
+                key={location.pathname}
+                className={`route-fallback-enter route-fallback-enter-${transitionMeta.axis}-${transitionMeta.direction}`}
+              >
               <Routes location={location}>
                 <Route path="/" element={<Index />} />
                 <Route path="/about" element={<About />} />

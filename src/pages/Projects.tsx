@@ -218,7 +218,7 @@ const Projects = () => {
         }}
       />
       <Navbar />
-      <main className="relative z-10 pt-24 pb-20">
+      <main className="route-transition-content relative z-10 pt-24 pb-20">
         <section className="section-shell">
           <div className="section-inner">
             <motion.div

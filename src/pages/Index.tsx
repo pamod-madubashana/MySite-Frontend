@@ -50,7 +50,7 @@ const Index = () => {
         keywords={["Pamod Madubashana", "full-stack developer", "React developer", "Node.js", "portfolio"]}
       />
       <Navbar />
-      <main className="relative z-10">
+      <main className="route-transition-content relative z-10">
         <HeroSection />
         <AboutSection />
         {settings?.siteSections.showProjects && <ProjectsSection />}

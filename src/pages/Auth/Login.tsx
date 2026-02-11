@@ -40,7 +40,7 @@ const Login = () => {
       />
       <div className="relative min-h-screen bg-background">
         <DynamicPageBackground />
-        <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+        <div className="route-transition-content relative z-10 flex min-h-screen items-center justify-center p-4">
           <Card className="w-full max-w-md glass border border-primary/30">
             <CardHeader className="space-y-1 text-center">
               <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>

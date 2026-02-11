@@ -136,7 +136,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
             width: '280px'
           }}
           transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-          className="fixed inset-y-0 left-0 z-50 bg-popover backdrop-blur-xl border-r border-border flex flex-col"
+          className="admin-sidebar fixed inset-y-0 left-0 z-50 bg-popover backdrop-blur-xl border-r border-border flex flex-col"
         >
         <div className="flex items-center justify-between p-4 border-b border-border">
           <AnimatePresence mode="wait">
@@ -272,7 +272,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0 ml-[280px]">
           {/* Top Bar */}
-          <header className="sticky top-0 z-30 bg-popover/80 backdrop-blur-xl border-b border-border px-6 py-4">
+          <header className="admin-topbar sticky top-0 z-30 bg-popover/80 backdrop-blur-xl border-b border-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -300,7 +300,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 overflow-auto">
+          <main className="route-transition-content flex-1 overflow-auto">
             <div className="p-6 pt-0 md:pt-6">
               {children}
             </div>

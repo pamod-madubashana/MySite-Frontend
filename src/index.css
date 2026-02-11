@@ -137,6 +137,20 @@
     background-image: none;
   }
 
+  html,
+  body,
+  #root {
+    overflow-x: clip;
+  }
+
+  @supports not (overflow: clip) {
+    html,
+    body,
+    #root {
+      overflow-x: hidden;
+    }
+  }
+
   body[data-scroll-locked][data-scroll-locked] {
     margin-right: 0 !important;
     padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
@@ -163,33 +177,161 @@
   animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-::view-transition-old(root) {
-  animation-name: route-exit;
-}
-
-::view-transition-new(root) {
-  animation-name: route-enter;
-}
-
 .route-fallback-enter {
-  animation: route-enter 240ms ease-out both;
+  animation: none;
+  overflow-x: clip;
 }
 
-@keyframes route-enter {
+.route-transition-content {
+  contain: paint;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.route-fallback-enter-horizontal-forward .route-transition-content {
+  animation: none !important;
+}
+
+.route-fallback-enter-horizontal-backward .route-transition-content {
+  animation: none !important;
+}
+
+.route-fallback-enter-vertical-forward .route-transition-content {
+  animation: none !important;
+}
+
+.route-fallback-enter-vertical-backward .route-transition-content {
+  animation: none !important;
+}
+
+.site-navbar {
+  view-transition-name: site-nav;
+}
+
+.admin-sidebar {
+  view-transition-name: admin-sidebar;
+}
+
+.admin-topbar {
+  view-transition-name: admin-topbar;
+}
+
+::view-transition-old(site-nav),
+::view-transition-new(site-nav),
+::view-transition-old(admin-sidebar),
+::view-transition-new(admin-sidebar),
+::view-transition-old(admin-topbar),
+::view-transition-new(admin-topbar) {
+  animation: none;
+}
+
+::view-transition-group(site-nav),
+::view-transition-group(admin-sidebar),
+::view-transition-group(admin-topbar) {
+  animation: none;
+}
+
+html[data-route-axis="horizontal"][data-route-direction="forward"]::view-transition-old(root) {
+  animation-name: route-exit-horizontal-forward;
+}
+
+html[data-route-axis="horizontal"][data-route-direction="forward"]::view-transition-new(root) {
+  animation-name: route-enter-horizontal-forward;
+}
+
+html[data-route-axis="horizontal"][data-route-direction="backward"]::view-transition-old(root) {
+  animation-name: route-exit-horizontal-backward;
+}
+
+html[data-route-axis="horizontal"][data-route-direction="backward"]::view-transition-new(root) {
+  animation-name: route-enter-horizontal-backward;
+}
+
+html[data-route-axis="vertical"][data-route-direction="forward"]::view-transition-old(root) {
+  animation-name: route-exit-vertical-forward;
+}
+
+html[data-route-axis="vertical"][data-route-direction="forward"]::view-transition-new(root) {
+  animation-name: route-enter-vertical-forward;
+}
+
+html[data-route-axis="vertical"][data-route-direction="backward"]::view-transition-old(root) {
+  animation-name: route-exit-vertical-backward;
+}
+
+html[data-route-axis="vertical"][data-route-direction="backward"]::view-transition-new(root) {
+  animation-name: route-enter-vertical-backward;
+}
+
+@keyframes route-enter-horizontal-forward {
   from {
-    opacity: 0;
+    transform: translate3d(32px, 0, 0);
   }
   to {
-    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
-@keyframes route-exit {
+@keyframes route-exit-horizontal-forward {
   from {
-    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
   to {
-    opacity: 0;
+    transform: translate3d(-32px, 0, 0);
+  }
+}
+
+@keyframes route-enter-horizontal-backward {
+  from {
+    transform: translate3d(-32px, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes route-exit-horizontal-backward {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(32px, 0, 0);
+  }
+}
+
+@keyframes route-enter-vertical-forward {
+  from {
+    transform: translate3d(0, 24px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes route-exit-vertical-forward {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -24px, 0);
+  }
+}
+
+@keyframes route-enter-vertical-backward {
+  from {
+    transform: translate3d(0, -24px, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes route-exit-vertical-backward {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 24px, 0);
   }
 }
 
@@ -687,6 +829,7 @@
     .contact-dialog-content[data-state="closed"] {
       animation-duration: 0.01ms !important;
     }
+
   }
 
   .animate-fade-up {

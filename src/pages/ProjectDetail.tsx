@@ -781,7 +781,7 @@ const ProjectDetail = () => {
         structuredData={projectStructuredData}
       />
       <Navbar />
-      <main className="relative z-10 pt-24 pb-20">
+      <main className="route-transition-content relative z-10 pt-24 pb-20">
         <h1 className="sr-only">{project?.title ? `${project.title} Project Details` : "Project Details"}</h1>
         {loading ? (
           <ProjectDetailSkeleton />
