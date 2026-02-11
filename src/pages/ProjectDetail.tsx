@@ -361,7 +361,6 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           aria-hidden
           loading="eager"
           decoding="async"
-          fetchPriority="high"
           sizes="100vw"
           className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80"
         />
@@ -382,7 +381,6 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
             alt={`${project.title} thumbnail`}
             loading="eager"
             decoding="async"
-            fetchPriority="high"
             sizes="(max-width: 768px) 100vw, 92vw"
             className="max-h-[190px] max-w-full object-contain drop-shadow-[0_16px_40px_rgba(0,0,0,0.7)] sm:max-h-[240px] md:max-h-[85%] md:max-w-[92%]"
           />

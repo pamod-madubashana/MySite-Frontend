@@ -14,7 +14,7 @@ const HeroPortrait = () => {
           width={672}
           height={672}
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           className="h-full w-full object-contain"
           style={{
