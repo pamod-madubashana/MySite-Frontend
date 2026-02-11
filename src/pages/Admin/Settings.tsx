@@ -138,7 +138,7 @@ const SettingsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+      <div className="min-h-screen flex items-center justify-center from-gray-900 to-gray-800 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">Loading settings...</p>
@@ -148,7 +148,7 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4 md:p-8">
+    <div className="min-h-screen from-gray-900 to-gray-800 p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-2">
