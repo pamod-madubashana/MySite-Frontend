@@ -139,24 +139,17 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
           className="admin-sidebar fixed inset-y-0 left-0 z-50 bg-popover backdrop-blur-xl border-r border-border flex flex-col"
         >
         <div className="flex items-center justify-between p-4 border-b border-border">
-          <AnimatePresence mode="wait">
-            {sidebarOpen && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
-                  <Shield className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-foreground/60">Admin Panel</h1>
-                  <p className="text-xs text-muted-foreground">Portfolio Manager</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {sidebarOpen && (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                <Shield className="w-6 h-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-foreground/60">Admin Panel</h1>
+                <p className="text-xs text-muted-foreground">Portfolio Manager</p>
+              </div>
+            </div>
+          )}
           
           <Button
             variant="ghost"
@@ -228,44 +221,30 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                 user?.username?.charAt(0)?.toUpperCase() || 'A'
               )}
             </div>
-            <AnimatePresence>
-              {sidebarOpen && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex-1 min-w-0"
-                >
-                  <p className="text-sm font-medium truncate text-muted-foreground">
-                    {user?.username || 'Admin'}
-                  </p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    Administrator
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {sidebarOpen && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate text-muted-foreground">
+                  {user?.username || 'Admin'}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  Administrator
+                </p>
+              </div>
+            )}
           </div>
           
-          <AnimatePresence>
-            {sidebarOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-4"
+          {sidebarOpen && (
+            <div className="mt-4">
+              <Button
+                variant="outline"
+                onClick={logout}
+                className="w-full flex items-center gap-2 border-border text-foreground/60 hover:bg-muted hover:text-foreground"
               >
-                <Button
-                  variant="outline"
-                  onClick={logout}
-                  className="w-full flex items-center gap-2 border-border text-foreground/60 hover:bg-muted hover:text-foreground"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="text-foreground/60">Logout</span>
-                </Button>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <LogOut className="w-4 h-4" />
+                <span className="text-foreground/60">Logout</span>
+              </Button>
+            </div>
+          )}
         </div>
         </motion.aside>
 
