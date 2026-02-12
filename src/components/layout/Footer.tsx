@@ -5,10 +5,10 @@ import { TransitionLink } from "@/components/TransitionLink";
 
 
 const footerLinks = [
-  { name: "Home", path: "/" },
-  { name: "About", path: "/about" },
-  { name: "Projects", path: "/projects" },
-  { name: "Articles", path: "/articles" },
+  { name: "Home", path: "/", tone: "text-primary/95 hover:text-primary" },
+  { name: "About", path: "/about", tone: "text-secondary/95 hover:text-secondary" },
+  { name: "Projects", path: "/projects", tone: "text-accent/95 hover:text-accent" },
+  { name: "Articles", path: "/articles", tone: "text-foreground/85 hover:text-foreground" },
 ];
 
 interface SocialLink {
@@ -71,15 +71,15 @@ export const Footer = () => {
           </div>
 
           <div className="space-y-2">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/90">
-              Quick Links
+            <span className="inline-flex items-center text-base font-bold uppercase tracking-[0.12em] md:text-lg">
+              <span>Quick Links</span>
             </span>
             <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Footer links">
               {footerLinks.map((link) => (
                 <TransitionLink
                   key={link.path}
                   to={link.path}
-                  className="inline-flex items-center py-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-primary"
+                  className={`inline-flex items-center py-1 text-sm font-medium transition-colors duration-200 text-secondary`}
                 >
                   {link.name}
                 </TransitionLink>
