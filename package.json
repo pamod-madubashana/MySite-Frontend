@@ -96,7 +96,6 @@
   "reactSnap": {
     "source": "dist",
     "include": [
-      "/",
       "/about",
       "/projects",
       "/articles",

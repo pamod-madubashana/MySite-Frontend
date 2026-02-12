@@ -11,9 +11,83 @@
 
     <meta name="google-site-verification" content="cssjjEKB3dmpV2_1eOEJi2fjWW3PVOOmo3Jld1UAFMo" />
 
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: hsl(218 34% 11%);
+      }
+
+      body.app-boot-loading {
+        overflow: hidden;
+      }
+
+      #app-boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at 24% 18%, hsl(190.9 100% 50% / 0.14), transparent 42%),
+          radial-gradient(circle at 80% 84%, hsl(206 56% 59% / 0.12), transparent 40%),
+          linear-gradient(160deg, hsl(218 34% 11%) 0%, hsl(218 30% 14%) 100%);
+        color: hsl(214 18% 79%);
+        font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+        transition: opacity 240ms ease, visibility 240ms ease;
+      }
+
+      #app-boot-loader.app-boot-loader-hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .app-boot-loader__spinner {
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        border: 3px solid hsl(190.9 100% 50% / 0.22);
+        border-top-color: hsl(190.9 100% 50%);
+        box-shadow: 0 0 0 1px hsl(218 20% 16% / 0.7), 0 14px 30px hsl(190.9 100% 50% / 0.22);
+        animation: app-boot-spin 900ms linear infinite;
+      }
+
+      .app-boot-loader__content {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 180px;
+      }
+
+      .app-boot-loader__label {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.25;
+      }
+
+      @keyframes app-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
   </head>
 
-  <body>
+  <body class="app-boot-loading">
+    <div id="app-boot-loader" role="status" aria-live="polite" aria-label="Loading page">
+      <div class="app-boot-loader__content">
+        <div class="app-boot-loader__spinner"></div>
+        <p class="app-boot-loader__label">Loading...</p>
+      </div>
+    </div>
     <div id="root"></div>
     <script>
       (function () {
