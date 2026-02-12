@@ -153,7 +153,7 @@
 
   body[data-scroll-locked][data-scroll-locked] {
     margin-right: 0 !important;
-    padding-right: var(--removed-body-scroll-bar-size, 0px) !important;
+    padding-right: 0 !important;
   }
 
   input,
