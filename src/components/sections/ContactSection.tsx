@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { contactApi } from "@/api/contactApi";
 
 interface ContactFormState {
@@ -30,6 +31,8 @@ const INITIAL_FORM_STATE: ContactFormState = {
 const isValidEmail = (value: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
 export const ContactSection = () => {
+  const isMobile = useIsMobile();
+  const shouldAnimate = !isMobile;
   const { toast } = useToast();
   const [formData, setFormData] = useState<ContactFormState>(INITIAL_FORM_STATE);
   const [formErrors, setFormErrors] = useState<ContactFormErrors>({});
@@ -125,10 +128,10 @@ export const ContactSection = () => {
       <div className="section-inner">
         <div className="mx-auto max-w-5xl">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
+            whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+            viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
+            transition={shouldAnimate ? { duration: 0.4 } : undefined}
             className="mb-12 text-center"
           >
             <span className="section-pill">Get in Touch</span>
@@ -141,10 +144,10 @@ export const ContactSection = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+            whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+            viewport={shouldAnimate ? { once: true, amount: 0.18, margin: "0px 0px -56px 0px" } : undefined}
+            transition={shouldAnimate ? { duration: 0.38, delay: 0.06 } : undefined}
             className="surface-card"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>

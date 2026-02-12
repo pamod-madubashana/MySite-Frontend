@@ -8,6 +8,7 @@ import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
 import { TransitionLink } from "@/components/TransitionLink";
 import { navigateWithTransition } from "@/lib/viewTransition";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navLinks = [
   { name: "Home", path: "/" },
@@ -43,6 +44,7 @@ export const Navbar = () => {
     x: "50vw",
     y: "50vh",
   });
+  const isMobile = useIsMobile();
   const location = useLocation();
   const navigate = useNavigate();
   const { settings } = useSettings();
@@ -66,10 +68,12 @@ export const Navbar = () => {
     setIsContactModalOpen(true);
   };
 
-  const contactDialogStyle = {
-    "--contact-origin-x": contactDialogOrigin.x,
-    "--contact-origin-y": contactDialogOrigin.y,
-  } as CSSProperties;
+  const contactDialogStyle = isMobile
+    ? undefined
+    : ({
+        "--contact-origin-x": contactDialogOrigin.x,
+        "--contact-origin-y": contactDialogOrigin.y,
+      } as CSSProperties);
   
   // Generate social links from settings, fallback to defaults if not loaded
   const socialLinks: SocialLink[] = settings?.socialLinks ? [
@@ -269,7 +273,7 @@ export const Navbar = () => {
             transition={{ 
               duration: 0.2
             }}
-            className="md:hidden glass-strong border-t border-border overflow-hidden"
+            className="md:hidden overflow-hidden border-t border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/98 backdrop-blur-xl"
             style={{
               maxHeight: isOpen ? "300px" : "0",
               overflow: "hidden",

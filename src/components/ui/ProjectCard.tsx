@@ -27,6 +27,7 @@ interface ProjectCardProps {
     forks: number;
   };
   showLanguages?: boolean;
+  disableEntryAnimation?: boolean;
 }
 
 const fallbackGradients = [
@@ -39,7 +40,8 @@ export const ProjectCard = ({
   project,
   index,
   githubStats,
-  showLanguages = true
+  showLanguages = true,
+  disableEntryAnimation = false
 }: ProjectCardProps) => {
   const navigate = useNavigate();
   const projectPath = `/projects/${project.slug || project._id}`;
@@ -54,9 +56,9 @@ export const ProjectCard = ({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay: index * 0.08 }}
+      initial={disableEntryAnimation ? false : { opacity: 0, y: 28 }}
+      animate={disableEntryAnimation ? undefined : { opacity: 1, y: 0 }}
+      transition={disableEntryAnimation ? undefined : { duration: 0.45, delay: index * 0.08 }}
       className="surface-card group relative flex h-full cursor-pointer flex-col overflow-hidden p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
       onClick={() => navigateWithTransition(navigate, projectPath)}
       onKeyDown={handleCardKeyDown}

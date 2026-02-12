@@ -3,6 +3,7 @@ import { Code2, Palette, Zap, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
 import { API_BASE_URL } from "@/lib/apiConfig";
 import { aboutApi } from "@/api/aboutApi";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const skills = [
   {
@@ -40,6 +41,9 @@ const skills = [
 ];
 
 export const AboutSection = () => {
+  const isMobile = useIsMobile();
+  const shouldAnimate = !isMobile;
+
   const [techStack, setTechStack] = useState([
     { name: "Python", level: 95 },
     { name: "JavaScript", level: 80 },
@@ -99,18 +103,19 @@ export const AboutSection = () => {
   }, []);
 
   const displayedTechStack = techStack.slice(0, 8);
+  const revealViewport = { once: true, amount: 0.2, margin: "0px 0px -64px 0px" };
 
   return (
     <section id="about" className="section-shell">
-      <div aria-hidden className="pointer-events-none absolute -left-24 top-20 h-56 w-56 rounded-full bg-primary/20 blur-3xl animate-orbit-soft" />
-      <div aria-hidden className="pointer-events-none absolute -right-28 bottom-10 h-64 w-64 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft" />
+      <div aria-hidden className="pointer-events-none absolute -left-24 top-20 hidden h-56 w-56 rounded-full bg-primary/20 blur-3xl animate-orbit-soft md:block" />
+      <div aria-hidden className="pointer-events-none absolute -right-28 bottom-10 hidden h-64 w-64 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft md:block" />
 
       <div className="section-inner">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          initial={shouldAnimate ? { opacity: 0, y: 26 } : false}
+          whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+          viewport={shouldAnimate ? revealViewport : undefined}
+          transition={shouldAnimate ? { duration: 0.45 } : undefined}
           className="mx-auto mb-14 max-w-3xl text-center"
         >
           <span className="section-pill">About Me</span>
@@ -126,10 +131,10 @@ export const AboutSection = () => {
           {skills.map((skill, index) => (
             <motion.div
               key={skill.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              initial={shouldAnimate ? { opacity: 0, y: 22 } : false}
+              whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+              viewport={shouldAnimate ? revealViewport : undefined}
+              transition={shouldAnimate ? { duration: 0.38, delay: index * 0.06 } : undefined}
               className="surface-card group cursor-pointer"
             >
               <div className="relative mb-5 inline-flex">
@@ -139,8 +144,8 @@ export const AboutSection = () => {
                 <motion.span
                   aria-hidden
                   className={`absolute inset-0 rounded-xl border ${skill.ringTone}`}
-                  animate={{ rotate: [0, 6, -6, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 }}
+                  animate={shouldAnimate ? { rotate: [0, 6, -6, 0] } : undefined}
+                  transition={shouldAnimate ? { duration: 4, repeat: Infinity, ease: "easeInOut", delay: index * 0.2 } : undefined}
                 />
                 <span
                   aria-hidden
@@ -155,10 +160,10 @@ export const AboutSection = () => {
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
+          whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+          viewport={shouldAnimate ? revealViewport : undefined}
+          transition={shouldAnimate ? { duration: 0.45 } : undefined}
           className="surface-card mx-auto max-w-3xl"
         >
           <h3 className="text-center text-2xl font-semibold text-foreground/90">Technical Proficiency</h3>
@@ -172,10 +177,10 @@ export const AboutSection = () => {
               displayedTechStack.map((tech, index) => (
                 <motion.div
                   key={tech.name}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  initial={shouldAnimate ? { opacity: 0, x: -20 } : false}
+                  whileInView={shouldAnimate ? { opacity: 1, x: 0 } : undefined}
+                  viewport={shouldAnimate ? revealViewport : undefined}
+                  transition={shouldAnimate ? { duration: 0.35, delay: index * 0.06 } : undefined}
                 >
                   <div className="mb-2 flex items-center justify-between gap-3">
                     <span className="font-mono text-sm text-foreground/80">{tech.name}</span>
@@ -184,10 +189,11 @@ export const AboutSection = () => {
 
                   <div className="h-2.5 overflow-hidden rounded-full bg-muted/20">
                     <motion.div
-                      initial={{ width: 0 }}
-                      whileInView={{ width: `${tech.level}%` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.3 + index * 0.1, ease: "easeOut" }}
+                      initial={shouldAnimate ? { width: 0 } : false}
+                      whileInView={shouldAnimate ? { width: `${tech.level}%` } : undefined}
+                      viewport={shouldAnimate ? revealViewport : undefined}
+                      transition={shouldAnimate ? { duration: 0.75, delay: 0.16 + index * 0.06, ease: "easeOut" } : undefined}
+                      style={!shouldAnimate ? { width: `${tech.level}%` } : undefined}
                       className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
                     />
                   </div>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { projectApi } from "@/api/projectApi";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { TransitionLink } from "@/components/TransitionLink";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Project {
   _id: string;
@@ -23,12 +24,12 @@ interface Project {
   updatedAt: string;
 }
 
-const ProjectsHeader = ({ copy }: { copy: string }) => (
+const ProjectsHeader = ({ copy, shouldAnimate }: { copy: string; shouldAnimate: boolean }) => (
   <motion.div
-    initial={{ opacity: 0, y: 28 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
+    initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
+    whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+    viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
+    transition={shouldAnimate ? { duration: 0.42 } : undefined}
     className="mx-auto mb-14 max-w-3xl text-center"
   >
     <span className="section-pill">Featured Work</span>
@@ -40,6 +41,8 @@ const ProjectsHeader = ({ copy }: { copy: string }) => (
 );
 
 export const ProjectsSection = () => {
+  const isMobile = useIsMobile();
+  const shouldAnimate = !isMobile;
   const [projects, setProjects] = useState<Project[]>([]);
   const [githubStats, setGithubStats] = useState<Record<string, { stars: number; forks: number }>>({});
   const [loading, setLoading] = useState(true);
@@ -94,13 +97,13 @@ export const ProjectsSection = () => {
 
   return (
     <section id="projects" className="section-shell section-shell-muted">
-      <div aria-hidden className="pointer-events-none absolute -right-24 top-12 h-60 w-60 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft" />
-      <div aria-hidden className="pointer-events-none absolute left-0 top-1/3 h-48 w-48 rounded-full bg-primary/16 blur-3xl animate-orbit-soft" />
+      <div aria-hidden className="pointer-events-none absolute -right-24 top-12 hidden h-60 w-60 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft md:block" />
+      <div aria-hidden className="pointer-events-none absolute left-0 top-1/3 hidden h-48 w-48 rounded-full bg-primary/16 blur-3xl animate-orbit-soft md:block" />
 
       <div className="section-inner">
         {loading ? (
           <>
-            <ProjectsHeader copy="Loading projects..." />
+            <ProjectsHeader copy="Loading projects..." shouldAnimate={shouldAnimate} />
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
               {Array.from({ length: 3 }).map((_, index) => (
                 <div key={`project-skeleton-${index}`} className="surface-card animate-pulse">
@@ -114,7 +117,7 @@ export const ProjectsSection = () => {
           </>
         ) : projects.length === 0 ? (
           <>
-            <ProjectsHeader copy="No recent projects found yet." />
+            <ProjectsHeader copy="No recent projects found yet." shouldAnimate={shouldAnimate} />
             <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-card/30 p-8 text-center backdrop-blur-xl">
               <Sparkles className="mx-auto h-8 w-8 text-primary" />
               <p className="mt-4 text-muted-foreground">New case studies are on the way. Check back soon.</p>
@@ -122,7 +125,10 @@ export const ProjectsSection = () => {
           </>
         ) : (
           <>
-            <ProjectsHeader copy="A focused selection of recent builds with polished UX, solid architecture, and measurable impact." />
+            <ProjectsHeader
+              copy="A focused selection of recent builds with polished UX, solid architecture, and measurable impact."
+              shouldAnimate={shouldAnimate}
+            />
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
               {projects.map((project, index) => (
@@ -131,15 +137,16 @@ export const ProjectsSection = () => {
                   project={project}
                   index={index}
                   githubStats={githubStats[project._id]}
+                  disableEntryAnimation={!shouldAnimate}
                 />
               ))}
             </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: 0.2 }}
+              initial={shouldAnimate ? { opacity: 0, y: 18 } : false}
+              whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
+              viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
+              transition={shouldAnimate ? { duration: 0.38, delay: 0.12 } : undefined}
               className="mt-14 text-center"
             >
               <Button asChild variant="outline" size="lg" className="brand-outline-btn group px-8 font-semibold">
@@ -148,8 +155,8 @@ export const ProjectsSection = () => {
                   View All Projects
                   <motion.span
                     className="ml-2"
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.1, repeat: Infinity }}
+                    animate={shouldAnimate ? { x: [0, 5, 0] } : undefined}
+                    transition={shouldAnimate ? { duration: 1.1, repeat: Infinity } : undefined}
                   >
                     {"->"}
                   </motion.span>

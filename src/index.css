@@ -772,18 +772,15 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   @keyframes contact-dialog-open {
     0% {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.2);
-      filter: blur(10px);
+      transform: translate(-50%, -50%) scale(0.94);
     }
     65% {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1.02);
-      filter: blur(0);
     }
     100% {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
-      filter: blur(0);
     }
   }
 
@@ -791,26 +788,24 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     0% {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
-      filter: blur(0);
     }
     100% {
       opacity: 0;
-      transform: translate(-50%, -50%) scale(0.25);
-      filter: blur(8px);
+      transform: translate(-50%, -50%) scale(0.96);
     }
   }
 
   .contact-dialog-content {
     transform-origin: calc(var(--contact-origin-x, 50vw) - 50vw + 50%) calc(var(--contact-origin-y, 50vh) - 50vh + 50%);
-    will-change: transform, opacity, filter;
+    will-change: transform, opacity;
   }
 
   .contact-dialog-content[data-state="open"] {
-    animation: contact-dialog-open 0.5s cubic-bezier(0.2, 0.85, 0.2, 1) forwards !important;
+    animation: contact-dialog-open 0.32s cubic-bezier(0.2, 0.85, 0.2, 1) forwards !important;
   }
 
   .contact-dialog-content[data-state="closed"] {
-    animation: contact-dialog-close 0.34s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+    animation: contact-dialog-close 0.2s cubic-bezier(0.4, 0, 1, 1) forwards !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
