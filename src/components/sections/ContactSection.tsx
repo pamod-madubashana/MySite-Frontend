@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { motion } from "framer-motion";
-import { Send, Mail, MapPin, Calendar, Loader2 } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,25 +28,6 @@ const INITIAL_FORM_STATE: ContactFormState = {
 };
 
 const isValidEmail = (value: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-
-const contactCards = [
-  {
-    icon: Mail,
-    title: "Email",
-    value: "contact@pamod.is-a.dev",
-    href: "mailto:contact@pamod.is-a.dev"
-  },
-  {
-    icon: MapPin,
-    title: "Location",
-    value: "Ampara, Sri Lanka"
-  },
-  {
-    icon: Calendar,
-    title: "Availability",
-    value: "Open to projects"
-  }
-];
 
 export const ContactSection = () => {
   const { toast } = useToast();
@@ -152,10 +133,10 @@ export const ContactSection = () => {
           >
             <span className="section-pill">Get in Touch</span>
             <h2 className="section-title">
-              <span className="text-foreground/75">Let&apos;s Work</span> <span className="text-gradient">Together</span>
+              <span className="text-foreground/75">Start a</span> <span className="text-gradient">Conversation</span>
             </h2>
             <p className="section-copy mx-auto mt-4 max-w-xl">
-              Have a project in mind? I&apos;d love to hear about it and plan the next release with you.
+              Share your goals, scope, and timeline. I will review your request and send a clear next-step plan.
             </p>
           </motion.div>
 
@@ -164,57 +145,6 @@ export const ContactSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-10 grid gap-6 md:grid-cols-3"
-          >
-            {contactCards.map((item, index) => {
-              const content = (
-                <>
-                  <div className="mx-auto mb-4 w-fit">
-                    <motion.div
-                      className="surface-icon"
-                      animate={{ rotate: [0, 2, -2, 0] }}
-                      transition={{ duration: 4.5, repeat: Infinity, delay: index * 0.25, ease: "easeInOut" }}
-                    >
-                      <item.icon className="h-6 w-6" />
-                    </motion.div>
-                  </div>
-                  <h3 className="mb-1 font-semibold text-foreground">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.value}</p>
-                </>
-              );
-
-              return item.href ? (
-                <motion.a
-                  key={item.title}
-                  href={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                  className="surface-card text-center"
-                >
-                  {content}
-                </motion.a>
-              ) : (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                  className="surface-card text-center"
-                >
-                  {content}
-                </motion.div>
-              );
-            })}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
             className="surface-card"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
@@ -272,13 +202,13 @@ export const ContactSection = () => {
 
               <div>
                 <label htmlFor="message" className="mb-2 block text-sm font-medium text-foreground/90">
-                  Message
+                  Project Brief
                 </label>
                 <Textarea
                   id="message"
                   name="message"
                   rows={5}
-                  placeholder="Tell me about your project..."
+                  placeholder="Tell me what you are building, timeline, and key requirements..."
                   value={formData.message}
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
@@ -304,7 +234,7 @@ export const ContactSection = () => {
                 ) : (
                   <Send className="mr-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 )}
-                {isSubmitting ? "Sending..." : "Send Message"}
+                {isSubmitting ? "Sending..." : "Send Inquiry"}
               </Button>
             </form>
           </motion.div>

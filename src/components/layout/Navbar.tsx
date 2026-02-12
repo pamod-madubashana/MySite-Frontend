@@ -1,9 +1,9 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Github, Linkedin, Send, Mail } from "lucide-react";
+import { Menu, X, Github, Linkedin, Send, Mail, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -27,6 +27,12 @@ const socialIcons = {
 interface ContactDialogOrigin {
   x: string;
   y: string;
+}
+
+interface SocialLink {
+  icon: LucideIcon;
+  href: string;
+  label: string;
 }
 
 export const Navbar = () => {
@@ -66,28 +72,28 @@ export const Navbar = () => {
   } as CSSProperties;
   
   // Generate social links from settings, fallback to defaults if not loaded
-  const socialLinks = settings?.socialLinks ? [
-    settings.socialLinks.github && { 
-      icon: socialIcons.github, 
-      href: settings.socialLinks.github, 
-      label: "GitHub" 
-    },
-    settings.socialLinks.linkedin && { 
-      icon: socialIcons.linkedin, 
-      href: settings.socialLinks.linkedin, 
-      label: "LinkedIn" 
-    },
-    settings.socialLinks.telegram && { 
-      icon: socialIcons.telegram, 
-      href: settings.socialLinks.telegram, 
-      label: "Telegram" 
-    },
-    settings.socialLinks.email && { 
-      icon: socialIcons.email, 
-      href: `mailto:${settings.socialLinks.email}`, 
-      label: "Email" 
-    }
-  ].filter(Boolean) as Array<{icon: React.FC<any>, href: string, label: string}> : [
+  const socialLinks: SocialLink[] = settings?.socialLinks ? [
+    settings.socialLinks.github ? {
+      icon: socialIcons.github,
+      href: settings.socialLinks.github,
+      label: "GitHub"
+    } : null,
+    settings.socialLinks.linkedin ? {
+      icon: socialIcons.linkedin,
+      href: settings.socialLinks.linkedin,
+      label: "LinkedIn"
+    } : null,
+    settings.socialLinks.telegram ? {
+      icon: socialIcons.telegram,
+      href: settings.socialLinks.telegram,
+      label: "Telegram"
+    } : null,
+    settings.socialLinks.email ? {
+      icon: socialIcons.email,
+      href: `mailto:${settings.socialLinks.email}`,
+      label: "Email"
+    } : null
+  ].filter((social): social is SocialLink => Boolean(social)) : [
     { icon: socialIcons.github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
     { icon: socialIcons.linkedin, href: "https://www.linkedin.com/in/pamod-madubashana-886b621a2", label: "LinkedIn" },
     { icon: socialIcons.telegram, href: "https://t.me/pamod_madubashana", label: "Telegram" },
@@ -324,10 +330,7 @@ export const Navbar = () => {
           overlayClassName="bg-transparent backdrop-blur-[2px]"
           className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-border/60 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 contact-dialog-content"
         >
-          <DialogHeader className="px-6 pt-6 pb-2 border-b border-border/60 bg-background/40">
-            <DialogTitle className="text-foreground/80">Contact Me</DialogTitle>
-          </DialogHeader>
-          <div className="h-[calc(90vh-72px)] overflow-y-auto contact-modal-scroll bg-gradient-to-b from-background/55 to-background/70">
+          <div className="h-full overflow-y-auto contact-modal-scroll bg-gradient-to-b from-background/55 to-background/70">
             <ContactSection />
           </div>
         </DialogContent>
