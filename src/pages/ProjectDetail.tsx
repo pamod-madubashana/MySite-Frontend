@@ -23,6 +23,7 @@ import { projectApi } from "@/api/projectApi";
 import { languageColors } from "@/lib/languageColors";
 import DynamicPageBackground from "@/components/DynamicPageBackground";
 import PageSeo from "@/components/seo/PageSeo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Project {
   _id: string;
@@ -263,14 +264,15 @@ interface ProjectSectionProps {
   children: ReactNode;
   index: number;
   action?: ReactNode;
+  disableAnimation?: boolean;
 }
 
-const ProjectSection = ({ title, children, index, action }: ProjectSectionProps) => (
+const ProjectSection = ({ title, children, index, action, disableAnimation = false }: ProjectSectionProps) => (
   <motion.section
-    initial={{ opacity: 0, y: 16 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.35, delay: 0.12 + index * 0.08 }}
-    className="surface-card min-w-0 p-6 backdrop-blur-2xl md:p-8"
+    initial={disableAnimation ? false : { opacity: 0, y: 16 }}
+    animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
+    transition={disableAnimation ? undefined : { duration: 0.35, delay: 0.12 + index * 0.08 }}
+    className="surface-card min-w-0 p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8"
   >
     <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-border/60 pb-4">
       <h2 className="text-lg font-semibold text-foreground/90 sm:text-xl md:text-2xl">{title}</h2>
@@ -284,9 +286,10 @@ const ProjectSection = ({ title, children, index, action }: ProjectSectionProps)
 interface ProjectGalleryProps {
   projectTitle: string;
   screenshots: string[];
+  disableAnimation?: boolean;
 }
 
-const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
+const ProjectGallery = ({ projectTitle, screenshots, disableAnimation = false }: ProjectGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const activeImage = activeIndex !== null ? screenshots[activeIndex] : null;
@@ -298,10 +301,10 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
           <motion.button
             key={`${projectTitle}-shot-${shotIndex}`}
             type="button"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.28, delay: shotIndex * 0.06 }}
-            whileHover={{ scale: 1.02 }}
+            initial={disableAnimation ? false : { opacity: 0, y: 12 }}
+            animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
+            transition={disableAnimation ? undefined : { duration: 0.28, delay: shotIndex * 0.06 }}
+            whileHover={disableAnimation ? undefined : { scale: 1.02 }}
             className="group overflow-hidden rounded-xl border border-border/60 bg-card/40 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
             onClick={() => setActiveIndex(shotIndex)}
           >
@@ -318,7 +321,7 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
       </div>
 
       <Dialog open={activeIndex !== null} onOpenChange={(isOpen) => !isOpen && setActiveIndex(null)}>
-        <DialogContent className="w-[95vw] max-w-5xl border-border/60 bg-card/90 p-3 backdrop-blur-2xl sm:p-4">
+        <DialogContent className="w-[95vw] max-w-5xl border-border/60 bg-card/90 p-3 backdrop-blur-none md:backdrop-blur-2xl sm:p-4">
           <DialogTitle className="sr-only">Expanded screenshot</DialogTitle>
           {activeImage && (
             <img
@@ -338,23 +341,24 @@ const ProjectGallery = ({ projectTitle, screenshots }: ProjectGalleryProps) => {
 
 interface ProjectHeroProps {
   project: Project;
+  disableAnimation?: boolean;
 }
 
-const ProjectHero = ({ project }: ProjectHeroProps) => {
+const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) => {
   const thumbnailSrc = project.thumbnail || "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1600&h=900&fit=crop";
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 22 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-      className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/30 backdrop-blur-2xl shadow-[0_38px_70px_-46px_hsl(var(--primary)/0.6)]"
+      initial={disableAnimation ? false : { opacity: 0, y: 22 }}
+      animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
+      transition={disableAnimation ? undefined : { duration: 0.45 }}
+      className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-none shadow-[0_30px_56px_-46px_hsl(var(--primary)/0.56)] md:bg-card/30 md:backdrop-blur-2xl md:shadow-[0_38px_70px_-46px_hsl(var(--primary)/0.6)]"
     >
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/18 via-transparent to-secondary/20" />
-      <div aria-hidden className="pointer-events-none absolute -left-20 top-0 h-52 w-52 rounded-full bg-primary/20 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -right-20 bottom-0 h-52 w-52 rounded-full bg-secondary/22 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -left-20 top-0 hidden h-52 w-52 rounded-full bg-primary/20 blur-3xl md:block" />
+      <div aria-hidden className="pointer-events-none absolute -right-20 bottom-0 hidden h-52 w-52 rounded-full bg-secondary/22 blur-3xl md:block" />
 
-      <div className="relative min-h-[360px] overflow-hidden rounded-xl border border-border/60 bg-black/10 md:h-[460px] md:min-h-0">
+      <div className="relative min-h-[360px] overflow-hidden rounded-xl border border-border/60 bg-black/20 md:h-[460px] md:min-h-0 md:bg-black/10">
         <img
           src={thumbnailSrc}
           alt=""
@@ -362,7 +366,7 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
           loading="eager"
           decoding="async"
           sizes="100vw"
-          className="absolute inset-0 block h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80"
+          className="absolute inset-0 hidden h-full w-full min-h-full min-w-full scale-[1.35] object-cover blur-[32px] opacity-80 md:block"
         />
 
         <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10 md:pt-10">
@@ -412,9 +416,10 @@ const ProjectHero = ({ project }: ProjectHeroProps) => {
 interface ProjectSidebarProps {
   project: Project;
   githubStats: RepoStats | null;
+  disableAnimation?: boolean;
 }
 
-const ProjectSidebar = ({ project, githubStats }: ProjectSidebarProps) => {
+const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: ProjectSidebarProps) => {
   const [copied, setCopied] = useState(false);
 
   const copyLink = async () => {
@@ -429,10 +434,10 @@ const ProjectSidebar = ({ project, githubStats }: ProjectSidebarProps) => {
 
   return (
     <motion.aside
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay: 0.22 }}
-      className="surface-card rounded-2xl p-6 backdrop-blur-2xl xl:sticky xl:top-28"
+      initial={disableAnimation ? false : { opacity: 0, y: 16 }}
+      animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
+      transition={disableAnimation ? undefined : { duration: 0.35, delay: 0.22 }}
+      className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl xl:sticky xl:top-28"
     >
       <div className="space-y-6">
         <div>
@@ -501,7 +506,7 @@ const ProjectDetailSkeleton = () => (
   <section className="py-8 md:py-12">
     <div className="container mx-auto px-4">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-10">
+        <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-10">
           <Skeleton className="mb-6 h-4 w-56" />
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="mt-3 h-5 w-full max-w-2xl" />
@@ -519,18 +524,18 @@ const ProjectDetailSkeleton = () => (
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
           <div className="space-y-8">
-            <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-8">
+            <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8">
               <Skeleton className="mb-5 h-7 w-40" />
               <Skeleton className="h-4 w-full" />
               <Skeleton className="mt-2 h-4 w-5/6" />
               <Skeleton className="mt-2 h-4 w-4/6" />
             </div>
-            <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl md:p-8">
+            <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8">
               <Skeleton className="mb-5 h-7 w-52" />
               <Skeleton className="h-48 w-full" />
             </div>
           </div>
-          <div className="surface-card rounded-2xl p-6 backdrop-blur-2xl">
+          <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl">
             <Skeleton className="h-6 w-32" />
             <Skeleton className="mt-3 h-10 w-full" />
             <Skeleton className="mt-2 h-10 w-full" />
@@ -543,6 +548,7 @@ const ProjectDetailSkeleton = () => (
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
+  const isMobile = useIsMobile();
   const [project, setProject] = useState<Project | null>(null);
   const [githubStats, setGithubStats] = useState<RepoStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -787,8 +793,8 @@ const ProjectDetail = () => {
           <section className="py-24">
             <div className="container mx-auto px-4">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={isMobile ? false : { opacity: 0, y: 20 }}
+                animate={isMobile ? undefined : { opacity: 1, y: 0 }}
                 className="page-glass-strip mx-auto max-w-2xl rounded-xl p-10 text-center"
               >
                 <h1 className="mb-4 text-3xl font-bold text-foreground/80 md:text-4xl">Project not found</h1>
@@ -805,17 +811,18 @@ const ProjectDetail = () => {
           <section className="py-8 md:py-12">
             <div className="container mx-auto px-4">
               <article className="mx-auto max-w-6xl space-y-8">
-                <ProjectHero project={project} />
+                <ProjectHero project={project} disableAnimation={isMobile} />
 
                 <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
                   <div className="min-w-0 space-y-8">
-                    <ProjectSection title="Overview" index={0}>
+                    <ProjectSection title="Overview" index={0} disableAnimation={isMobile}>
                       <p className="whitespace-pre-line break-words text-base leading-relaxed text-muted-foreground">{project.description}</p>
                     </ProjectSection>
 
                     <ProjectSection
                       title="README"
                       index={1}
+                      disableAnimation={isMobile}
                       action={project.githubUrl ? (
                         <Button
                           asChild
@@ -852,19 +859,19 @@ const ProjectDetail = () => {
                     </ProjectSection>
 
                     <div className="xl:hidden">
-                      <ProjectSidebar project={project} githubStats={githubStats} />
+                      <ProjectSidebar project={project} githubStats={githubStats} disableAnimation={isMobile} />
                     </div>
 
                     {screenshots.length > 0 && (
-                      <ProjectSection title="Screenshot Gallery" index={2}>
-                        <ProjectGallery projectTitle={project.title} screenshots={screenshots} />
+                      <ProjectSection title="Screenshot Gallery" index={2} disableAnimation={isMobile}>
+                        <ProjectGallery projectTitle={project.title} screenshots={screenshots} disableAnimation={isMobile} />
                       </ProjectSection>
                     )}
 
                   </div>
 
                   <div className="hidden xl:block">
-                    <ProjectSidebar project={project} githubStats={githubStats} />
+                    <ProjectSidebar project={project} githubStats={githubStats} disableAnimation={isMobile} />
                   </div>
                 </div>
               </article>
