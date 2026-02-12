@@ -160,7 +160,7 @@ export const ContactSection = () => {
                     type="text"
                     id="name"
                     name="name"
-                    placeholder="John Doe"
+                    placeholder="Your Name"
                     value={formData.name}
                     onChange={(event) => handleChange("name", event.target.value)}
                     autoComplete="name"
@@ -179,7 +179,7 @@ export const ContactSection = () => {
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="john@example.com"
+                    placeholder="yourname@example.com"
                     value={formData.email}
                     onChange={(event) => handleChange("email", event.target.value)}
                     autoComplete="email"
