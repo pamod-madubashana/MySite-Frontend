@@ -238,7 +238,7 @@ const Projects = () => {
           </div>
         </section>
 
-        <section className="section-shell section-shell-muted py-10">
+        <section className="section-shell py-10">
           <div className="section-inner">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

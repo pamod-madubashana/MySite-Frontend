@@ -233,7 +233,7 @@ const About = () => {
         </section>
 
         {loading ? (
-          <section className="section-shell section-shell-muted">
+          <section className="section-shell">
             <div className="section-inner">
               <div className="page-glass-strip mx-auto max-w-xl p-10 text-center">
                 <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary" />
@@ -242,7 +242,7 @@ const About = () => {
             </div>
           </section>
         ) : (
-          <section className="section-shell section-shell-muted">
+          <section className="section-shell">
             <div className="section-inner">
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
@@ -336,7 +336,7 @@ const About = () => {
           </div>
         </section>
 
-        <section className="section-shell section-shell-muted">
+        <section className="section-shell">
           <div className="section-inner">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
