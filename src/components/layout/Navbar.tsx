@@ -185,7 +185,7 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <TransitionLink to="/" className="relative group min-h-11 inline-flex items-center">
-            <span className="text-xl md:text-2xl font-bold text-foreground/70">
+            <span className="text-xl whitespace-nowrap md:text-2xl font-bold text-foreground/70">
               P A M O D
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
