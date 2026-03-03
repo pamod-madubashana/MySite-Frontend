@@ -205,7 +205,7 @@ const Projects = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="Projects by Pamod Madubashana | Full-Stack Portfolio"
+        title="Projects | Pamod Madubashana"
         description="Browse full-stack projects by Pamod Madubashana, including production-ready web applications, experiments, and open-source engineering work."
         path="/projects"
         keywords={["Pamod projects", "full-stack portfolio", "web applications", "open-source projects"]}
@@ -213,7 +213,7 @@ const Projects = () => {
           "@type": "CollectionPage",
           "@id": "https://pamod.is-a.dev/projects#collection",
           url: "https://pamod.is-a.dev/projects",
-          name: "Projects by Pamod Madubashana",
+          name: "Projects | Pamod Madubashana",
           description: "Portfolio collection of full-stack software projects.",
         }}
       />

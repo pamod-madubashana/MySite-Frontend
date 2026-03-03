@@ -743,7 +743,7 @@ const ProjectDetail = () => {
   const screenshots = project?.screenshots ?? [];
   const detailPath = slug ? `/projects/${slug}` : "/projects";
   const seoTitle = project
-    ? `${project.title} | Project by Pamod Madubashana`
+    ? `${project.title} | Pamod Madubashana`
     : "Project Details | Pamod Madubashana";
   const seoDescription = project
     ? truncateMetaDescription(project.description)

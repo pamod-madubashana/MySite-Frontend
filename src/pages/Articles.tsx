@@ -143,7 +143,7 @@ const Articles = () => {
     <div className="relative min-h-screen bg-background">
       <DynamicPageBackground />
       <PageSeo
-        title="Articles by Pamod Madubashana | Web Development"
+        title="Articles | Pamod Madubashana"
         description="Read practical articles by Pamod Madubashana on web development, frontend architecture, and software engineering lessons from real products."
         path="/articles"
         keywords={["web development articles", "software engineering", "frontend architecture", "Pamod Madubashana"]}
@@ -151,7 +151,7 @@ const Articles = () => {
           "@type": "Blog",
           "@id": "https://pamod.is-a.dev/articles#blog",
           url: "https://pamod.is-a.dev/articles",
-          name: "Pamod Madubashana Articles",
+          name: "Articles | Pamod Madubashana",
           description: "Technical articles on web development and software engineering.",
           publisher: {
             "@type": "Person",
