@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run seo:sitemap && vite build && react-snap",
+    "build:pages": "npm run seo:sitemap && vite build",
     "build:dev": "vite build --mode development",
     "seo:sitemap": "node scripts/generate-sitemap.mjs",
     "prerender": "react-snap",
