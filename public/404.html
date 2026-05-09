@@ -30,9 +30,10 @@
   <script>
     (function () {
       const path = window.location.pathname;
+      const looksLikeFileRequest = /\/[^/]+\.[^/]+$/.test(path);
+      const isStaticAsset = path.startsWith("/assets/") || path.startsWith("/.well-known/");
 
-      // ✅ If it's a project route, show Loading and redirect
-      if (path.startsWith("/projects/")) {
+      if (path !== "/" && !looksLikeFileRequest && !isStaticAsset) {
         document.title = "Loading…";
         window.addEventListener("DOMContentLoaded", () => {
           document.getElementById("notfound").style.display = "none";
@@ -44,8 +45,6 @@
         window.location.replace(window.location.origin + "/?redirect=" + redirect);
         return;
       }
-
-      // ❌ Anything else: real 404 page stays visible
     })();
   </script>
 </head>
