@@ -5,36 +5,36 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Futuristic Portfolio Design System */
+/* PAMOD.CORE visual system */
 
 @layer base {
   :root {
-    --background: 218 32% 13%;
+    --background: 225 29% 6%;
     --foreground: 210 24% 96%;
 
-    --card: 218 30% 17%;
+    --card: 225 18% 10%;
     --card-foreground: 210 24% 96%;
 
-    --popover: 218 30% 16%;
+    --popover: 225 18% 10%;
     --popover-foreground: 210 24% 96%;
 
     --primary: 190.9 100% 50%;
     --primary-foreground: 218 34% 11%;
 
-    --secondary: 206 54% 58%;
+    --secondary: 273 100% 77%;
     --secondary-foreground: 210 24% 96%;
 
-    --muted: 218 22% 21%;
+    --muted: 225 12% 15%;
     --muted-foreground: 214 18% 78%;
 
-    --accent: 198 58% 61%;
+    --accent: 39 100% 62%;
     --accent-foreground: 210 20% 95%;
 
     --destructive: 0 62% 46%;
     --destructive-foreground: 0 0% 96%;
 
-    --border: 218 22% 17%;
-    --input: 218 22% 17%;
+    --border: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.14;
     --ring: 190.9 100% 50%;
 
     --radius: 0.75rem;
@@ -59,10 +59,10 @@
     --neon-green: 198 58% 61%;
     --neon-pink: 34 32% 44%;
 
-    --glass-bg: 218 30% 18% / 0.78;
-    --glass-bg-strong: hsl(218 30% 18% / 0.92);
-    --glass-border: 218 22% 17% / 0.74;
-    --glass-shadow: 220 40% 2% / 0.45;
+    --glass-bg: 0 0% 100% / 0.04;
+    --glass-bg-strong: hsl(225 24% 8% / 0.78);
+    --glass-border: 0 0% 100% / 0.12;
+    --glass-shadow: 220 45% 2% / 0.48;
 
     --glow-cyan: 0 14px 30px hsl(190.9 100% 50% / 0.22);
     --glow-purple: 0 14px 30px hsl(206 54% 48% / 0.22);
@@ -70,32 +70,32 @@
   }
 
   .dark {
-    --background: 218 34% 11%;
+    --background: 225 29% 6%;
     --foreground: 210 24% 96%;
 
-    --card: 218 30% 15%;
+    --card: 225 18% 10%;
     --card-foreground: 210 24% 96%;
 
-    --popover: 218 30% 14%;
+    --popover: 225 18% 10%;
     --popover-foreground: 210 24% 96%;
 
     --primary: 190.9 100% 50%;
     --primary-foreground: 218 34% 11%;
 
-    --secondary: 206 56% 59%;
+    --secondary: 273 100% 77%;
     --secondary-foreground: 210 24% 96%;
 
-    --muted: 218 20% 20%;
+    --muted: 225 12% 15%;
     --muted-foreground: 214 18% 79%;
 
-    --accent: 198 60% 62%;
+    --accent: 39 100% 62%;
     --accent-foreground: 210 20% 95%;
 
     --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 97%;
 
-    --border: 218 20% 16%;
-    --input: 218 20% 16%;
+    --border: 0 0% 100% / 0.12;
+    --input: 0 0% 100% / 0.14;
     --ring: 190.9 100% 50%;
 
     --sidebar-background: 218 30% 14%;
@@ -113,9 +113,9 @@
     --chart-4: 34 32% 45%;
     --chart-5: 166 20% 37%;
 
-    --glass-bg: 218 30% 15% / 0.88;
-    --glass-bg-strong: hsl(218 30% 15% / 0.95);
-    --glass-border: 218 20% 16% / 0.8;
+    --glass-bg: 0 0% 100% / 0.04;
+    --glass-bg-strong: hsl(225 24% 8% / 0.82);
+    --glass-border: 0 0% 100% / 0.12;
     --glass-shadow: 220 45% 2% / 0.56;
 
     --glow-cyan: 0 16px 32px hsl(190.9 100% 50% / 0.23);
@@ -134,7 +134,7 @@
     font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.5;
-    background-image: none;
+    background-color: #0b0e14;
   }
 
   html,
@@ -337,7 +337,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
 
 @layer components {
   .section-shell {
-    @apply relative overflow-hidden py-20 md:py-28;
+    @apply relative overflow-hidden py-20 md:py-32;
   }
 
   .section-shell::before {
@@ -345,8 +345,10 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: hsl(var(--primary) / 0.08);
-    opacity: 0.72;
+    background:
+      linear-gradient(180deg, transparent, hsl(var(--primary) / 0.025), transparent),
+      linear-gradient(90deg, transparent, hsl(var(--secondary) / 0.025), transparent);
+    opacity: 1;
   }
 
   .section-shell::after {
@@ -357,13 +359,13 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     background-image:
       linear-gradient(to right, hsl(var(--border) / 0.18) 1px, transparent 1px),
       linear-gradient(to bottom, hsl(var(--border) / 0.14) 1px, transparent 1px);
-    background-size: 44px 44px;
-    mask-image: radial-gradient(circle at center, black 35%, transparent 88%);
-    opacity: 0.35;
+    background-size: 56px 56px;
+    mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+    opacity: 0.22;
   }
 
   .section-shell-muted::before {
-    background: hsl(var(--secondary) / 0.07);
+    background: hsl(var(--secondary) / 0.035);
   }
 
   .section-inner {
@@ -371,11 +373,12 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .section-pill {
-    @apply mb-5 inline-flex items-center rounded-full border border-primary/40 bg-primary/10 px-4 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary sm:text-sm;
+    @apply mb-5 inline-flex items-center rounded-md border border-primary/35 bg-primary/10 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-primary sm:text-xs;
+    text-shadow: 0 0 12px hsl(var(--primary) / 0.35);
   }
 
   .section-title {
-    @apply text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl;
+    @apply text-3xl font-black tracking-normal text-foreground sm:text-4xl lg:text-5xl;
   }
 
   .section-copy {
@@ -383,11 +386,11 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .page-hero-panel {
-    @apply relative overflow-hidden rounded-3xl border border-border/60 bg-card/20 px-6 py-10 text-center backdrop-blur-sm md:px-12 md:py-14;
+    @apply relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center backdrop-blur-2xl md:px-12 md:py-14;
     box-shadow:
       0 30px 58px -42px hsl(var(--background) / 0.95),
-      0 18px 40px -34px hsl(var(--primary) / 0.24),
-      inset 0 1px 0 hsl(var(--border) / 0.8);
+      0 0 48px -30px hsl(var(--primary) / 0.55),
+      inset 0 1px 0 hsl(0 0% 100% / 0.12);
   }
 
   .page-hero-panel::before {
@@ -395,8 +398,10 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: hsl(var(--primary) / 0.12);
-    opacity: 0.7;
+    background:
+      linear-gradient(135deg, hsl(var(--primary) / 0.12), transparent 38%),
+      repeating-linear-gradient(0deg, hsl(0 0% 100% / 0.035) 0 1px, transparent 1px 4px);
+    opacity: 0.72;
   }
 
   .page-hero-panel::after {
@@ -404,7 +409,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     position: absolute;
     inset: 14px;
     border-radius: 1.25rem;
-    border: 1px solid hsl(var(--border) / 0.85);
+    border: 1px solid hsl(0 0% 100% / 0.1);
     pointer-events: none;
   }
 
@@ -430,11 +435,11 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .surface-card {
-    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-card/10 p-6 backdrop-blur-sm;
+    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl;
     box-shadow:
       0 22px 45px -28px hsl(var(--background) / 0.9),
-      inset 0 1px 0 hsl(var(--border) / 0.75);
-    transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 260ms ease, border-color 260ms ease;
+      inset 0 1px 0 hsl(0 0% 100% / 0.12);
+    transition: transform 320ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 260ms ease, border-color 260ms ease, background-color 260ms ease;
   }
 
   .surface-card::before {
@@ -442,8 +447,10 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: hsl(var(--foreground) / 0.02);
-    opacity: 1;
+    background:
+      linear-gradient(135deg, hsl(var(--primary) / 0.09), transparent 28%),
+      linear-gradient(315deg, hsl(var(--secondary) / 0.06), transparent 32%);
+    opacity: 0.85;
   }
 
   .surface-card > * {
@@ -452,17 +459,18 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .surface-card:hover {
-    transform: translateY(-4px);
-    border-color: hsl(var(--border) / 0.95);
+    transform: translateY(-4px) rotateX(1.25deg);
+    border-color: hsl(var(--primary) / 0.42);
+    background-color: hsl(0 0% 100% / 0.065);
     box-shadow:
       0 30px 55px -32px hsl(var(--background) / 0.98),
-      0 14px 28px -24px hsl(var(--primary) / 0.2),
-      0 0 0 1px hsl(var(--border) / 0.85) inset;
+      0 0 40px -24px hsl(var(--primary) / 0.65),
+      0 0 0 1px hsl(0 0% 100% / 0.1) inset;
   }
 
   .surface-icon {
-    @apply relative flex h-12 w-12 items-center justify-center rounded-xl border border-border/70 bg-muted/40 text-primary;
-    box-shadow: 0 12px 24px -20px hsl(var(--background) / 0.95);
+    @apply relative flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-muted/60 text-primary;
+    box-shadow: 0 0 24px -16px hsl(var(--primary) / 0.9);
   }
 
   .surface-icon::after {
@@ -470,19 +478,19 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    border: 1px solid hsl(var(--border) / 0.75);
+    border: 1px solid hsl(var(--primary) / 0.28);
     opacity: 0.65;
     clip-path: polygon(0 0, 100% 0, 100% 40%, 40% 100%, 0 100%);
     pointer-events: none;
   }
 
   .chip-tag {
-    @apply inline-flex items-center gap-1 rounded-md border border-border/60 bg-muted/20 px-2.5 py-1 text-xs font-mono text-foreground/80;
+    @apply inline-flex items-center gap-1 rounded-md border border-primary/20 bg-primary/10 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.08em] text-primary;
   }
 
   .brand-outline-btn {
-    @apply border-border/70 bg-background/30 text-primary hover:border-border hover:bg-muted/40 hover:text-foreground;
-    box-shadow: inset 0 1px 0 hsl(var(--border) / 0.7);
+    @apply border-white/10 bg-white/[0.04] text-foreground backdrop-blur-2xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary;
+    box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.1);
   }
 
   .glass {
@@ -492,7 +500,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .glass-strong {
-    @apply bg-transparent backdrop-blur-2xl border border-border/60;
+    @apply bg-transparent backdrop-blur-2xl border border-white/10;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
   }
@@ -530,7 +538,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .neon-glow {
-    box-shadow: var(--glow-cyan);
+    box-shadow: 0 0 24px hsl(var(--primary) / 0.35);
   }
 
   .neon-glow-purple {
@@ -549,6 +557,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     color: hsl(var(--primary));
     background-image: none;
     -webkit-text-fill-color: hsl(var(--primary));
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.28);
   }
 
   .text-gradient-cyan {
@@ -691,6 +700,25 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     height: 0;
   }
 
+  .hero-dashboard-overlay {
+    transform-style: preserve-3d;
+    animation: float-core 6s ease-in-out infinite;
+  }
+
+  .code-container {
+    animation: code-scroll 22s linear infinite;
+  }
+
+  .scanline::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: -40%;
+    height: 35%;
+    background: linear-gradient(to bottom, transparent, hsl(var(--primary) / 0.18), transparent);
+    animation: scan 4s linear infinite;
+  }
+
   .grid-pattern {
     background-image: 
       linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
@@ -740,6 +768,21 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-20px); }
+  }
+
+  @keyframes float-core {
+    0%, 100% { transform: translate3d(0, 0, 50px); }
+    50% { transform: translate3d(0, -14px, 50px); }
+  }
+
+  @keyframes scan {
+    0% { top: -40%; }
+    100% { top: 110%; }
+  }
+
+  @keyframes code-scroll {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-35%); }
   }
 
   @keyframes pulse-glow {

@@ -40,6 +40,15 @@ const skills = [
   }
 ];
 
+interface CachedTechCategory {
+  skills: string[];
+}
+
+interface PublicTechSkill {
+  name: string;
+  level: number;
+}
+
 export const AboutSection = () => {
   const isMobile = useIsMobile();
   const shouldAnimate = !isMobile;
@@ -60,7 +69,7 @@ export const AboutSection = () => {
         const cachedData = aboutApi.getCachedAboutData();
 
         if (cachedData && cachedData.techCategories.length > 0) {
-          const allSkills = cachedData.techCategories.flatMap((category: any) =>
+          const allSkills = (cachedData.techCategories as CachedTechCategory[]).flatMap((category) =>
             category.skills.map((skill: string) => ({
               name: skill,
               level: Math.floor(Math.random() * 40) + 60
@@ -81,8 +90,8 @@ export const AboutSection = () => {
 
           const skillsResponse = await fetch(`${API_BASE_URL}/tech-skills/public`);
           if (skillsResponse.ok) {
-            const techSkillsData = await skillsResponse.json();
-            const mappedTechStack = techSkillsData.map((skill: any) => ({
+            const techSkillsData = (await skillsResponse.json()) as PublicTechSkill[];
+            const mappedTechStack = techSkillsData.map((skill) => ({
               name: skill.name,
               level: skill.level
             }));
@@ -107,9 +116,6 @@ export const AboutSection = () => {
 
   return (
     <section id="about" className="section-shell">
-      <div aria-hidden className="pointer-events-none absolute -left-24 top-20 hidden h-56 w-56 rounded-full bg-primary/20 blur-3xl animate-orbit-soft md:block" />
-      <div aria-hidden className="pointer-events-none absolute -right-28 bottom-10 hidden h-64 w-64 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft md:block" />
-
       <div className="section-inner">
         <motion.div
           initial={shouldAnimate ? { opacity: 0, y: 26 } : false}
@@ -120,12 +126,65 @@ export const AboutSection = () => {
         >
           <span className="section-pill">About Me</span>
           <h2 className="section-title">
-            <span className="text-foreground/75">Crafting Digital</span> <span className="text-gradient">Experiences</span>
+            <span className="text-foreground/80">Architecting</span> <span className="text-gradient">Digital Flows</span>
           </h2>
           <p className="section-copy mx-auto mt-4 max-w-2xl">
-            With over 5 years of experience in full-stack development, I specialize in building scalable web applications that users love.
+            I connect high-performance backends, practical automation, and sharp interfaces into systems that feel fast, useful, and resilient.
           </p>
         </motion.div>
+
+        <div className="mb-16 grid items-stretch gap-8 md:grid-cols-12">
+          <motion.div
+            initial={shouldAnimate ? { opacity: 0, x: -24 } : false}
+            whileInView={shouldAnimate ? { opacity: 1, x: 0 } : undefined}
+            viewport={shouldAnimate ? revealViewport : undefined}
+            transition={shouldAnimate ? { duration: 0.45 } : undefined}
+            className="surface-card md:col-span-5"
+          >
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
+            <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">INITIALIZING SYSTEM</span>
+              <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,0.85)]" />
+            </div>
+            <div className="h-full min-h-[280px] overflow-hidden font-mono text-sm leading-7 text-primary/65">
+              <div className="code-container space-y-1">
+                <p>&gt; ARCHITECTURE: FULL_STACK</p>
+                <p>&gt; STATUS: OPTIMAL</p>
+                <p>class DigitalArchitect {"{"}</p>
+                <p className="pl-4">stack = [&quot;React&quot;, &quot;Node&quot;, &quot;Python&quot;];</p>
+                <p className="pl-4">focus = &quot;Practical systems&quot;;</p>
+                <p>{"}"}</p>
+                <p>&gt; DEPLOYING RECENT PROJECT...</p>
+                <p>&gt; CONNECTED TO NODE_01</p>
+                <p className="text-secondary/75">while(alive) {"{"} code(); deploy(); {"}"}</p>
+                <p>&gt; SECURITY PROTOCOL: ACTIVE</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={shouldAnimate ? { opacity: 0, x: 24 } : false}
+            whileInView={shouldAnimate ? { opacity: 1, x: 0 } : undefined}
+            viewport={shouldAnimate ? revealViewport : undefined}
+            transition={shouldAnimate ? { duration: 0.45, delay: 0.08 } : undefined}
+            className="surface-card flex flex-col justify-center md:col-span-7"
+          >
+            <div className="space-y-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+              <p>
+                My work lives at the intersection of web apps, Telegram automation, backend services,
+                and self-hosted infrastructure.
+              </p>
+              <p>
+                I like systems that are independent, observable, and easy to ship: Dockerized services,
+                clean APIs, useful dashboards, and UI that makes operations feel calm.
+              </p>
+              <p>
+                AI-assisted development helps me move from idea to production faster while keeping the
+                architecture readable and maintainable.
+              </p>
+            </div>
+          </motion.div>
+        </div>
 
         <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {skills.map((skill, index) => (

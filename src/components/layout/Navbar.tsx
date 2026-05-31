@@ -177,18 +177,18 @@ export const Navbar = () => {
       }}
       className={`site-navbar fixed top-0 left-0 right-0 z-50 select-none ${
         scrolled
-          ? "glass-strong shadow-lg"
-          : "bg-transparent"
+          ? "glass-strong shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
+          : "bg-background/20 backdrop-blur-md"
       }`}
     >
       <div className="container mx-auto px-4 navbar-container transform3d">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <TransitionLink to="/" className="relative group min-h-11 inline-flex items-center">
-            <span className="text-xl whitespace-nowrap md:text-2xl font-bold text-foreground/70">
+          <TransitionLink to="/" className="group relative inline-flex min-h-11 items-center">
+            <span className="whitespace-nowrap font-mono text-lg font-black uppercase tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-xl">
               P A M O D
             </span>
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-all duration-300 group-hover:w-full" />
           </TransitionLink>
 
           {/* Desktop Navigation */}
@@ -202,7 +202,7 @@ export const Navbar = () => {
               >
                 <TransitionLink
                   to={link.path}
-                  className={`block min-h-11 px-4 py-2 text-base font-medium transition-colors duration-200 ${
+                  className={`block min-h-11 px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-200 ${
                     location.pathname === link.path
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -253,7 +253,7 @@ export const Navbar = () => {
           <button
             ref={menuButtonRef}
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-lg text-foreground"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-foreground md:hidden"
             aria-label="Toggle menu"
             aria-expanded={isOpen}
             aria-controls="mobile-menu"
@@ -273,7 +273,7 @@ export const Navbar = () => {
             transition={{ 
               duration: 0.2
             }}
-            className="md:hidden overflow-hidden border-t border-border/70 bg-background/95 supports-[backdrop-filter]:bg-background/98 backdrop-blur-xl"
+            className="overflow-hidden border-t border-white/10 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90 md:hidden"
             style={{
               maxHeight: isOpen ? "300px" : "0",
               overflow: "hidden",
@@ -301,7 +301,7 @@ export const Navbar = () => {
                       className={`block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-colors duration-200 ${
                         location.pathname === link.path
                           ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                          : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
                       }`}
                       role="menuitem"
                     >

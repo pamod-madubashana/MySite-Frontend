@@ -9,6 +9,7 @@ import { SettingsProvider, useSettings } from "./contexts/SettingsContext";
 import ProtectedRoute from "./components/RouteProtector";
 import ScrollToTop from "./components/ScrollToTop";
 import DynamicPageBackground from "./components/DynamicPageBackground";
+import PersistentCommandCore from "./components/PersistentCommandCore";
 import Index from "./pages/Index";
 
 const About = lazy(() => import("./pages/About"));
@@ -142,6 +143,9 @@ const App = () => {
   const location = useLocation();
   const navigationType = useNavigationType();
   const previousPathRef = useRef(location.pathname);
+  const showCommandCore =
+    !location.pathname.startsWith("/admin") &&
+    !/^\/(login|register)\/?$/.test(location.pathname);
 
   const transitionMeta = useMemo(() => {
     const currentPath = location.pathname;
@@ -194,13 +198,15 @@ const App = () => {
     contentNodes.forEach((node) => {
       node.style.transition = "none";
       node.style.transform = directionOffset;
+      node.style.opacity = "0.92";
       node.style.willChange = "transform";
     });
 
     const frame = requestAnimationFrame(() => {
       contentNodes.forEach((node) => {
-        node.style.transition = "transform 460ms cubic-bezier(0.16, 1, 0.3, 1)";
+        node.style.transition = "transform 620ms cubic-bezier(0.16, 1, 0.3, 1), opacity 520ms ease";
         node.style.transform = "translate3d(0, 0, 0)";
+        node.style.opacity = "1";
       });
     });
 
@@ -212,6 +218,7 @@ const App = () => {
       const node = event.currentTarget;
       node.style.transition = "";
       node.style.willChange = "";
+      node.style.opacity = "";
     };
 
     contentNodes.forEach((node) => {
@@ -223,6 +230,7 @@ const App = () => {
       contentNodes.forEach((node) => {
         node.style.transition = "";
         node.style.willChange = "";
+        node.style.opacity = "";
         node.removeEventListener("transitionend", onTransitionEnd);
       });
     };
@@ -239,6 +247,7 @@ const App = () => {
             <ScrollToTop />
             <Suspense fallback={<RouteFallback />}>
               <AppBootstrapGate>
+                {showCommandCore && <PersistentCommandCore />}
                 <div
                   key={location.pathname}
                   className={`route-fallback-enter route-fallback-enter-${transitionMeta.axis}-${transitionMeta.direction}`}

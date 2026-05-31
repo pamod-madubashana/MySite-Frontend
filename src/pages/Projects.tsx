@@ -227,12 +227,12 @@ const Projects = () => {
               transition={{ duration: 0.6 }}
               className="page-hero-panel mx-auto max-w-4xl"
             >
-              <span className="section-pill">My Work</span>
+              <span className="section-pill">PROJECTS ARCHIVE</span>
               <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-foreground/75">Featured</span> <span className="text-gradient">Projects</span>
+                <span className="text-foreground/80">Builds, Bots,</span> <span className="text-gradient">Systems</span>
               </h1>
               <p className="section-copy mx-auto mt-5 max-w-2xl">
-                A curated collection of products, experiments, and open-source builds with clean architecture and practical impact.
+                A curated archive of products, automation systems, and experiments powered by the existing project API.
               </p>
             </motion.div>
           </div>
@@ -244,16 +244,16 @@ const Projects = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.15 }}
-              className="surface-card flex flex-col gap-5 backdrop-blur-2xl md:flex-row md:items-center md:justify-between"
+              className="surface-card flex flex-col gap-5 rounded-3xl backdrop-blur-2xl md:flex-row md:items-center md:justify-between"
             >
               <div className="relative w-full max-w-xl">
                 <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search projects..."
+                  placeholder="Search archive..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border/70 bg-background/55 pl-10 pr-4 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/30"
+                  className="h-11 w-full rounded-lg border border-white/10 bg-background/55 pl-10 pr-4 font-mono text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
 
@@ -270,7 +270,7 @@ const Projects = () => {
                     className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                       selectedTag === tag
                         ? "border-primary/55 bg-primary/20 text-primary"
-                        : "border-border/60 bg-background/35 text-muted-foreground hover:border-primary/35 hover:text-foreground"
+                        : "border-white/10 bg-white/[0.04] text-muted-foreground hover:border-primary/35 hover:text-foreground"
                     }`}
                   >
                     {tag}

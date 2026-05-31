@@ -2,13 +2,11 @@ import { Github, Linkedin, Mail, Send, type LucideIcon } from "lucide-react";
 import { useSettings } from "@/contexts/SettingsContext";
 import { TransitionLink } from "@/components/TransitionLink";
 
-
-
 const footerLinks = [
-  { name: "Home", path: "/", tone: "text-primary/95 hover:text-primary" },
-  { name: "About", path: "/about", tone: "text-secondary/95 hover:text-secondary" },
-  { name: "Projects", path: "/projects", tone: "text-accent/95 hover:text-accent" },
-  { name: "Articles", path: "/articles", tone: "text-foreground/85 hover:text-foreground" },
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+  { name: "Projects", path: "/projects" },
+  { name: "Articles", path: "/articles" },
 ];
 
 interface SocialLink {
@@ -54,32 +52,32 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="relative select-none border-t border-border/80 bg-card/40 backdrop-blur-sm">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 opacity-60" />
+    <footer className="relative select-none border-t border-white/10 bg-background/80 backdrop-blur-2xl">
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.04)_1px,transparent_1px)] bg-[size:54px_54px] opacity-25" />
 
       <div className="container relative z-10 mx-auto px-4 py-8 md:py-10">
         <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-md space-y-3">
             <TransitionLink to="/" className="inline-flex items-center">
-              <span className="text-xl font-bold tracking-[0.24em] text-foreground/80 md:text-2xl">
+              <span className="font-mono text-xl font-black tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-2xl">
                 P A M O D
               </span>
             </TransitionLink>
             <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Full-stack developer crafting performant, scalable products with thoughtful UI and reliable architecture.
+              Developer, automation builder, and self-hosting enthusiast building practical systems for the neural grid.
             </p>
           </div>
 
           <div className="space-y-2">
-            <span className="inline-flex items-center text-base font-bold uppercase tracking-[0.12em] md:text-lg">
-              <span>Quick Links</span>
+            <span className="inline-flex items-center font-mono text-xs font-bold uppercase tracking-[0.14em] text-primary md:text-sm">
+              Quick Links
             </span>
             <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Footer links">
               {footerLinks.map((link) => (
                 <TransitionLink
                   key={link.path}
                   to={link.path}
-                  className={`inline-flex items-center py-1 text-sm font-medium transition-colors duration-200 text-secondary`}
+                  className="inline-flex items-center py-1 font-mono text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-200 hover:text-primary"
                 >
                   {link.name}
                 </TransitionLink>
@@ -95,22 +93,22 @@ export const Footer = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border/60 bg-muted/30 text-muted-foreground transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted-foreground transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
                   aria-label={social.label}
                 >
                   <social.icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
-            <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground/90">
+            <p className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground/90">
               Available for freelance opportunities
             </p>
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-border/70 pt-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-4 font-mono text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-center gap-1">
-            © {copyrightYears} Pamod Madubashana. All rights reserved.
+            (c) {copyrightYears} Pamod Madubashana. Built for the neural grid.
           </p>
           <div className="flex items-center gap-4">
             <TransitionLink
