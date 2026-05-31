@@ -402,8 +402,9 @@ const CommandCore3D = ({ className = "" }: CommandCore3DProps) => {
       <Suspense fallback={<CommandCoreFallback />}>
         <Canvas
           camera={{ position: [0, 0, 7.2], fov: 48 }}
-          dpr={[1, 1.6]}
+          dpr={[1, 1.25]}
           gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+          performance={{ min: 0.65 }}
         >
           <CommandCoreScene />
         </Canvas>

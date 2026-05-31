@@ -107,6 +107,8 @@ const PersistentCommandCore = () => {
     typeof window === "undefined" ? "desktop" : getViewportMode()
   );
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathnameRef = useRef(location.pathname);
+  const viewportModeRef = useRef(viewportMode);
   const initialStateRef = useRef<CommandCoreTarget | null>(null);
 
   if (!initialStateRef.current) {
@@ -115,7 +117,14 @@ const PersistentCommandCore = () => {
   }
 
   const animatedStateRef = useRef(initialStateRef.current);
-  const targetStateRef = useRef(initialStateRef.current);
+
+  useEffect(() => {
+    pathnameRef.current = location.pathname;
+  }, [location.pathname]);
+
+  useEffect(() => {
+    viewportModeRef.current = viewportMode;
+  }, [viewportMode]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -129,53 +138,20 @@ const PersistentCommandCore = () => {
   }, []);
 
   useEffect(() => {
-    const states = viewportMode === "mobile" ? mobileStates : desktopStates;
-
-    if (location.pathname !== "/") {
-      targetStateRef.current = states[getSectionFromPath(location.pathname)];
-      return undefined;
-    }
-
-    let frameId = 0;
-
-    const updateTarget = () => {
-      frameId = 0;
-      targetStateRef.current = getHomeScrollTarget(states);
-    };
-
-    const requestTargetUpdate = () => {
-      if (frameId !== 0) {
-        return;
-      }
-
-      frameId = window.requestAnimationFrame(updateTarget);
-    };
-
-    updateTarget();
-    window.addEventListener("scroll", requestTargetUpdate, { passive: true });
-    window.addEventListener("resize", requestTargetUpdate, { passive: true });
-
-    return () => {
-      if (frameId !== 0) {
-        window.cancelAnimationFrame(frameId);
-      }
-
-      window.removeEventListener("scroll", requestTargetUpdate);
-      window.removeEventListener("resize", requestTargetUpdate);
-    };
-  }, [location.pathname, viewportMode]);
-
-  useEffect(() => {
     let frameId = 0;
 
     const animate = () => {
+      const states = viewportModeRef.current === "mobile" ? mobileStates : desktopStates;
+      const target =
+        pathnameRef.current === "/"
+          ? getHomeScrollTarget(states)
+          : states[getSectionFromPath(pathnameRef.current)];
       const current = animatedStateRef.current;
-      const target = targetStateRef.current;
       const next = {
-        x: lerp(current.x, target.x, 0.075),
-        y: lerp(current.y, target.y, 0.075),
-        scale: lerp(current.scale, target.scale, 0.075),
-        opacity: lerp(current.opacity, target.opacity, 0.085),
+        x: lerp(current.x, target.x, 0.18),
+        y: lerp(current.y, target.y, 0.18),
+        scale: lerp(current.scale, target.scale, 0.16),
+        opacity: lerp(current.opacity, target.opacity, 0.18),
       };
 
       animatedStateRef.current = next;
@@ -198,7 +174,7 @@ const PersistentCommandCore = () => {
     <div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[5] overflow-hidden will-change-transform"
+      className="pointer-events-none fixed inset-0 z-[5] overflow-hidden will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
         transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialState.scale})`,
