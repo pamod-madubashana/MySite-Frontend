@@ -1,79 +1,103 @@
-import { Code, ChevronDown } from "lucide-react";
+import { Activity, Database, Server, Shield, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import AnimatedWaves from "@/components/AnimatedWaves";
-import HeroPortrait from "@/components/HeroPortrait";
 import { TransitionLink } from "@/components/TransitionLink";
+
+const systemStats = [
+  { label: "Deployments", value: "1,245", progress: "75%" },
+  { label: "Uptime", value: "99.9%", progress: "99%" },
+  { label: "Latency", value: "42ms", progress: "62%" },
+];
 
 export const HeroSection = () => {
   return (
-    <section className="relative flex min-h-[100svh] items-start overflow-hidden pb-10 pt-20 sm:pb-12 sm:pt-24 md:min-h-screen md:items-center md:justify-center md:py-0">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
+    <section
+      id="home"
+      className="relative min-h-[100svh] overflow-hidden px-4 pb-12 pt-24 md:min-h-[820px] md:pt-24"
+    >
+      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-6rem)] items-center md:min-h-[700px]">
+        <div className="w-full max-w-[430px] space-y-5 md:max-w-[470px]">
+          <div className="space-y-3">
+            <span className="section-pill mb-2">WELCOME TO MY DIGITAL SANCTUARY</span>
+            <h1 className="text-[2.65rem] font-black leading-[0.9] tracking-normal text-foreground drop-shadow-2xl sm:text-5xl md:text-[3.9rem] lg:text-[4.6rem]">
+              Hi, I&apos;m Pamod
+            </h1>
+            <p className="max-w-md text-base font-black leading-snug text-primary sm:text-lg md:text-xl">
+              Developer / Automation Builder / Self-Hosting Enthusiast
+            </p>
+          </div>
 
-      {/* Subtle darkening behind portrait for natural transition */}
-      <div className="absolute left-1/2 top-[42%] h-[380px] w-[380px] -translate-x-1/2 -translate-y-1/2 bg-radial-gradient(circle, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.02) 58%, transparent 100%) sm:h-[460px] sm:w-[460px] md:top-1/2 md:h-[500px] md:w-[500px]" />
+          <p className="max-w-md rounded-lg border border-white/10 bg-background/45 p-4 text-sm font-semibold leading-relaxed text-muted-foreground shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-md md:text-[0.95rem]">
+            I build bots, web apps, automation tools, and self-hosted systems with clean UI,
+            practical workflows, and reliable deployments.
+          </p>
 
-      {/* Animated waves */}
-      <div className="absolute inset-0 opacity-55 sm:opacity-70">
-        <AnimatedWaves />
+          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+            <Button
+              asChild
+              size="sm"
+              className="h-11 rounded-lg bg-primary px-6 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_30px_hsl(var(--primary)/0.38)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90"
+            >
+              <TransitionLink to="/projects" className="inline-flex min-h-11 items-center justify-center gap-2">
+                <span>View Projects</span>
+              </TransitionLink>
+            </Button>
+
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-11 rounded-lg border-white/10 bg-white/[0.04] px-6 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+            >
+              <TransitionLink to="/about" className="inline-flex min-h-11 items-center justify-center gap-2">
+                <span>Contact Me</span>
+              </TransitionLink>
+            </Button>
+          </div>
+        </div>
       </div>
 
-      {/* Noise texture overlay */}
-      <div className="absolute inset-0 opacity-[0.02] sm:opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iLjc1Ii8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2EpIi8+PC9zdmc+')]" />
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col items-center justify-center gap-5 md:flex-row md:gap-12 lg:gap-16">
-          {/* Portrait */}
-          <div className="order-2 flex w-full justify-center md:order-1 md:w-[54%] md:justify-start">
-            <HeroPortrait />
+      <div aria-hidden className="pointer-events-none absolute inset-y-20 right-0 z-30 hidden w-[58%] md:block">
+        <div className="hero-dashboard-overlay surface-card absolute right-[15%] top-[23%] w-64 rounded-2xl p-5">
+          <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">System Metrics</span>
+            <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,0.85)]" />
           </div>
-
-          {/* Text content */}
-          <div className="order-1 w-full max-w-xl text-center md:order-2 md:w-[46%] md:text-left">
-            <div className="rounded-2xl border border-border/50 bg-card/35 p-5 backdrop-blur-sm sm:p-6 md:border-border/40 md:bg-card/20 md:p-7">
-              <h1 className="text-4xl font-bold leading-tight tracking-tight [text-wrap:balance] sm:text-[2.65rem] md:text-5xl lg:text-6xl">
-                <span className="text-foreground">Hi, I&apos;m </span>
-                <span className="block bg-gradient-to-r from-primary via-teal-accent to-secondary bg-clip-text text-transparent sm:inline">
-                  Pamod Madubashana
-                </span>
-              </h1>
-
-              <h2 className="mt-3 text-base font-semibold text-foreground/90 sm:text-lg md:text-2xl lg:text-3xl">
-                Full-Stack Developer
-              </h2>
-
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg md:text-lg lg:text-xl">
-                I build fast, reliable web applications with modern tools. I care about clean architecture,
-                thoughtful UX, and shipping features that scale.
-              </p>
-
-              <div className="mt-6 grid w-full grid-cols-2 gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className="h-11 w-full min-w-0 bg-primary px-3 text-sm font-semibold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:px-5 sm:text-base"
-                >
-                  <TransitionLink to="/projects" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap">
-                    <Code className="h-4 w-4 sm:h-5 sm:w-5" />
-                    <span>View Projects</span>
-                  </TransitionLink>
-                </Button>
-
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="h-11 w-full min-w-0 border-primary/40 bg-transparent px-3 text-sm font-semibold text-primary transition-all duration-300 hover:scale-[1.02] hover:bg-primary/10 hover:text-primary sm:px-5 sm:text-base"
-                >
-                  <TransitionLink to="/about" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap">
-                    <span>About Me</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </TransitionLink>
-                </Button>
+          <div className="space-y-4">
+            {systemStats.map((stat) => (
+              <div key={stat.label}>
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</p>
+                  <p className="font-mono text-xs font-bold text-foreground">{stat.value}</p>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary" style={{ width: stat.progress }} />
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="surface-card absolute left-[20%] top-[30%] flex h-20 w-20 rotate-[-12deg] items-center justify-center rounded-xl text-primary">
+          <Terminal className="h-8 w-8" />
+        </div>
+        <div className="surface-card absolute bottom-[22%] right-[24%] flex h-16 w-16 rotate-12 items-center justify-center rounded-xl text-secondary">
+          <Database className="h-7 w-7" />
+        </div>
+        <div className="surface-card absolute bottom-[30%] left-[18%] flex items-center gap-2 rounded-full px-4 py-2">
+          <Activity className="h-4 w-4 text-primary" />
+          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-foreground">CORE_STABLE</span>
+        </div>
+        <div className="surface-card absolute bottom-[11%] left-[28%] flex w-[420px] items-center justify-between rounded-2xl p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Server className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Node Status</p>
+              <p className="text-sm font-bold text-foreground">Production Ready</p>
             </div>
           </div>
+          <Shield className="h-5 w-5 text-primary" />
         </div>
       </div>
     </section>

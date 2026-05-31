@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { ComponentType } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { 
@@ -7,7 +8,8 @@ import {
   Heart, Coffee, Music, Mountain 
 } from "lucide-react";
 import { useState, useEffect } from 'react';
-import { timelineApi, TimelineItem } from '@/api/timelineApi';
+import { timelineApi, type TimelineItem } from '@/api/timelineApi';
+import type { Interest } from '@/api/interestsApi';
 import { API_BASE_URL } from '@/lib/apiConfig';
 import { aboutApi } from '@/api/aboutApi';
 import PageSeo from "@/components/seo/PageSeo";
@@ -29,9 +31,41 @@ const iconMap = {
   Mountain,
 };
 
+type IconComponent = ComponentType<{ className?: string }>;
+
+interface TimelineDisplayItem {
+  _id?: string;
+  year: string;
+  role: string;
+  company?: string;
+  description: string;
+  icon: IconComponent;
+}
+
+interface TechCategoryResponse {
+  title: string;
+  icon: string;
+  skills: string[];
+}
+
+interface TechCategoryDisplay {
+  title: string;
+  icon: IconComponent;
+  skills: string[];
+}
+
+interface InterestDisplayItem {
+  _id?: string;
+  icon: IconComponent;
+  label: string;
+}
+
+const resolveIcon = (icon: string | undefined, fallback: IconComponent = Briefcase): IconComponent =>
+  iconMap[icon as keyof typeof iconMap] || fallback;
+
 const About = () => {
-  const [timeline, setTimeline] = useState<any[]>([]);
-  const [techCategories, setTechCategories] = useState<any[]>([
+  const [timeline, setTimeline] = useState<TimelineDisplayItem[]>([]);
+  const [techCategories, setTechCategories] = useState<TechCategoryDisplay[]>([
     {
       title: "Frontend",
       icon: Palette,
@@ -53,7 +87,7 @@ const About = () => {
       skills: ["GitHub Actions", "Koyeb", "Vercel", "Docker (Basics)", "Git"],
     },
   ]);
-  const [interests, setInterests] = useState<any[]>([
+  const [interests, setInterests] = useState<InterestDisplayItem[]>([
     { icon: Code2, label: "Telegram Bot Development" },
     { icon: Database, label: "Backend Architecture" },
     { icon: Palette, label: "UI Design" },
@@ -74,14 +108,14 @@ const About = () => {
           // Process timeline data
           const mappedTimeline = cachedData.timeline.map((item: TimelineItem) => ({
             ...item,
-            icon: iconMap[item.icon as keyof typeof iconMap] || Briefcase
+            icon: resolveIcon(item.icon)
           }));
           setTimeline(mappedTimeline);
           
           // Process tech categories data
-          const formattedTechCategories = cachedData.techCategories.map((category: any) => ({
+          const formattedTechCategories = (cachedData.techCategories as TechCategoryResponse[]).map((category) => ({
             title: category.title,
-            icon: iconMap[category.icon as keyof typeof iconMap] || iconMap['Terminal'],
+            icon: resolveIcon(category.icon, Terminal),
             skills: category.skills,
           }));
           
@@ -90,9 +124,9 @@ const About = () => {
           }
           
           // Process interests data
-          const formattedInterests = cachedData.interests.map((interest: any) => ({
+          const formattedInterests = cachedData.interests.map((interest: Interest) => ({
             ...interest,
-            icon: iconMap[interest.icon as keyof typeof iconMap] || Code2
+            icon: resolveIcon(interest.icon, Code2)
           }));
           
           if (formattedInterests.length > 0) {
@@ -111,18 +145,18 @@ const About = () => {
         // Map the API data to match the expected format
         const mappedTimeline = timelineData.map((item: TimelineItem) => ({
           ...item,
-          icon: iconMap[item.icon as keyof typeof iconMap] || Briefcase // default to Briefcase if icon not found
+          icon: resolveIcon(item.icon) // default to Briefcase if icon not found
         }));
         setTimeline(mappedTimeline);
         
         // Fetch tech stack categories data
         const techStackResponse = await fetch(`${API_BASE_URL}/tech-stack-categories/public`);
         if (techStackResponse.ok) {
-          const techStackCategories = await techStackResponse.json();
+          const techStackCategories = (await techStackResponse.json()) as TechCategoryResponse[];
           // Map the API data to match the expected format
-          const formattedTechCategories = techStackCategories.map((category: any) => ({
+          const formattedTechCategories = techStackCategories.map((category) => ({
             title: category.title,
-            icon: iconMap[category.icon as keyof typeof iconMap] || iconMap['Terminal'], // default icon
+            icon: resolveIcon(category.icon, Terminal), // default icon
             skills: category.skills,
           }));
           
@@ -134,10 +168,10 @@ const About = () => {
         // Fetch interests data
         const interestsResponse = await fetch(`${API_BASE_URL}/interests/public`);
         if (interestsResponse.ok) {
-          const interestsData = await interestsResponse.json();
-          const formattedInterests = interestsData.map((interest: any) => ({
+          const interestsData = (await interestsResponse.json()) as Interest[];
+          const formattedInterests = interestsData.map((interest) => ({
             ...interest,
-            icon: iconMap[interest.icon as keyof typeof iconMap] || Code2 // default to Code2 if icon not found
+            icon: resolveIcon(interest.icon, Code2) // default to Code2 if icon not found
           }));
           
           if (formattedInterests.length > 0) {
@@ -220,13 +254,13 @@ const About = () => {
               transition={{ duration: 0.6 }}
               className="page-hero-panel mx-auto max-w-4xl"
             >
-              <span className="section-pill">About Me</span>
+              <span className="section-pill">IDENTITY PROFILE</span>
               <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-foreground/75">Building the Future,</span>{" "}
-                <span className="text-gradient">One Line at a Time</span>
+                <span className="text-foreground/80">Architecting Digital</span>{" "}
+                <span className="text-gradient">Flows</span>
               </h1>
               <p className="section-copy mx-auto mt-5 max-w-2xl">
-                I&apos;m a passionate full-stack developer with 5+ years of experience creating digital experiences that combine beautiful design with powerful functionality.
+                Developer, automation builder, and self-hosting enthusiast working across web apps, bots, and resilient infrastructure.
               </p>
             </motion.div>
           </div>
@@ -250,11 +284,11 @@ const About = () => {
                 viewport={{ once: true }}
                 className="mb-16 text-center text-3xl font-bold md:text-4xl"
               >
-                <span className="text-foreground/75">My</span> <span className="text-gradient">Journey</span>
+                <span className="text-foreground/80">System</span> <span className="text-gradient">Timeline</span>
               </motion.h2>
 
               <div className="relative mx-auto max-w-5xl">
-                <div className="absolute bottom-0 left-8 top-0 w-px bg-primary md:left-1/2" />
+                <div className="absolute bottom-0 left-8 top-0 w-px bg-primary/70 shadow-[0_0_18px_hsl(var(--primary)/0.5)] md:left-1/2" />
 
                 {timeline.map((item, index) => {
                   const isLeft = index % 2 === 0;
@@ -270,7 +304,7 @@ const About = () => {
                       <div className={`hidden md:block md:w-1/2 md:pr-12 ${isLeft ? "" : "md:invisible"}`}>
                         {isLeft && (
                           <div className="surface-card p-5 text-right backdrop-blur-sm md:p-6">
-                            <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
+                        <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                             <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                             <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
                             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
@@ -284,7 +318,7 @@ const About = () => {
 
                       <div className={`ml-20 md:ml-0 md:w-1/2 md:pl-12 ${isLeft ? "md:hidden" : ""}`}>
                         <div className="surface-card p-5 text-left backdrop-blur-sm md:p-6">
-                          <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
+                          <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                           <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                           <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
                           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>

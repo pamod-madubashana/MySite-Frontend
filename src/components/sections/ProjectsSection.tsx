@@ -34,7 +34,7 @@ const ProjectsHeader = ({ copy, shouldAnimate }: { copy: string; shouldAnimate: 
   >
     <span className="section-pill">Featured Work</span>
     <h2 className="section-title">
-      <span className="text-foreground/75">Recent</span> <span className="text-gradient">Projects</span>
+      <span className="text-foreground/80">Featured</span> <span className="text-gradient">Projects</span>
     </h2>
     <p className="section-copy mx-auto mt-4 max-w-2xl">{copy}</p>
   </motion.div>
@@ -97,9 +97,6 @@ export const ProjectsSection = () => {
 
   return (
     <section id="projects" className="section-shell section-shell-muted">
-      <div aria-hidden className="pointer-events-none absolute -right-24 top-12 hidden h-60 w-60 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft md:block" />
-      <div aria-hidden className="pointer-events-none absolute left-0 top-1/3 hidden h-48 w-48 rounded-full bg-primary/16 blur-3xl animate-orbit-soft md:block" />
-
       <div className="section-inner">
         {loading ? (
           <>
@@ -149,10 +146,10 @@ export const ProjectsSection = () => {
               transition={shouldAnimate ? { duration: 0.38, delay: 0.12 } : undefined}
               className="mt-14 text-center"
             >
-              <Button asChild variant="outline" size="lg" className="brand-outline-btn group px-8 font-semibold">
+              <Button asChild variant="outline" size="lg" className="brand-outline-btn group px-8 font-mono text-xs font-bold uppercase tracking-[0.14em]">
                 <TransitionLink to="/projects" className="inline-flex min-h-11 items-center">
                   <Code className="mr-2 h-5 w-5" />
-                  View All Projects
+                  View Full Archive
                   <motion.span
                     className="ml-2"
                     animate={shouldAnimate ? { x: [0, 5, 0] } : undefined}
