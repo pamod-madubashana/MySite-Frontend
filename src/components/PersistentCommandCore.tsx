@@ -12,7 +12,7 @@ interface CommandCoreTarget {
 }
 
 const desktopStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 25, y: 0, scale: 1, opacity: 0.88 },
+  home: { x: 25, y: 0, scale: 0.86, opacity: 0.88 },
   about: { x: -24, y: 2, scale: 0.72, opacity: 0.36 },
   projects: { x: 30, y: 0, scale: 0.62, opacity: 0.44 },
   articles: { x: -14, y: 7, scale: 0.56, opacity: 0.34 },
@@ -174,7 +174,7 @@ const PersistentCommandCore = () => {
     <div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[5] overflow-hidden will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
+      className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
         transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialState.scale})`,
