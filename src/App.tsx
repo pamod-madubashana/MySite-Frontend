@@ -87,12 +87,23 @@ const getTransitionRank = (pathname: string, axis: RouteAxis): number | null => 
 };
 
 const RouteFallback = () => (
-  <div className="relative min-h-screen bg-background">
+  <div className="fixed inset-0 overflow-hidden bg-background">
     <DynamicPageBackground />
-    <div className="relative z-10 flex min-h-screen items-center justify-center">
-      <div className="flex flex-col items-center justify-center gap-3 text-center">
-        <div className="h-[46px] w-[46px] animate-spin rounded-full border-[3px] border-primary/25 border-t-primary" />
-        <p className="m-0 text-sm text-muted-foreground">Loading...</p>
+    <div className="pointer-events-none absolute inset-x-[-18%] bottom-[18%] h-px rotate-[-4deg] bg-gradient-to-r from-transparent via-primary/25 to-transparent" />
+    <div className="pointer-events-none absolute inset-x-[-18%] bottom-[22%] h-px rotate-[5deg] bg-gradient-to-r from-transparent via-secondary/15 to-transparent" />
+    <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
+      <div className="flex flex-col items-center justify-center gap-5">
+        <p className="m-0 font-mono text-[13px] font-black uppercase leading-none tracking-[0.42em] text-primary drop-shadow-[0_0_18px_hsl(var(--primary)/0.45)]">
+          P A M O D
+        </p>
+        <div className="relative h-[92px] w-[92px] rounded-full border border-primary/20 bg-primary/10 shadow-[0_0_64px_hsl(var(--primary)/0.24)]">
+          <div className="absolute inset-3 animate-spin rounded-full border-2 border-transparent border-r-primary/50 border-t-primary" />
+          <div className="absolute -inset-2 animate-[spin_1.8s_linear_infinite_reverse] rounded-full border border-transparent border-t-secondary/50" />
+          <div className="absolute inset-[33px] rounded-full bg-primary/30 blur-sm" />
+        </div>
+        <p className="m-0 inline-flex min-h-[30px] items-center justify-center rounded-full border border-primary/30 bg-background/55 px-4 font-mono text-[10px] font-extrabold uppercase leading-none tracking-[0.14em] text-primary shadow-[inset_0_0_20px_hsl(var(--primary)/0.08)]">
+          Booting Interface
+        </p>
       </div>
     </div>
   </div>

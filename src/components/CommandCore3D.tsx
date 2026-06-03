@@ -1,6 +1,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Suspense, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const CORE_COLOR = "#00d4ff";
 const RING_COLOR = "#3cd7ff";
@@ -397,11 +398,13 @@ interface CommandCore3DProps {
 }
 
 const CommandCore3D = ({ className = "" }: CommandCore3DProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className={`absolute inset-0 ${className}`}>
       <Suspense fallback={<CommandCoreFallback />}>
         <Canvas
-          camera={{ position: [0, 0, 8.9], fov: 50 }}
+          camera={{ position: [0, 0, isMobile ? 18 : 9.8], fov: isMobile ? 46 : 48 }}
           dpr={[1, 1.25]}
           gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
           performance={{ min: 0.65 }}

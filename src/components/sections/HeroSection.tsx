@@ -14,7 +14,7 @@ export const HeroSection = () => {
       id="home"
       className="relative min-h-[100svh] overflow-hidden px-4 pb-10 pt-16 md:min-h-[820px] md:pb-12 md:pt-24"
     >
-      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-4rem)] items-start pt-5 md:min-h-[700px] md:items-center md:pt-0">
+      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-4rem)] items-end pb-10 pt-[42vh] md:min-h-[700px] md:items-center md:pb-0 md:pt-0">
         <div className="w-full max-w-[430px] space-y-4 md:max-w-[470px] md:space-y-5">
           <div className="space-y-2.5 md:space-y-3">
             <span className="section-pill mb-2">WELCOME TO MY DIGITAL SANCTUARY</span>
