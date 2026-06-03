@@ -24,10 +24,10 @@ const desktopStates: Record<CommandSection, CommandCoreTarget> = {
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 42, y: -28, scale: 0.48, opacity: 0.28 },
-  about: { x: -34, y: -24, scale: 0.34, opacity: 0.18 },
-  projects: { x: 34, y: 18, scale: 0.32, opacity: 0.22 },
-  articles: { x: -28, y: 6, scale: 0.3, opacity: 0.16 },
+  home: { x: 0, y: -12, scale: 1, opacity: 0.34 },
+  about: { x: -18, y: -34, scale: 1, opacity: 0.18 },
+  projects: { x: 18, y: 8, scale: 1, opacity: 0.22 },
+  articles: { x: -14, y: -4, scale: 1, opacity: 0.16 },
 };
 
 const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
@@ -154,7 +154,8 @@ const PersistentCommandCore = () => {
     let frameId = 0;
 
     const animate = () => {
-      const states = viewportModeRef.current === "mobile" ? mobileStates : desktopStates;
+      const isMobile = viewportModeRef.current === "mobile";
+      const states = isMobile ? mobileStates : desktopStates;
       const target =
         pathnameRef.current === "/"
           ? getHomeScrollTarget(states, sectionCentersRef.current)
@@ -170,7 +171,7 @@ const PersistentCommandCore = () => {
       animatedStateRef.current = next;
       if (containerRef.current) {
         containerRef.current.style.opacity = String(next.opacity);
-        containerRef.current.style.transform = `translate3d(${next.x}%, ${next.y}%, 0) scale(${next.scale})`;
+        containerRef.current.style.transform = `translate3d(${next.x}%, ${next.y}%, 0) scale(${isMobile ? 1 : next.scale})`;
       }
 
       frameId = window.requestAnimationFrame(animate);
@@ -182,6 +183,7 @@ const PersistentCommandCore = () => {
   }, []);
 
   const initialState = initialStateRef.current;
+  const initialScale = viewportMode === "mobile" ? 1 : initialState.scale;
 
   return (
     <div
@@ -190,7 +192,7 @@ const PersistentCommandCore = () => {
       className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
-        transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialState.scale})`,
+        transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialScale})`,
       }}
     >
       <CommandCore3D />
