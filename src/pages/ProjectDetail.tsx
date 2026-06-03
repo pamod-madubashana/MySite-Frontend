@@ -272,11 +272,17 @@ const ProjectSection = ({ title, children, index, action, disableAnimation = fal
     initial={disableAnimation ? false : { opacity: 0, y: 16 }}
     animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
     transition={disableAnimation ? undefined : { duration: 0.35, delay: 0.12 + index * 0.08 }}
-    className="surface-card min-w-0 p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8"
+    className="surface-card min-w-0 overflow-hidden p-6 md:p-8"
   >
-    <div className="mb-5 flex flex-wrap items-center gap-3 border-b border-border/60 pb-4">
-      <h2 className="text-lg font-semibold text-foreground/90 sm:text-xl md:text-2xl">{title}</h2>
-      <div className="hidden h-px flex-1 bg-gradient-to-r from-border/80 to-transparent sm:block" />
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+    <div className="mb-5 flex flex-wrap items-end gap-3 border-b border-white/10 pb-4">
+      <div>
+        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary/70">
+          MODULE_{String(index + 1).padStart(2, "0")}
+        </p>
+        <h2 className="mt-1 text-lg font-black text-foreground sm:text-xl md:text-2xl">{title}</h2>
+      </div>
+      <div className="hidden h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent sm:block" />
       {action ? <div className="w-full sm:w-auto sm:shrink-0">{action}</div> : null}
     </div>
     {children}
@@ -305,7 +311,7 @@ const ProjectGallery = ({ projectTitle, screenshots, disableAnimation = false }:
             animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
             transition={disableAnimation ? undefined : { duration: 0.28, delay: shotIndex * 0.06 }}
             whileHover={disableAnimation ? undefined : { scale: 1.02 }}
-            className="group overflow-hidden rounded-xl border border-border/60 bg-card/40 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+            className="group overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] text-left shadow-[0_18px_48px_rgba(0,0,0,0.24)] transition-colors duration-300 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
             onClick={() => setActiveIndex(shotIndex)}
           >
             <img
@@ -321,7 +327,7 @@ const ProjectGallery = ({ projectTitle, screenshots, disableAnimation = false }:
       </div>
 
       <Dialog open={activeIndex !== null} onOpenChange={(isOpen) => !isOpen && setActiveIndex(null)}>
-        <DialogContent className="w-[95vw] max-w-5xl border-border/60 bg-card/90 p-3 backdrop-blur-none md:backdrop-blur-2xl sm:p-4">
+        <DialogContent className="dark w-[95vw] max-w-5xl border border-primary/20 bg-background/85 p-3 shadow-[0_0_80px_hsl(var(--primary)/0.18)] backdrop-blur-2xl sm:p-4">
           <DialogTitle className="sr-only">Expanded screenshot</DialogTitle>
           {activeImage && (
             <img
@@ -352,13 +358,12 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
       initial={disableAnimation ? false : { opacity: 0, y: 22 }}
       animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
       transition={disableAnimation ? undefined : { duration: 0.45 }}
-      className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 backdrop-blur-none shadow-[0_30px_56px_-46px_hsl(var(--primary)/0.56)] md:bg-card/30 md:backdrop-blur-2xl md:shadow-[0_38px_70px_-46px_hsl(var(--primary)/0.6)]"
+      className="surface-card overflow-hidden p-0"
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/18 via-transparent to-secondary/20" />
-      <div aria-hidden className="pointer-events-none absolute -left-20 top-0 hidden h-52 w-52 rounded-full bg-primary/20 blur-3xl md:block" />
-      <div aria-hidden className="pointer-events-none absolute -right-20 bottom-0 hidden h-52 w-52 rounded-full bg-secondary/22 blur-3xl md:block" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/16 via-transparent to-secondary/16" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
 
-      <div className="relative min-h-[360px] overflow-hidden rounded-xl border border-border/60 bg-black/20 md:h-[460px] md:min-h-0 md:bg-black/10">
+      <div className="relative min-h-[360px] overflow-hidden rounded-lg border border-white/10 bg-background/55 md:h-[460px] md:min-h-0">
         <img
           src={thumbnailSrc}
           alt=""
@@ -370,12 +375,12 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
         />
 
         <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10 md:pt-10">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-foreground/75 sm:gap-2 sm:text-xs md:text-sm">
+          <nav aria-label="Breadcrumb" className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-background/45 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground backdrop-blur-xl sm:gap-2">
             <Link to="/" className="transition-colors hover:text-primary">Home</Link>
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-3.5 w-3.5" />
             <Link to="/projects" className="transition-colors hover:text-primary">Projects</Link>
-            <ChevronRight className="h-4 w-4" />
-            <span className="truncate text-foreground/90">{project.slug || project._id}</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+            <span className="truncate text-primary">{project.slug || project._id}</span>
           </nav>
         </div>
 
@@ -392,14 +397,14 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
 
         <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4 sm:px-6 sm:pb-6 md:px-10 md:pb-10">
           <div className="inline-flex max-w-full flex-col items-start gap-2">
-            <p className="relative inline-block px-1 text-[10px] font-medium uppercase tracking-[0.14em] text-gradient sm:text-xs sm:tracking-[0.18em] md:text-sm">
+            <p className="section-pill">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-4 -inset-y-2 -z-10 rounded-full bg-background/35 blur-xl"
               />
               Project Showcase
             </p>
-            <h1 className="relative inline-block max-w-3xl break-words px-1 text-xl font-bold leading-tight text-foreground/95 sm:text-2xl md:text-5xl">
+            <h1 className="relative inline-block max-w-3xl break-words px-1 text-xl font-black leading-tight text-foreground sm:text-2xl md:text-5xl">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-5 -inset-y-3 -z-10 rounded-full bg-background/30 blur-2xl"
@@ -437,14 +442,15 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
       initial={disableAnimation ? false : { opacity: 0, y: 16 }}
       animate={disableAnimation ? undefined : { opacity: 1, y: 0 }}
       transition={disableAnimation ? undefined : { duration: 0.35, delay: 0.22 }}
-      className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl xl:sticky xl:top-28"
+      className="surface-card overflow-hidden rounded-lg p-6 xl:sticky xl:top-28"
     >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
       <div className="space-y-6">
         <div>
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Project Links</h3>
+          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Project Links</h3>
           <div className="space-y-2">
             {project.liveUrl && (
-              <Button asChild className="w-full justify-start gap-2">
+              <Button asChild className="h-11 w-full justify-start gap-2 rounded-lg bg-primary text-primary-foreground shadow-[0_0_28px_hsl(var(--primary)/0.26)] hover:bg-primary/90">
                 <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
                   Live Demo
@@ -452,7 +458,7 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
               </Button>
             )}
             {project.githubUrl && (
-              <Button asChild variant="outline" className="w-full justify-start gap-2 border-border/60 bg-card/60 text-foreground hover:bg-card/80 hover:text-foreground">
+              <Button asChild variant="outline" className="h-11 w-full justify-start gap-2 rounded-lg border-white/15 bg-white/[0.035] text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary">
                 <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                   <Github className="h-4 w-4" />
                   Source Code
@@ -462,26 +468,36 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
           </div>
         </div>
 
-        <div className="border-t border-border/60 pt-5">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Quick Stats</h3>
+        <div className="border-t border-white/10 pt-5">
+          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Quick Stats</h3>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p className="flex items-center justify-between gap-3"><span className="flex items-center gap-1.5"><Star className="h-4 w-4" />Stars</span><span>{githubStats?.stars ?? 0}</span></p>
-            <p className="flex items-center justify-between gap-3"><span className="flex items-center gap-1.5"><GitFork className="h-4 w-4" />Forks</span><span>{githubStats?.forks ?? 0}</span></p>
-            <p className="flex items-center justify-between gap-3"><span className="flex items-center gap-1.5"><CalendarDays className="h-4 w-4" />Created</span><span>{formatDate(project.createdAt)}</span></p>
-            <p className="flex items-center justify-between gap-3"><span className="flex items-center gap-1.5"><Clock3 className="h-4 w-4" />Updated</span><span>{formatDate(project.updatedAt)}</span></p>
+            {[
+              { label: "Stars", value: githubStats?.stars ?? 0, icon: Star },
+              { label: "Forks", value: githubStats?.forks ?? 0, icon: GitFork },
+              { label: "Created", value: formatDate(project.createdAt), icon: CalendarDays },
+              { label: "Updated", value: formatDate(project.updatedAt), icon: Clock3 },
+            ].map((stat) => (
+              <p key={stat.label} className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2">
+                <span className="flex items-center gap-2">
+                  <stat.icon className="h-4 w-4 text-primary" />
+                  {stat.label}
+                </span>
+                <span className="font-mono text-xs font-bold text-foreground">{stat.value}</span>
+              </p>
+            ))}
           </div>
         </div>
 
-        <div className="border-t border-border/60 pt-5">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Stack</h3>
+        <div className="border-t border-white/10 pt-5">
+          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Stack</h3>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
-              <span key={`side-tag-${tag}`} className="rounded-full border border-border/60 bg-muted/20 px-2.5 py-1 text-xs text-foreground/75">
+              <span key={`side-tag-${tag}`} className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 font-mono text-[11px] font-bold text-primary/90">
                 {tag}
               </span>
             ))}
             {project.languages.map((language) => (
-              <span key={`side-language-${language}`} className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/20 px-2.5 py-1 text-xs text-foreground/75">
+              <span key={`side-language-${language}`} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 font-mono text-[11px] font-bold text-foreground/80">
                 <span className={`h-2 w-2 rounded-full ${languageColors[language] || "bg-muted"}`} />
                 {language}
               </span>
@@ -489,9 +505,9 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
           </div>
         </div>
 
-        <div className="border-t border-border/60 pt-5">
-          <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">Share</h3>
-          <Button type="button" variant="outline" onClick={copyLink} className="w-full justify-start gap-2 border-border/60 bg-card/60 text-foreground hover:bg-card/80 hover:text-foreground">
+        <div className="border-t border-white/10 pt-5">
+          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Share</h3>
+          <Button type="button" variant="outline" onClick={copyLink} className="h-11 w-full justify-start gap-2 rounded-lg border-white/15 bg-white/[0.035] text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary">
             <Share2 className="h-4 w-4" />
             {copied ? "Link copied" : "Copy project link"}
             <Copy className="ml-auto h-4 w-4" />
@@ -506,7 +522,8 @@ const ProjectDetailSkeleton = () => (
   <section className="py-8 md:py-12">
     <div className="container mx-auto px-4">
       <div className="mx-auto max-w-6xl space-y-8">
-        <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-10">
+        <div className="surface-card overflow-hidden rounded-lg p-6 md:p-10">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
           <Skeleton className="mb-6 h-4 w-56" />
           <Skeleton className="h-12 w-3/4" />
           <Skeleton className="mt-3 h-5 w-full max-w-2xl" />
@@ -524,18 +541,21 @@ const ProjectDetailSkeleton = () => (
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
           <div className="space-y-8">
-            <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8">
+            <div className="surface-card overflow-hidden rounded-lg p-6 md:p-8">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
               <Skeleton className="mb-5 h-7 w-40" />
               <Skeleton className="h-4 w-full" />
               <Skeleton className="mt-2 h-4 w-5/6" />
               <Skeleton className="mt-2 h-4 w-4/6" />
             </div>
-            <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl md:p-8">
+            <div className="surface-card overflow-hidden rounded-lg p-6 md:p-8">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
               <Skeleton className="mb-5 h-7 w-52" />
               <Skeleton className="h-48 w-full" />
             </div>
           </div>
-          <div className="surface-card rounded-2xl p-6 !backdrop-blur-none md:!backdrop-blur-2xl">
+          <div className="surface-card overflow-hidden rounded-lg p-6">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
             <Skeleton className="h-6 w-32" />
             <Skeleton className="mt-3 h-10 w-full" />
             <Skeleton className="mt-2 h-10 w-full" />
@@ -795,13 +815,15 @@ const ProjectDetail = () => {
               <motion.div
                 initial={isMobile ? false : { opacity: 0, y: 20 }}
                 animate={isMobile ? undefined : { opacity: 1, y: 0 }}
-                className="page-glass-strip mx-auto max-w-2xl rounded-xl p-10 text-center"
+                className="surface-card mx-auto max-w-2xl overflow-hidden rounded-lg p-10 text-center"
               >
-                <h1 className="mb-4 text-3xl font-bold text-foreground/80 md:text-4xl">Project not found</h1>
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+                <span className="section-pill">Route Error</span>
+                <h1 className="mb-4 mt-4 text-3xl font-black text-foreground md:text-4xl">Project not found</h1>
                 <p className="mb-8 text-muted-foreground">
                   We couldn&apos;t find the project you requested. It may have been removed or the slug is invalid.
                 </p>
-                <Button asChild className="hover-lift">
+                <Button asChild className="rounded-lg bg-primary text-primary-foreground shadow-[0_0_28px_hsl(var(--primary)/0.26)] hover:bg-primary/90">
                   <Link to="/projects">Back to Projects</Link>
                 </Button>
               </motion.div>
@@ -828,7 +850,7 @@ const ProjectDetail = () => {
                           asChild
                           variant="outline"
                           size="sm"
-                          className="w-full gap-2 border-border/60 bg-card/70 text-foreground hover:bg-card hover:text-foreground sm:w-auto"
+                          className="w-full gap-2 rounded-lg border-white/15 bg-white/[0.035] text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary sm:w-auto"
                         >
                           <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                             <Github className="h-4 w-4" />
@@ -837,7 +859,8 @@ const ProjectDetail = () => {
                         </Button>
                       ) : undefined}
                     >
-                      <div className="rounded-xl border border-border/60 bg-background/30 p-4 md:p-6">
+                      <div className="relative overflow-hidden rounded-lg border border-white/10 bg-background/55 p-4 shadow-[inset_0_0_40px_rgba(0,0,0,0.18)] md:p-6">
+                        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-transparent" />
                         {readmeLoading ? (
                           <div className="space-y-3">
                             <Skeleton className="h-6 w-1/3" />
@@ -847,7 +870,7 @@ const ProjectDetail = () => {
                             <Skeleton className="h-28 w-full" />
                           </div>
                         ) : readme ? (
-                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-border/60 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-border/40 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_p]:my-4 [&_p]:break-words [&_p]:leading-relaxed [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:break-words [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-border/60 [&_table]:my-5 [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-border/60 [&_table]:whitespace-nowrap [&_th]:bg-muted/30 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-border/50 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-border/60 [&_pre]:bg-black/40 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:break-words [&_code]:rounded [&_code]:bg-muted/40 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
+                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-primary/25 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-primary/20 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground [&_p]:my-4 [&_p]:break-words [&_p]:leading-relaxed [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:break-words [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:py-2 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-primary/20 [&_table]:my-5 [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-white/10 [&_table]:whitespace-nowrap [&_th]:bg-primary/10 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-primary/20 [&_pre]:bg-black/45 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:break-words [&_code]:rounded [&_code]:bg-primary/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {readme}
                             </ReactMarkdown>
