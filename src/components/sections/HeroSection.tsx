@@ -12,9 +12,9 @@ export const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative min-h-[100svh] overflow-hidden px-4 pb-12 pt-24 md:min-h-[820px] md:pt-24"
+      className="relative min-h-[100svh] overflow-hidden px-4 pb-10 pt-20 md:min-h-[820px] md:pb-12 md:pt-24"
     >
-      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-6rem)] items-center md:min-h-[700px]">
+      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-5rem)] items-start pt-12 md:min-h-[700px] md:items-center md:pt-0">
         <div className="w-full max-w-[430px] space-y-5 md:max-w-[470px]">
           <div className="space-y-3">
             <span className="section-pill mb-2">WELCOME TO MY DIGITAL SANCTUARY</span>

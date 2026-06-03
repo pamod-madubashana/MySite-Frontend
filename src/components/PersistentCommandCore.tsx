@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CommandCore3D from "@/components/CommandCore3D";
 
@@ -11,6 +11,11 @@ interface CommandCoreTarget {
   opacity: number;
 }
 
+interface SectionCenter {
+  id: CommandSection;
+  center: number;
+}
+
 const desktopStates: Record<CommandSection, CommandCoreTarget> = {
   home: { x: 25, y: 0, scale: 0.86, opacity: 0.88 },
   about: { x: -24, y: 2, scale: 0.72, opacity: 0.36 },
@@ -19,10 +24,10 @@ const desktopStates: Record<CommandSection, CommandCoreTarget> = {
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 0, y: 18, scale: 0.62, opacity: 0.58 },
-  about: { x: 0, y: -28, scale: 0.42, opacity: 0.25 },
-  projects: { x: 0, y: 30, scale: 0.34, opacity: 0.3 },
-  articles: { x: 0, y: 12, scale: 0.32, opacity: 0.24 },
+  home: { x: 18, y: -10, scale: 0.42, opacity: 0.3 },
+  about: { x: -10, y: -28, scale: 0.34, opacity: 0.2 },
+  projects: { x: 14, y: 24, scale: 0.32, opacity: 0.24 },
+  articles: { x: -8, y: 10, scale: 0.3, opacity: 0.18 },
 };
 
 const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
@@ -58,39 +63,28 @@ const mixTargets = (from: CommandCoreTarget, to: CommandCoreTarget, progress: nu
   opacity: lerp(from.opacity, to.opacity, progress),
 });
 
-const getHomeScrollTarget = (states: Record<CommandSection, CommandCoreTarget>): CommandCoreTarget => {
-  const measuredSections = homeSectionOrder
-    .map((sectionId) => {
-      const element = document.getElementById(sectionId);
-      if (!element) {
-        return null;
-      }
-
-      return {
-        id: sectionId,
-        center: element.offsetTop + element.offsetHeight * 0.5,
-      };
-    })
-    .filter((section): section is { id: CommandSection; center: number } => Boolean(section));
-
-  if (measuredSections.length === 0) {
+const getHomeScrollTarget = (
+  states: Record<CommandSection, CommandCoreTarget>,
+  sectionCenters: SectionCenter[]
+): CommandCoreTarget => {
+  if (sectionCenters.length === 0) {
     return states.home;
   }
 
   const viewportCenter = window.scrollY + window.innerHeight * 0.5;
 
-  if (viewportCenter <= measuredSections[0].center) {
-    return states[measuredSections[0].id];
+  if (viewportCenter <= sectionCenters[0].center) {
+    return states[sectionCenters[0].id];
   }
 
-  const lastSection = measuredSections[measuredSections.length - 1];
+  const lastSection = sectionCenters[sectionCenters.length - 1];
   if (viewportCenter >= lastSection.center) {
     return states[lastSection.id];
   }
 
-  for (let index = 0; index < measuredSections.length - 1; index += 1) {
-    const current = measuredSections[index];
-    const next = measuredSections[index + 1];
+  for (let index = 0; index < sectionCenters.length - 1; index += 1) {
+    const current = sectionCenters[index];
+    const next = sectionCenters[index + 1];
 
     if (viewportCenter >= current.center && viewportCenter <= next.center) {
       const rawProgress = (viewportCenter - current.center) / Math.max(next.center - current.center, 1);
@@ -109,6 +103,7 @@ const PersistentCommandCore = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const pathnameRef = useRef(location.pathname);
   const viewportModeRef = useRef(viewportMode);
+  const sectionCentersRef = useRef<SectionCenter[]>([]);
   const initialStateRef = useRef<CommandCoreTarget | null>(null);
 
   if (!initialStateRef.current) {
@@ -118,9 +113,26 @@ const PersistentCommandCore = () => {
 
   const animatedStateRef = useRef(initialStateRef.current);
 
+  const updateSectionCenters = useCallback(() => {
+    sectionCentersRef.current = homeSectionOrder
+      .map((sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (!element) {
+          return null;
+        }
+
+        return {
+          id: sectionId,
+          center: element.offsetTop + element.offsetHeight * 0.5,
+        };
+      })
+      .filter((section): section is SectionCenter => Boolean(section));
+  }, []);
+
   useEffect(() => {
     pathnameRef.current = location.pathname;
-  }, [location.pathname]);
+    window.requestAnimationFrame(updateSectionCenters);
+  }, [location.pathname, updateSectionCenters]);
 
   useEffect(() => {
     viewportModeRef.current = viewportMode;
@@ -129,13 +141,14 @@ const PersistentCommandCore = () => {
   useEffect(() => {
     const handleResize = () => {
       setViewportMode(getViewportMode());
+      updateSectionCenters();
     };
 
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [updateSectionCenters]);
 
   useEffect(() => {
     let frameId = 0;
@@ -144,7 +157,7 @@ const PersistentCommandCore = () => {
       const states = viewportModeRef.current === "mobile" ? mobileStates : desktopStates;
       const target =
         pathnameRef.current === "/"
-          ? getHomeScrollTarget(states)
+          ? getHomeScrollTarget(states, sectionCentersRef.current)
           : states[getSectionFromPath(pathnameRef.current)];
       const current = animatedStateRef.current;
       const next = {
@@ -174,7 +187,7 @@ const PersistentCommandCore = () => {
     <div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
+      className="pointer-events-none fixed inset-0 z-[5] overflow-hidden will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
         transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialState.scale})`,
