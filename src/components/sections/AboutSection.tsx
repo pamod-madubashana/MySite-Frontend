@@ -223,14 +223,34 @@ export const AboutSection = () => {
           whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
           viewport={shouldAnimate ? revealViewport : undefined}
           transition={shouldAnimate ? { duration: 0.45 } : undefined}
-          className="surface-card mx-auto max-w-3xl"
+          className="surface-card mx-auto max-w-5xl overflow-hidden"
         >
-          <h3 className="text-center text-2xl font-semibold text-foreground/90">Technical Proficiency</h3>
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
+          <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <span className="section-pill">Skill Matrix</span>
+              <h3 className="mt-3 text-2xl font-black leading-tight text-foreground md:text-3xl">
+                Technical <span className="text-gradient">Proficiency</span>
+              </h3>
+            </div>
+            <div className="inline-flex items-center gap-3 self-start rounded-full border border-primary/25 bg-primary/10 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-primary sm:self-auto">
+              <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_14px_rgba(74,222,128,0.9)]" />
+              Core Synced
+            </div>
+          </div>
 
-          <div className="mt-8 space-y-5">
+          <div className="grid gap-4 md:grid-cols-2">
             {loading ? (
-              <div className="py-6 text-center">
-                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
+              <div className="col-span-full flex min-h-40 items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="relative h-16 w-16 rounded-full border border-primary/25 bg-primary/10 shadow-[0_0_44px_hsl(var(--primary)/0.18)]">
+                    <div className="absolute inset-2 animate-spin rounded-full border-2 border-transparent border-r-primary/50 border-t-primary" />
+                    <div className="absolute -inset-1 animate-[spin_1.6s_linear_infinite_reverse] rounded-full border border-transparent border-t-secondary/60" />
+                  </div>
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                    Scanning Skill Nodes
+                  </p>
+                </div>
               </div>
             ) : (
               displayedTechStack.map((tech, index) => (
@@ -240,21 +260,36 @@ export const AboutSection = () => {
                   whileInView={shouldAnimate ? { opacity: 1, x: 0 } : undefined}
                   viewport={shouldAnimate ? revealViewport : undefined}
                   transition={shouldAnimate ? { duration: 0.35, delay: index * 0.06 } : undefined}
+                  className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl transition-colors duration-300 hover:border-primary/35 hover:bg-primary/[0.06]"
                 >
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <span className="font-mono text-sm text-foreground/80">{tech.name}</span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">{tech.level}%</span>
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary/70">
+                        NODE_{String(index + 1).padStart(2, "0")}
+                      </p>
+                      <h4 className="mt-1 text-base font-black text-foreground">{tech.name}</h4>
+                    </div>
+                    <span className="rounded-md border border-primary/20 bg-background/55 px-2.5 py-1 font-mono text-xs font-black text-primary">
+                      {tech.level}%
+                    </span>
                   </div>
 
-                  <div className="h-2.5 overflow-hidden rounded-full bg-muted/20">
+                  <div className="relative h-2 overflow-hidden rounded-full bg-background/70 ring-1 ring-white/10">
+                    <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0,rgba(255,255,255,0.08)_50%,transparent_100%)] bg-[length:24px_100%] opacity-35" />
                     <motion.div
                       initial={shouldAnimate ? { width: 0 } : false}
                       whileInView={shouldAnimate ? { width: `${tech.level}%` } : undefined}
                       viewport={shouldAnimate ? revealViewport : undefined}
                       transition={shouldAnimate ? { duration: 0.75, delay: 0.16 + index * 0.06, ease: "easeOut" } : undefined}
                       style={!shouldAnimate ? { width: `${tech.level}%` } : undefined}
-                      className="h-full rounded-full bg-gradient-to-r from-primary via-secondary to-accent"
+                      className="relative h-full rounded-full bg-gradient-to-r from-primary via-cyan-300 to-secondary shadow-[0_0_22px_hsl(var(--primary)/0.45)]"
                     />
+                  </div>
+
+                  <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                    <span>Throughput</span>
+                    <span>{tech.level >= 80 ? "High" : tech.level >= 60 ? "Stable" : "Learning"}</span>
                   </div>
                 </motion.div>
               ))
