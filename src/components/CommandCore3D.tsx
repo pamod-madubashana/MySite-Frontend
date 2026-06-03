@@ -7,7 +7,7 @@ const RING_COLOR = "#3cd7ff";
 const SECONDARY_COLOR = "#dcb8ff";
 
 const makeParticleGeometry = () => {
-  const particleCount = 3200;
+  const particleCount = 2600;
   const positions = new Float32Array(particleCount * 3);
 
   for (let index = 0; index < particleCount; index += 1) {
@@ -28,7 +28,7 @@ const makeParticleGeometry = () => {
 };
 
 const makeAmbientParticleGeometry = () => {
-  const particleCount = 2600;
+  const particleCount = 1900;
   const positions = new Float32Array(particleCount * 3);
 
   for (let index = 0; index < particleCount; index += 1) {
@@ -56,7 +56,7 @@ const randomSpherePoint = (radius: number) => {
 };
 
 const makeNetworkGeometry = () => {
-  const segmentCount = 260;
+  const segmentCount = 190;
   const positions = new Float32Array(segmentCount * 2 * 3);
 
   for (let index = 0; index < segmentCount; index += 1) {
@@ -79,7 +79,7 @@ const makeNetworkGeometry = () => {
 };
 
 const makeNodeGeometry = () => {
-  const nodeCount = 520;
+  const nodeCount = 380;
   const positions = new Float32Array(nodeCount * 3);
 
   for (let index = 0; index < nodeCount; index += 1) {
@@ -401,7 +401,7 @@ const CommandCore3D = ({ className = "" }: CommandCore3DProps) => {
     <div className={`absolute inset-0 ${className}`}>
       <Suspense fallback={<CommandCoreFallback />}>
         <Canvas
-          camera={{ position: [0, 0, 7.2], fov: 48 }}
+          camera={{ position: [0, 0, 8.9], fov: 50 }}
           dpr={[1, 1.25]}
           gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
           performance={{ min: 0.65 }}
