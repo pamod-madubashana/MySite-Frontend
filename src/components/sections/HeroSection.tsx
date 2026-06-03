@@ -12,32 +12,32 @@ export const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative min-h-[100svh] overflow-hidden px-4 pb-10 pt-20 md:min-h-[820px] md:pb-12 md:pt-24"
+      className="relative min-h-[100svh] overflow-hidden px-4 pb-10 pt-16 md:min-h-[820px] md:pb-12 md:pt-24"
     >
-      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-5rem)] items-start pt-12 md:min-h-[700px] md:items-center md:pt-0">
-        <div className="w-full max-w-[430px] space-y-5 md:max-w-[470px]">
-          <div className="space-y-3">
+      <div className="container relative z-20 mx-auto flex min-h-[calc(100svh-4rem)] items-start pt-5 md:min-h-[700px] md:items-center md:pt-0">
+        <div className="w-full max-w-[430px] space-y-4 md:max-w-[470px] md:space-y-5">
+          <div className="space-y-2.5 md:space-y-3">
             <span className="section-pill mb-2">WELCOME TO MY DIGITAL SANCTUARY</span>
-            <h1 className="text-[2.65rem] font-black leading-[0.9] tracking-normal text-foreground drop-shadow-2xl sm:text-5xl md:text-[3.9rem] lg:text-[4.6rem]">
+            <h1 className="text-[2.35rem] font-black leading-[0.92] tracking-normal text-foreground drop-shadow-2xl min-[390px]:text-[2.55rem] sm:text-5xl md:text-[3.9rem] lg:text-[4.6rem]">
               Hi, I&apos;m Pamod
             </h1>
-            <p className="max-w-md text-base font-black leading-snug text-primary sm:text-lg md:text-xl">
+            <p className="max-w-md text-[0.95rem] font-black leading-snug text-primary min-[390px]:text-base sm:text-lg md:text-xl">
               Developer / Automation Builder / Self-Hosting Enthusiast
             </p>
           </div>
 
-          <p className="max-w-md rounded-lg border border-white/10 bg-background/45 p-4 text-sm font-semibold leading-relaxed text-muted-foreground shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-md md:text-[0.95rem]">
+          <p className="max-w-md rounded-lg border border-white/10 bg-background/50 p-3.5 text-[0.83rem] font-semibold leading-relaxed text-muted-foreground shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-md min-[390px]:text-sm md:p-4 md:text-[0.95rem]">
             I build bots, web apps, automation tools, and self-hosted systems with clean UI,
             practical workflows, and reliable deployments.
           </p>
 
-          <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+          <div className="flex flex-wrap gap-3 pt-1 md:pt-2">
             <Button
               asChild
               size="sm"
-              className="h-11 rounded-lg bg-primary px-6 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_30px_hsl(var(--primary)/0.38)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90"
+              className="h-10 rounded-lg bg-primary px-5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_30px_hsl(var(--primary)/0.38)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:h-11 sm:px-6 sm:text-[10px]"
             >
-              <TransitionLink to="/projects" className="inline-flex min-h-11 items-center justify-center gap-2">
+              <TransitionLink to="/projects" className="inline-flex min-h-10 items-center justify-center gap-2 sm:min-h-11">
                 <span>View Projects</span>
               </TransitionLink>
             </Button>
@@ -46,9 +46,9 @@ export const HeroSection = () => {
               asChild
               size="sm"
               variant="outline"
-              className="h-11 rounded-lg border-white/10 bg-white/[0.04] px-6 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+              className="h-10 rounded-lg border-white/10 bg-white/[0.04] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary sm:h-11 sm:px-6 sm:text-[10px]"
             >
-              <TransitionLink to="/about" className="inline-flex min-h-11 items-center justify-center gap-2">
+              <TransitionLink to="/about" className="inline-flex min-h-10 items-center justify-center gap-2 sm:min-h-11">
                 <span>Contact Me</span>
               </TransitionLink>
             </Button>

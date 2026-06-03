@@ -24,10 +24,10 @@ const desktopStates: Record<CommandSection, CommandCoreTarget> = {
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 18, y: -10, scale: 0.42, opacity: 0.3 },
-  about: { x: -10, y: -28, scale: 0.34, opacity: 0.2 },
-  projects: { x: 14, y: 24, scale: 0.32, opacity: 0.24 },
-  articles: { x: -8, y: 10, scale: 0.3, opacity: 0.18 },
+  home: { x: 42, y: -28, scale: 0.48, opacity: 0.28 },
+  about: { x: -34, y: -24, scale: 0.34, opacity: 0.18 },
+  projects: { x: 34, y: 18, scale: 0.32, opacity: 0.22 },
+  articles: { x: -28, y: 6, scale: 0.3, opacity: 0.16 },
 };
 
 const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
