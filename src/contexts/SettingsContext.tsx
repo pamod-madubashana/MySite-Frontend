@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { settingsApi } from '@/api/settingsApi';
+import { getPublicSiteData, type PublicSiteData } from '@/api/siteDataApi';
 
 interface Settings {
   aboutContent: string;
@@ -79,19 +79,19 @@ export const SettingsProvider = ({ children }: SettingsProviderProps) => {
       setError(null);
       
       // Set up timeout promise
-      const timeoutPromise = new Promise<Settings>((_, reject) => {
+      const timeoutPromise = new Promise<PublicSiteData>((_, reject) => {
         setTimeout(() => {
           reject(new Error('Settings loading timed out after 5 seconds'));
         }, 12000); // 12 seconds timeout
       });
       
       // Race between API call and timeout
-      const data = await Promise.race([
-        settingsApi.getSettings(forceRefresh),
+      const siteData = await Promise.race([
+        getPublicSiteData(forceRefresh),
         timeoutPromise
       ]);
-      
-      setSettings(data);
+
+      setSettings(siteData.settings || DEFAULT_SETTINGS);
     } catch (err: any) {
       if (err.message.includes('timed out')) {
         // Use default settings on timeout

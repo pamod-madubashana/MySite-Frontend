@@ -4,19 +4,11 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
 import { ProjectsSection } from "@/components/sections/ProjectsSection";
 import { useSettings } from "@/contexts/SettingsContext";
-import { useEffect } from 'react';
-import { aboutApi } from '@/api/aboutApi';
 import PageSeo from "@/components/seo/PageSeo";
 import DynamicPageBackground from "@/components/DynamicPageBackground";
 
 const Index = () => {
   const { settings, loading } = useSettings();
-  
-  // Pre-fetch about page data when home page loads
-  useEffect(() => {
-    // Start pre-fetching in background without blocking UI
-    aboutApi.prefetchAboutData();
-  }, []);
   
   if (loading) {
     return (

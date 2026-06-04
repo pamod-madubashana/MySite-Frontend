@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import { Code2, Palette, Zap, Globe } from "lucide-react";
-import { useEffect, useState } from "react";
-import { API_BASE_URL } from "@/lib/apiConfig";
-import { aboutApi } from "@/api/aboutApi";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePublicSiteData } from "@/hooks/usePublicSiteData";
 
 const skills = [
   {
@@ -40,76 +38,24 @@ const skills = [
   }
 ];
 
-interface CachedTechCategory {
-  skills: string[];
-}
-
-interface PublicTechSkill {
-  name: string;
-  level: number;
-}
-
 export const AboutSection = () => {
   const isMobile = useIsMobile();
   const shouldAnimate = !isMobile;
-
-  const [techStack, setTechStack] = useState([
+  const { data: siteData, isLoading } = usePublicSiteData();
+  const fallbackTechStack = [
     { name: "Python", level: 95 },
     { name: "JavaScript", level: 80 },
     { name: "React", level: 65 },
     { name: "TypeScript", level: 75 },
     { name: "MongoDB", level: 85 },
     { name: "AWS", level: 30 }
-  ]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTechSkills = async () => {
-      try {
-        const cachedData = aboutApi.getCachedAboutData();
-
-        if (cachedData && cachedData.techCategories.length > 0) {
-          const allSkills = (cachedData.techCategories as CachedTechCategory[]).flatMap((category) =>
-            category.skills.map((skill: string) => ({
-              name: skill,
-              level: Math.floor(Math.random() * 40) + 60
-            }))
-          );
-
-          if (allSkills.length > 0) {
-            setTechStack(allSkills.slice(0, 6));
-          }
-
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/tech-stack-categories/public`);
-        if (response.ok) {
-          await response.json();
-
-          const skillsResponse = await fetch(`${API_BASE_URL}/tech-skills/public`);
-          if (skillsResponse.ok) {
-            const techSkillsData = (await skillsResponse.json()) as PublicTechSkill[];
-            const mappedTechStack = techSkillsData.map((skill) => ({
-              name: skill.name,
-              level: skill.level
-            }));
-
-            if (mappedTechStack.length > 0) {
-              setTechStack(mappedTechStack);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching tech skills:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTechSkills();
-  }, []);
+  ];
+  const techStack = siteData?.techSkills.length
+    ? siteData.techSkills.map((skill) => ({
+      name: skill.name,
+      level: skill.level
+    }))
+    : fallbackTechStack;
 
   const displayedTechStack = techStack.slice(0, 8);
   const revealViewport = { once: true, amount: 0.2, margin: "0px 0px -64px 0px" };
@@ -240,7 +186,7 @@ export const AboutSection = () => {
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {loading ? (
+            {isLoading ? (
               <div className="col-span-full flex min-h-40 items-center justify-center">
                 <div className="flex flex-col items-center gap-4">
                   <div className="relative h-16 w-16 rounded-full border border-primary/25 bg-primary/10 shadow-[0_0_44px_hsl(var(--primary)/0.18)]">

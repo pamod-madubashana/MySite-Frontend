@@ -49,7 +49,7 @@ export const HeroSection = () => {
               className="h-10 rounded-lg border-white/10 bg-white/[0.04] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary sm:h-11 sm:px-6 sm:text-[10px]"
             >
               <TransitionLink to="/about" className="inline-flex min-h-10 items-center justify-center gap-2 sm:min-h-11">
-                <span>Contact Me</span>
+                <span>About Me</span>
               </TransitionLink>
             </Button>
           </div>

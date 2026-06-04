@@ -83,6 +83,7 @@ export const interestsApi = {
     
     // Invalidate cache after creating an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
     
@@ -108,6 +109,7 @@ export const interestsApi = {
     
     // Invalidate cache after updating an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
     
@@ -129,6 +131,7 @@ export const interestsApi = {
     
     // Invalidate cache after deleting an interest
     apiCache.invalidate('interests:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
   }

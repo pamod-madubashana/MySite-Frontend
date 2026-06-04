@@ -84,6 +84,7 @@ export const techSkillsApi = {
     
     // Invalidate cache after creating a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;
@@ -108,6 +109,7 @@ export const techSkillsApi = {
     
     // Invalidate cache after updating a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;
@@ -128,6 +130,7 @@ export const techSkillsApi = {
     
     // Invalidate cache after deleting a tech skill
     apiCache.invalidate('techskills:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
   }
 };

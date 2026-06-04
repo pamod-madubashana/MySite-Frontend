@@ -1,28 +1,11 @@
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Code, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { projectApi } from "@/api/projectApi";
+import type { SiteProject } from "@/api/siteDataApi";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { TransitionLink } from "@/components/TransitionLink";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-interface Project {
-  _id: string;
-  slug?: string;
-  title: string;
-  description: string;
-  tags: string[];
-  languages: string[];
-  githubUrl?: string;
-  liveUrl?: string;
-  featured: boolean;
-  status: "draft" | "published";
-  thumbnail?: string;
-  screenshots?: string[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { usePublicSiteData } from "@/hooks/usePublicSiteData";
 
 const ProjectsHeader = ({ copy, shouldAnimate }: { copy: string; shouldAnimate: boolean }) => (
   <motion.div
@@ -43,62 +26,15 @@ const ProjectsHeader = ({ copy, shouldAnimate }: { copy: string; shouldAnimate: 
 export const ProjectsSection = () => {
   const isMobile = useIsMobile();
   const shouldAnimate = !isMobile;
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [githubStats, setGithubStats] = useState<Record<string, { stars: number; forks: number }>>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProjectsAndStats = async () => {
-      try {
-        const response = await projectApi.getProjects({ limit: 3 });
-        setProjects(response.projects);
-
-        const stats: Record<string, { stars: number; forks: number }> = {};
-        for (const project of response.projects) {
-          if (!project.githubUrl) {
-            continue;
-          }
-
-          try {
-            const urlParts = project.githubUrl.replace("https://github.com/", "").split("/");
-            if (urlParts.length < 2) {
-              continue;
-            }
-
-            const owner = urlParts[0];
-            const repo = urlParts[1].split("/")[0];
-            const githubResponse = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-
-            if (!githubResponse.ok) {
-              continue;
-            }
-
-            const data = await githubResponse.json();
-            stats[project._id] = {
-              stars: data.stargazers_count,
-              forks: data.forks_count
-            };
-          } catch {
-            continue;
-          }
-        }
-
-        setGithubStats(stats);
-      } catch (error) {
-        console.error("Failed to fetch projects:", error);
-        setProjects([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjectsAndStats();
-  }, []);
+  const { data: siteData, isLoading } = usePublicSiteData();
+  const sourceProjects = siteData?.featuredProjects.length ? siteData.featuredProjects : siteData?.projects || [];
+  const projects: SiteProject[] = sourceProjects.slice(0, 3);
+  const githubStats = siteData?.github.projectStats || {};
 
   return (
     <section id="projects" className="section-shell section-shell-muted">
       <div className="section-inner">
-        {loading ? (
+        {isLoading ? (
           <>
             <ProjectsHeader copy="Loading projects..." shouldAnimate={shouldAnimate} />
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">

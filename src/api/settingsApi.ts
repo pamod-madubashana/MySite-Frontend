@@ -87,6 +87,7 @@ export const settingsApi = {
     
     // Invalidate cache after updating settings
     apiCache.invalidate('settings:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     apiCache.set(cacheKeys.settings(), result.settings);
     

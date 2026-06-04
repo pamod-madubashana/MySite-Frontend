@@ -86,6 +86,7 @@ export const timelineApi = {
     
     // Invalidate cache after creating a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
     
@@ -111,6 +112,7 @@ export const timelineApi = {
     
     // Invalidate cache after updating a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
     
@@ -132,6 +134,7 @@ export const timelineApi = {
     
     // Invalidate cache after deleting a timeline item
     apiCache.invalidate('timeline:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('about:*');
     apiCache.invalidate('dashboard:*');
   }

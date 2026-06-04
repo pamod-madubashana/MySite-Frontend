@@ -8,10 +8,8 @@ import {
   Heart, Coffee, Music, Mountain 
 } from "lucide-react";
 import { useState, useEffect } from 'react';
-import { timelineApi, type TimelineItem } from '@/api/timelineApi';
-import type { Interest } from '@/api/interestsApi';
-import { API_BASE_URL } from '@/lib/apiConfig';
-import { aboutApi } from '@/api/aboutApi';
+import type { SiteInterest, SiteTimelineItem } from '@/api/siteDataApi';
+import { usePublicSiteData } from "@/hooks/usePublicSiteData";
 import PageSeo from "@/components/seo/PageSeo";
 import DynamicPageBackground from "@/components/DynamicPageBackground";
 
@@ -64,6 +62,7 @@ const resolveIcon = (icon: string | undefined, fallback: IconComponent = Briefca
   iconMap[icon as keyof typeof iconMap] || fallback;
 
 const About = () => {
+  const { data: siteData, isLoading, error } = usePublicSiteData();
   const [timeline, setTimeline] = useState<TimelineDisplayItem[]>([]);
   const [techCategories, setTechCategories] = useState<TechCategoryDisplay[]>([
     {
@@ -96,91 +95,38 @@ const About = () => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        // First check if we have cached data from home page pre-fetch
-        const cachedData = aboutApi.getCachedAboutData();
-        
-        if (cachedData) {
-          // Use cached data - no loading time!
-          console.log('Using cached about page data');
-          
-          // Process timeline data
-          const mappedTimeline = cachedData.timeline.map((item: TimelineItem) => ({
-            ...item,
-            icon: resolveIcon(item.icon)
-          }));
-          setTimeline(mappedTimeline);
-          
-          // Process tech categories data
-          const formattedTechCategories = (cachedData.techCategories as TechCategoryResponse[]).map((category) => ({
-            title: category.title,
-            icon: resolveIcon(category.icon, Terminal),
-            skills: category.skills,
-          }));
-          
-          if (formattedTechCategories.length > 0) {
-            setTechCategories(formattedTechCategories);
-          }
-          
-          // Process interests data
-          const formattedInterests = cachedData.interests.map((interest: Interest) => ({
-            ...interest,
-            icon: resolveIcon(interest.icon, Code2)
-          }));
-          
-          if (formattedInterests.length > 0) {
-            setInterests(formattedInterests);
-          }
-          
-          setLoading(false);
-          return;
-        }
-        
-        // Fallback to individual API calls if no cached data
-        console.log('No cached data found, fetching from APIs');
-        
-        // Fetch timeline data
-        const timelineData = await timelineApi.getTimeline();
-        // Map the API data to match the expected format
-        const mappedTimeline = timelineData.map((item: TimelineItem) => ({
-          ...item,
-          icon: resolveIcon(item.icon) // default to Briefcase if icon not found
-        }));
-        setTimeline(mappedTimeline);
-        
-        // Fetch tech stack categories data
-        const techStackResponse = await fetch(`${API_BASE_URL}/tech-stack-categories/public`);
-        if (techStackResponse.ok) {
-          const techStackCategories = (await techStackResponse.json()) as TechCategoryResponse[];
-          // Map the API data to match the expected format
-          const formattedTechCategories = techStackCategories.map((category) => ({
-            title: category.title,
-            icon: resolveIcon(category.icon, Terminal), // default icon
-            skills: category.skills,
-          }));
-          
-          if (formattedTechCategories.length > 0) {
-            setTechCategories(formattedTechCategories);
-          }
-        }
-        
-        // Fetch interests data
-        const interestsResponse = await fetch(`${API_BASE_URL}/interests/public`);
-        if (interestsResponse.ok) {
-          const interestsData = (await interestsResponse.json()) as Interest[];
-          const formattedInterests = interestsData.map((interest) => ({
-            ...interest,
-            icon: resolveIcon(interest.icon, Code2) // default to Code2 if icon not found
-          }));
-          
-          if (formattedInterests.length > 0) {
-            setInterests(formattedInterests);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Still set default timeline if API fails
+    if (siteData) {
+      const mappedTimeline = siteData.timeline.map((item: SiteTimelineItem) => ({
+        ...item,
+        icon: resolveIcon(item.icon)
+      }));
+      setTimeline(mappedTimeline);
+
+      const formattedTechCategories = siteData.techStackCategories.map((category: TechCategoryResponse) => ({
+        title: category.title,
+        icon: resolveIcon(category.icon, Terminal),
+        skills: category.skills,
+      }));
+
+      if (formattedTechCategories.length > 0) {
+        setTechCategories(formattedTechCategories);
+      }
+
+      const formattedInterests = siteData.interests.map((interest: SiteInterest) => ({
+        ...interest,
+        icon: resolveIcon(interest.icon, Code2)
+      }));
+
+      if (formattedInterests.length > 0) {
+        setInterests(formattedInterests);
+      }
+
+      setLoading(false);
+      return;
+    }
+
+    if (error) {
+      console.error('Error fetching data:', error);
         setTimeline([
           {
             year: "2025 - Present",
@@ -215,13 +161,12 @@ const About = () => {
             icon: Palette,
           },
         ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchAllData();
-  }, []);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(isLoading);
+  }, [error, isLoading, siteData]);
 
   return (
     <div className="relative min-h-screen bg-background">

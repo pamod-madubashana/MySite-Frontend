@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -8,7 +8,7 @@ const RING_COLOR = "#3cd7ff";
 const SECONDARY_COLOR = "#dcb8ff";
 
 const makeParticleGeometry = () => {
-  const particleCount = 2600;
+  const particleCount = 1100;
   const positions = new Float32Array(particleCount * 3);
 
   for (let index = 0; index < particleCount; index += 1) {
@@ -29,7 +29,7 @@ const makeParticleGeometry = () => {
 };
 
 const makeAmbientParticleGeometry = () => {
-  const particleCount = 1900;
+  const particleCount = 650;
   const positions = new Float32Array(particleCount * 3);
 
   for (let index = 0; index < particleCount; index += 1) {
@@ -57,7 +57,7 @@ const randomSpherePoint = (radius: number) => {
 };
 
 const makeNetworkGeometry = () => {
-  const segmentCount = 190;
+  const segmentCount = 110;
   const positions = new Float32Array(segmentCount * 2 * 3);
 
   for (let index = 0; index < segmentCount; index += 1) {
@@ -80,7 +80,7 @@ const makeNetworkGeometry = () => {
 };
 
 const makeNodeGeometry = () => {
-  const nodeCount = 380;
+  const nodeCount = 160;
   const positions = new Float32Array(nodeCount * 3);
 
   for (let index = 0; index < nodeCount; index += 1) {
@@ -130,7 +130,23 @@ const energyRings = [
   speed: [number, number];
 }>;
 
-const CommandCoreScene = () => {
+const usePrefersReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleMotionPreference = () => setPrefersReducedMotion(motionQuery.matches);
+
+    handleMotionPreference();
+    motionQuery.addEventListener("change", handleMotionPreference);
+
+    return () => motionQuery.removeEventListener("change", handleMotionPreference);
+  }, []);
+
+  return prefersReducedMotion;
+};
+
+const CommandCoreScene = ({ isActive }: { isActive: boolean }) => {
   const groupRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Mesh>(null);
   const shieldRef = useRef<THREE.Mesh>(null);
@@ -148,13 +164,16 @@ const CommandCoreScene = () => {
   const nodeGeometry = useMemo(makeNodeGeometry, []);
   const dataBeamGeometry = useMemo(makeDataBeamGeometry, []);
 
-  useFrame(({ clock, pointer }) => {
+  useFrame(({ clock }) => {
+    if (!isActive) {
+      return;
+    }
+
     const elapsed = clock.getElapsedTime();
     const pulse = 1 + Math.sin(elapsed * 1.5) * 0.045;
 
     if (groupRef.current) {
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, pointer.y * 0.22, 0.045);
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, pointer.x * 0.32, 0.045);
+      groupRef.current.rotation.y += 0.00045;
     }
 
     if (coreRef.current) {
@@ -180,21 +199,15 @@ const CommandCoreScene = () => {
     if (networkRef.current) {
       networkRef.current.rotation.y += 0.0009;
       networkRef.current.rotation.z += 0.00035;
-      const material = networkRef.current.material as THREE.LineBasicMaterial;
-      material.opacity = 0.22 + Math.sin(elapsed * 1.2) * 0.045;
     }
 
     if (nodesRef.current) {
       nodesRef.current.rotation.y += 0.0009;
-      const material = nodesRef.current.material as THREE.PointsMaterial;
-      material.opacity = 0.5 + Math.sin(elapsed * 1.6) * 0.08;
     }
 
     if (beamsRef.current) {
       beamsRef.current.rotation.y -= 0.0013;
       beamsRef.current.rotation.x += 0.0005;
-      const material = beamsRef.current.material as THREE.LineBasicMaterial;
-      material.opacity = 0.18 + Math.sin(elapsed * 2.2) * 0.08;
     }
 
     if (particlesRef.current) {
@@ -237,7 +250,7 @@ const CommandCoreScene = () => {
 
       <group ref={groupRef} scale={1.04}>
         <mesh scale={1.38}>
-          <sphereGeometry args={[1.22, 48, 48]} />
+          <sphereGeometry args={[1.22, 28, 28]} />
           <meshBasicMaterial
             color={CORE_COLOR}
             transparent
@@ -248,7 +261,7 @@ const CommandCoreScene = () => {
         </mesh>
 
         <mesh scale={1.74}>
-          <sphereGeometry args={[1.2, 48, 48]} />
+          <sphereGeometry args={[1.2, 28, 28]} />
           <meshBasicMaterial
             color={RING_COLOR}
             transparent
@@ -260,7 +273,7 @@ const CommandCoreScene = () => {
         </mesh>
 
         <mesh ref={coreRef}>
-          <sphereGeometry args={[1.16, 64, 64]} />
+          <sphereGeometry args={[1.16, 32, 32]} />
           <meshStandardMaterial
             color={CORE_COLOR}
             emissive="#00677e"
@@ -273,7 +286,7 @@ const CommandCoreScene = () => {
         </mesh>
 
         <mesh>
-          <sphereGeometry args={[1.42, 36, 36]} />
+          <sphereGeometry args={[1.42, 24, 24]} />
           <meshBasicMaterial
             color={RING_COLOR}
             wireframe
@@ -372,7 +385,7 @@ const CommandCoreScene = () => {
             }}
             rotation={ring.rotation}
           >
-            <torusGeometry args={[ring.radius, 0.012, 16, 140]} />
+            <torusGeometry args={[ring.radius, 0.012, 10, 80]} />
             <meshBasicMaterial
               color={index === 1 ? SECONDARY_COLOR : CORE_COLOR}
               transparent
@@ -389,27 +402,47 @@ const CommandCoreScene = () => {
 
 const CommandCoreFallback = () => (
   <div className="absolute inset-0 flex items-center justify-center">
-    <div className="h-20 w-20 rounded-full border border-primary/35 bg-primary/10 shadow-[0_0_70px_hsl(var(--primary)/0.3)]" />
+    <div className="relative aspect-square w-[min(68vw,380px)] opacity-95">
+      <div className="absolute inset-[7%] rounded-full border border-primary/35 shadow-[0_0_52px_hsl(var(--primary)/0.22)]" />
+      <div className="absolute inset-[16%] rounded-full border border-secondary/30" />
+      <div className="absolute inset-[24%] rounded-full bg-primary/20 shadow-[0_0_110px_hsl(var(--primary)/0.5),inset_0_0_46px_hsl(var(--primary)/0.28)]" />
+      <div className="absolute inset-[31%] rounded-full bg-cyan-300/45 blur-xl" />
+      <div className="absolute inset-[39%] rounded-full border border-primary/70 bg-background/45 shadow-[0_0_58px_hsl(var(--primary)/0.5)]" />
+      <div className="absolute inset-[45%] rounded-full bg-primary shadow-[0_0_26px_hsl(var(--primary)/0.9)]" />
+      <div className="absolute left-[6%] right-[6%] top-1/2 h-px -rotate-12 bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
+      <div className="absolute left-[12%] right-[12%] top-1/2 h-px rotate-[28deg] bg-gradient-to-r from-transparent via-secondary/55 to-transparent" />
+      <div className="absolute left-[18%] right-[18%] top-1/2 h-px rotate-[74deg] bg-gradient-to-r from-transparent via-cyan-200/40 to-transparent" />
+      <div className="absolute left-1/2 top-[9%] h-2.5 w-2.5 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_24px_hsl(var(--primary)/0.95)]" />
+      <div className="absolute bottom-[16%] left-[21%] h-2 w-2 rounded-full bg-secondary shadow-[0_0_22px_hsl(var(--secondary)/0.9)]" />
+      <div className="absolute right-[16%] top-[32%] h-2 w-2 rounded-full bg-cyan-200 shadow-[0_0_22px_rgba(165,243,252,0.9)]" />
+    </div>
   </div>
 );
 
 interface CommandCore3DProps {
   className?: string;
+  isActive?: boolean;
 }
 
-const CommandCore3D = ({ className = "" }: CommandCore3DProps) => {
+const CommandCore3D = ({ className = "", isActive = true }: CommandCore3DProps) => {
   const isMobile = useIsMobile();
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  if (prefersReducedMotion) {
+    return <CommandCoreFallback />;
+  }
 
   return (
     <div className={`absolute inset-0 ${className}`}>
       <Suspense fallback={<CommandCoreFallback />}>
         <Canvas
-          camera={{ position: [0, 0, isMobile ? 18 : 9.8], fov: isMobile ? 46 : 48 }}
-          dpr={[1, 1.25]}
-          gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
+          frameloop={isActive ? "always" : "demand"}
+          camera={{ position: [0, 0, isMobile ? 16.5 : 9.8], fov: isMobile ? 46 : 48 }}
+          dpr={isMobile ? [1, 1] : [1, 1.15]}
+          gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
           performance={{ min: 0.65 }}
         >
-          <CommandCoreScene />
+          <CommandCoreScene isActive={isActive} />
         </Canvas>
       </Suspense>
     </div>

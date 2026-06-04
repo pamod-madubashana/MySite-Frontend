@@ -114,6 +114,7 @@ export const cacheKeys = {
     bySlug: (slug: string) => `project:slug:${slug}`,
   },
   settings: () => 'settings:current',
+  siteData: () => 'public:site-data',
   about: () => 'about:all-data',
   timeline: () => 'timeline:all',
   techSkills: () => 'techskills:all',

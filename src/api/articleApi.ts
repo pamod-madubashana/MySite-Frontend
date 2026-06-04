@@ -118,6 +118,7 @@ export const articleApi = {
     
     // Invalidate cache after creating an article
     apiCache.invalidate('articles:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;
@@ -143,6 +144,7 @@ export const articleApi = {
     
     // Invalidate cache after creating an article
     apiCache.invalidate('articles:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;
@@ -167,6 +169,7 @@ export const articleApi = {
     // Invalidate cache after updating an article
     apiCache.delete(cacheKeys.articles.byId(id));
     apiCache.invalidate('articles:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;
@@ -194,6 +197,7 @@ export const articleApi = {
     // Invalidate cache after updating an article
     apiCache.delete(cacheKeys.articles.byId(id));
     apiCache.invalidate('articles:*');
+    apiCache.invalidate('public:*');
     apiCache.invalidate('dashboard:*');
     
     return result;

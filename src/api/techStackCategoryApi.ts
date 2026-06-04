@@ -13,6 +13,7 @@ export interface TechStackCategory {
 
 const invalidateTechStackCaches = () => {
   apiCache.invalidate('techstack:*');
+  apiCache.invalidate('public:*');
   apiCache.invalidate('about:*');
   apiCache.invalidate('dashboard:*');
 };

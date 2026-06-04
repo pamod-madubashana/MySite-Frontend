@@ -24,10 +24,10 @@ const desktopStates: Record<CommandSection, CommandCoreTarget> = {
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 0, y: -12, scale: 1, opacity: 0.34 },
-  about: { x: -18, y: -34, scale: 1, opacity: 0.18 },
-  projects: { x: 18, y: 8, scale: 1, opacity: 0.22 },
-  articles: { x: -14, y: -4, scale: 1, opacity: 0.16 },
+  home: { x: 8, y: -12, scale: 1, opacity: 0.58 },
+  about: { x: 2, y: -34, scale: 1, opacity: 0.28 },
+  projects: { x: 10, y: 8, scale: 1, opacity: 0.32 },
+  articles: { x: 4, y: -4, scale: 1, opacity: 0.24 },
 };
 
 const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
@@ -105,6 +105,10 @@ const PersistentCommandCore = () => {
   const viewportModeRef = useRef(viewportMode);
   const sectionCentersRef = useRef<SectionCenter[]>([]);
   const initialStateRef = useRef<CommandCoreTarget | null>(null);
+  const targetStateRef = useRef<CommandCoreTarget | null>(null);
+  const frameIdRef = useRef(0);
+  const reducedMotionRef = useRef(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   if (!initialStateRef.current) {
     const states = typeof window === "undefined" ? desktopStates : getStates();
@@ -112,6 +116,7 @@ const PersistentCommandCore = () => {
   }
 
   const animatedStateRef = useRef(initialStateRef.current);
+  targetStateRef.current = targetStateRef.current || initialStateRef.current;
 
   const updateSectionCenters = useCallback(() => {
     sectionCentersRef.current = homeSectionOrder
@@ -129,10 +134,41 @@ const PersistentCommandCore = () => {
       .filter((section): section is SectionCenter => Boolean(section));
   }, []);
 
+  const resolveTarget = useCallback(() => {
+    const isMobile = viewportModeRef.current === "mobile";
+    const states = isMobile ? mobileStates : desktopStates;
+
+    return pathnameRef.current === "/"
+      ? getHomeScrollTarget(states, sectionCentersRef.current)
+      : states[getSectionFromPath(pathnameRef.current)];
+  }, []);
+
+  const applyState = useCallback((state: CommandCoreTarget) => {
+    const isMobile = viewportModeRef.current === "mobile";
+
+    if (containerRef.current) {
+      containerRef.current.style.opacity = String(state.opacity);
+      containerRef.current.style.transform = `translate3d(${state.x}%, ${state.y}%, 0) scale(${isMobile ? 1 : state.scale})`;
+    }
+  }, []);
+
+  const updateTarget = useCallback(() => {
+    const target = resolveTarget();
+    targetStateRef.current = target;
+
+    if (reducedMotionRef.current) {
+      animatedStateRef.current = target;
+      applyState(target);
+    }
+  }, [applyState, resolveTarget]);
+
   useEffect(() => {
     pathnameRef.current = location.pathname;
-    window.requestAnimationFrame(updateSectionCenters);
-  }, [location.pathname, updateSectionCenters]);
+    window.requestAnimationFrame(() => {
+      updateSectionCenters();
+      updateTarget();
+    });
+  }, [location.pathname, updateSectionCenters, updateTarget]);
 
   useEffect(() => {
     viewportModeRef.current = viewportMode;
@@ -142,45 +178,98 @@ const PersistentCommandCore = () => {
     const handleResize = () => {
       setViewportMode(getViewportMode());
       updateSectionCenters();
+      updateTarget();
     };
 
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("public-site-data:loaded", handleResize, { passive: true });
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, [updateSectionCenters]);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("public-site-data:loaded", handleResize);
+    };
+  }, [updateSectionCenters, updateTarget]);
 
   useEffect(() => {
-    let frameId = 0;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleMotionPreference = () => {
+      reducedMotionRef.current = motionQuery.matches;
+      setPrefersReducedMotion(motionQuery.matches);
+      updateTarget();
+    };
 
+    handleMotionPreference();
+    motionQuery.addEventListener("change", handleMotionPreference);
+
+    return () => motionQuery.removeEventListener("change", handleMotionPreference);
+  }, [updateTarget]);
+
+  useEffect(() => {
+    const handleScroll = () => updateTarget();
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [updateTarget]);
+
+  useEffect(() => {
     const animate = () => {
+      if (reducedMotionRef.current) {
+        frameIdRef.current = 0;
+        return;
+      }
+
       const isMobile = viewportModeRef.current === "mobile";
-      const states = isMobile ? mobileStates : desktopStates;
-      const target =
-        pathnameRef.current === "/"
-          ? getHomeScrollTarget(states, sectionCentersRef.current)
-          : states[getSectionFromPath(pathnameRef.current)];
+      const target = targetStateRef.current || resolveTarget();
       const current = animatedStateRef.current;
       const next = {
-        x: lerp(current.x, target.x, 0.18),
-        y: lerp(current.y, target.y, 0.18),
-        scale: lerp(current.scale, target.scale, 0.16),
-        opacity: lerp(current.opacity, target.opacity, 0.18),
+        x: lerp(current.x, target.x, 0.42),
+        y: lerp(current.y, target.y, 0.42),
+        scale: lerp(current.scale, target.scale, 0.36),
+        opacity: lerp(current.opacity, target.opacity, 0.4),
       };
 
       animatedStateRef.current = next;
-      if (containerRef.current) {
-        containerRef.current.style.opacity = String(next.opacity);
-        containerRef.current.style.transform = `translate3d(${next.x}%, ${next.y}%, 0) scale(${isMobile ? 1 : next.scale})`;
+      applyState(next);
+
+      const isSettled =
+        Math.abs(next.x - target.x) < 0.6 &&
+        Math.abs(next.y - target.y) < 0.6 &&
+        Math.abs(next.scale - target.scale) < 0.018 &&
+        Math.abs(next.opacity - target.opacity) < 0.035;
+
+      if (isSettled) {
+        animatedStateRef.current = target;
+        applyState(target);
+        frameIdRef.current = 0;
+        return;
       }
 
-      frameId = window.requestAnimationFrame(animate);
+      frameIdRef.current = window.requestAnimationFrame(animate);
     };
 
-    frameId = window.requestAnimationFrame(animate);
+    const startAnimation = () => {
+      if (!frameIdRef.current && !reducedMotionRef.current) {
+        frameIdRef.current = window.requestAnimationFrame(animate);
+      }
+    };
 
-    return () => window.cancelAnimationFrame(frameId);
-  }, []);
+    startAnimation();
+    window.addEventListener("scroll", startAnimation, { passive: true });
+    window.addEventListener("resize", startAnimation, { passive: true });
+    window.addEventListener("public-site-data:loaded", startAnimation, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", startAnimation);
+      window.removeEventListener("resize", startAnimation);
+      window.removeEventListener("public-site-data:loaded", startAnimation);
+      if (frameIdRef.current) {
+        window.cancelAnimationFrame(frameIdRef.current);
+      }
+    };
+  }, [applyState, resolveTarget]);
 
   const initialState = initialStateRef.current;
   const initialScale = viewportMode === "mobile" ? 1 : initialState.scale;
@@ -189,13 +278,13 @@ const PersistentCommandCore = () => {
     <div
       ref={containerRef}
       aria-hidden
-      className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-transform [backface-visibility:hidden] [contain:layout_paint_style]"
+      className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-[transform,opacity] [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
         transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialScale})`,
       }}
     >
-      <CommandCore3D />
+      <CommandCore3D isActive={!prefersReducedMotion} />
     </div>
   );
 };
