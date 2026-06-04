@@ -52,65 +52,58 @@ export const Footer = () => {
   ];
 
   return (
-    <footer className="relative select-none border-t border-white/10 bg-background/80 backdrop-blur-2xl">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.04)_1px,transparent_1px)] bg-[size:54px_54px] opacity-25" />
-
-      <div className="container relative z-10 mx-auto px-4 py-8 md:py-10">
-        <div className="flex flex-col gap-7 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-md space-y-3">
+    <footer className="relative select-none border-t border-white/10 bg-background/92 backdrop-blur-xl">
+      <div className="container mx-auto px-4 py-7 md:py-8">
+        <div className="grid gap-7 md:grid-cols-[1.2fr_auto_1fr] md:items-start">
+          <div className="max-w-sm space-y-3">
             <TransitionLink to="/" className="inline-flex items-center">
-              <span className="font-mono text-xl font-black tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-2xl">
+              <span className="font-mono text-lg font-black tracking-[0.32em] text-primary md:text-xl">
                 P A M O D
               </span>
             </TransitionLink>
-            <p className="max-w-sm text-sm leading-relaxed text-muted-foreground">
-              Developer, automation builder, and self-hosting enthusiast building practical systems for the neural grid.
+            <p className="text-sm leading-6 text-muted-foreground">
+              Developer, automation builder, and self-hosting enthusiast building practical web systems and reliable workflows.
             </p>
           </div>
 
-          <div className="space-y-2">
-            <span className="inline-flex items-center font-mono text-xs font-bold uppercase tracking-[0.14em] text-primary md:text-sm">
-              Quick Links
-            </span>
-            <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Footer links">
+          <nav className="flex flex-wrap gap-x-5 gap-y-2 md:justify-center" aria-label="Footer links">
               {footerLinks.map((link) => (
                 <TransitionLink
                   key={link.path}
                   to={link.path}
-                  className="inline-flex items-center py-1 font-mono text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-200 hover:text-primary"
+                className="inline-flex items-center py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-200 hover:text-primary"
                 >
                   {link.name}
                 </TransitionLink>
               ))}
-            </nav>
-          </div>
+          </nav>
 
-          <div className="flex flex-col gap-3 lg:items-end">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-3 md:items-end">
+            <div className="flex items-center gap-2 md:justify-end">
               {socialLinks.map((social) => (
                 <a
                   key={social.label}
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted-foreground transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.035] text-muted-foreground transition-colors duration-200 hover:border-primary/45 hover:bg-primary/10 hover:text-primary"
                   aria-label={social.label}
                 >
                   <social.icon className="h-4 w-4" />
                 </a>
               ))}
             </div>
-            <p className="font-mono text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground/90">
-              Available for freelance opportunities
+            <p className="text-sm text-muted-foreground md:text-right">
+              Available for freelance opportunities.
             </p>
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-4 font-mono text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p className="flex items-center gap-1">
-            (c) {copyrightYears} Pamod Madubashana. Built for the neural grid.
+        <div className="mt-7 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {copyrightYears} Pamod Madubashana. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <TransitionLink
               to="/privacy"
               className="inline-flex items-center py-1 text-xs text-muted-foreground transition-colors hover:text-foreground"

@@ -93,17 +93,11 @@ const RouteFallback = () => (
     <div className="pointer-events-none absolute inset-x-[-18%] bottom-[22%] h-px rotate-[5deg] bg-gradient-to-r from-transparent via-secondary/15 to-transparent" />
     <div className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center">
       <div className="flex flex-col items-center justify-center gap-5">
-        <p className="m-0 font-mono text-[13px] font-black uppercase leading-none tracking-[0.42em] text-primary drop-shadow-[0_0_18px_hsl(var(--primary)/0.45)]">
-          P A M O D
-        </p>
         <div className="relative h-[92px] w-[92px] rounded-full border border-primary/20 bg-primary/10 shadow-[0_0_64px_hsl(var(--primary)/0.24)]">
           <div className="absolute inset-3 animate-spin rounded-full border-2 border-transparent border-r-primary/50 border-t-primary" />
           <div className="absolute -inset-2 animate-[spin_1.8s_linear_infinite_reverse] rounded-full border border-transparent border-t-secondary/50" />
           <div className="absolute inset-[33px] rounded-full bg-primary/30 blur-sm" />
         </div>
-        <p className="m-0 inline-flex min-h-[30px] items-center justify-center rounded-full border border-primary/30 bg-background/55 px-4 font-mono text-[10px] font-extrabold uppercase leading-none tracking-[0.14em] text-primary shadow-[inset_0_0_20px_hsl(var(--primary)/0.08)]">
-          Booting Interface
-        </p>
       </div>
     </div>
   </div>
@@ -152,14 +146,15 @@ const AppBootstrapGate = ({ children }: { children: ReactNode }) => {
 
 const App = () => {
   const location = useLocation();
+  const { pathname } = location;
   const navigationType = useNavigationType();
-  const previousPathRef = useRef(location.pathname);
+  const previousPathRef = useRef(pathname);
   const showCommandCore =
-    !location.pathname.startsWith("/admin") &&
-    !/^\/(login|register)\/?$/.test(location.pathname);
+    !pathname.startsWith("/admin") &&
+    !/^\/(login|register)\/?$/.test(pathname);
 
   const transitionMeta = useMemo(() => {
-    const currentPath = location.pathname;
+    const currentPath = pathname;
     const previousPath = previousPathRef.current;
     const currentAxis = getRouteAxis(currentPath);
     const previousAxis = getRouteAxis(previousPath);
@@ -180,11 +175,11 @@ const App = () => {
       axis: currentAxis,
       direction,
     };
-  }, [location.pathname, navigationType]);
+  }, [pathname, navigationType]);
 
   useEffect(() => {
-    previousPathRef.current = location.pathname;
-  }, [location.pathname]);
+    previousPathRef.current = pathname;
+  }, [pathname]);
 
   useLayoutEffect(() => {
     document.documentElement.dataset.routeAxis = transitionMeta.axis;
@@ -245,7 +240,7 @@ const App = () => {
         node.removeEventListener("transitionend", onTransitionEnd);
       });
     };
-  }, [location.pathname, transitionMeta.axis, transitionMeta.direction]);
+  }, [pathname, transitionMeta.axis, transitionMeta.direction]);
 
   return (
   <SettingsProvider>
@@ -260,7 +255,7 @@ const App = () => {
               <AppBootstrapGate>
                 {showCommandCore && <PersistentCommandCore />}
                 <div
-                  key={location.pathname}
+                  key={pathname}
                   className={`route-fallback-enter route-fallback-enter-${transitionMeta.axis}-${transitionMeta.direction}`}
                 >
                 <Routes location={location}>
