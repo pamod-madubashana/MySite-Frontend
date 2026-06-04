@@ -17,10 +17,10 @@ interface SectionCenter {
 }
 
 const desktopStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 25, y: 0, scale: 0.86, opacity: 0.88 },
-  about: { x: -24, y: 2, scale: 0.72, opacity: 0.36 },
-  projects: { x: 30, y: 0, scale: 0.62, opacity: 0.44 },
-  articles: { x: -14, y: 7, scale: 0.56, opacity: 0.34 },
+  home: { x: 25, y: 0, scale: 0.82, opacity: 0.88 },
+  about: { x: -24, y: 2, scale: 0.82, opacity: 0.36 },
+  projects: { x: 30, y: 0, scale: 0.82, opacity: 0.44 },
+  articles: { x: -14, y: 7, scale: 0.82, opacity: 0.34 },
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
@@ -107,6 +107,7 @@ const PersistentCommandCore = () => {
   const initialStateRef = useRef<CommandCoreTarget | null>(null);
   const targetStateRef = useRef<CommandCoreTarget | null>(null);
   const frameIdRef = useRef(0);
+  const recalcTimeoutsRef = useRef<number[]>([]);
   const reducedMotionRef = useRef(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
@@ -134,14 +135,33 @@ const PersistentCommandCore = () => {
       .filter((section): section is SectionCenter => Boolean(section));
   }, []);
 
+  const scheduleSectionRefresh = useCallback(() => {
+    recalcTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+    recalcTimeoutsRef.current = [];
+
+    const refresh = () => {
+      updateSectionCenters();
+      updateTargetRef.current?.();
+    };
+
+    window.requestAnimationFrame(refresh);
+    [120, 360, 900].forEach((delay) => {
+      recalcTimeoutsRef.current.push(window.setTimeout(refresh, delay));
+    });
+  }, [updateSectionCenters]);
+
   const resolveTarget = useCallback(() => {
     const isMobile = viewportModeRef.current === "mobile";
     const states = isMobile ? mobileStates : desktopStates;
 
+    if (pathnameRef.current === "/" && sectionCentersRef.current.length === 0) {
+      updateSectionCenters();
+    }
+
     return pathnameRef.current === "/"
       ? getHomeScrollTarget(states, sectionCentersRef.current)
       : states[getSectionFromPath(pathnameRef.current)];
-  }, []);
+  }, [updateSectionCenters]);
 
   const applyState = useCallback((state: CommandCoreTarget) => {
     const isMobile = viewportModeRef.current === "mobile";
@@ -155,20 +175,20 @@ const PersistentCommandCore = () => {
   const updateTarget = useCallback(() => {
     const target = resolveTarget();
     targetStateRef.current = target;
-
-    if (reducedMotionRef.current) {
-      animatedStateRef.current = target;
-      applyState(target);
-    }
+    animatedStateRef.current = target;
+    applyState(target);
   }, [applyState, resolveTarget]);
+
+  const updateTargetRef = useRef(updateTarget);
+
+  useEffect(() => {
+    updateTargetRef.current = updateTarget;
+  }, [updateTarget]);
 
   useEffect(() => {
     pathnameRef.current = location.pathname;
-    window.requestAnimationFrame(() => {
-      updateSectionCenters();
-      updateTarget();
-    });
-  }, [location.pathname, updateSectionCenters, updateTarget]);
+    scheduleSectionRefresh();
+  }, [location.pathname, scheduleSectionRefresh]);
 
   useEffect(() => {
     viewportModeRef.current = viewportMode;
@@ -177,8 +197,7 @@ const PersistentCommandCore = () => {
   useEffect(() => {
     const handleResize = () => {
       setViewportMode(getViewportMode());
-      updateSectionCenters();
-      updateTarget();
+      scheduleSectionRefresh();
     };
 
     handleResize();
@@ -188,8 +207,25 @@ const PersistentCommandCore = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("public-site-data:loaded", handleResize);
+      recalcTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      recalcTimeoutsRef.current = [];
     };
-  }, [updateSectionCenters, updateTarget]);
+  }, [scheduleSectionRefresh]);
+
+  useEffect(() => {
+    const observedSections = homeSectionOrder
+      .map((sectionId) => document.getElementById(sectionId))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (observedSections.length === 0 || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const observer = new ResizeObserver(scheduleSectionRefresh);
+    observedSections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, [location.pathname, scheduleSectionRefresh]);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
