@@ -16,18 +16,22 @@ interface SectionCenter {
   center: number;
 }
 
+interface UpdateTargetOptions {
+  immediate?: boolean;
+}
+
 const desktopStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 25, y: 0, scale: 0.82, opacity: 0.88 },
-  about: { x: -24, y: 2, scale: 0.82, opacity: 0.36 },
-  projects: { x: 30, y: 0, scale: 0.82, opacity: 0.44 },
-  articles: { x: -14, y: 7, scale: 0.82, opacity: 0.34 },
+  home: { x: 24, y: -2, scale: 0.82, opacity: 0.88 },
+  about: { x: -30, y: 6, scale: 0.82, opacity: 0.4 },
+  projects: { x: 12, y: 16, scale: 0.82, opacity: 0.46 },
+  articles: { x: -6, y: -18, scale: 0.82, opacity: 0.38 },
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
   home: { x: 8, y: -12, scale: 1, opacity: 0.58 },
-  about: { x: 2, y: -34, scale: 1, opacity: 0.28 },
-  projects: { x: 10, y: 8, scale: 1, opacity: 0.32 },
-  articles: { x: 4, y: -4, scale: 1, opacity: 0.24 },
+  about: { x: -8, y: -30, scale: 1, opacity: 0.3 },
+  projects: { x: 12, y: 2, scale: 1, opacity: 0.34 },
+  articles: { x: -2, y: -18, scale: 1, opacity: 0.28 },
 };
 
 const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
@@ -95,25 +99,31 @@ const getHomeScrollTarget = (
   return states.home;
 };
 
+const getRouteTarget = (pathname: string, states: Record<CommandSection, CommandCoreTarget>): CommandCoreTarget =>
+  states[getSectionFromPath(pathname)];
+
 const PersistentCommandCore = () => {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const [viewportMode, setViewportMode] = useState<"desktop" | "mobile">(() =>
     typeof window === "undefined" ? "desktop" : getViewportMode()
   );
   const containerRef = useRef<HTMLDivElement>(null);
-  const pathnameRef = useRef(location.pathname);
+  const pathnameRef = useRef(pathname);
   const viewportModeRef = useRef(viewportMode);
   const sectionCentersRef = useRef<SectionCenter[]>([]);
   const initialStateRef = useRef<CommandCoreTarget | null>(null);
   const targetStateRef = useRef<CommandCoreTarget | null>(null);
   const frameIdRef = useRef(0);
   const recalcTimeoutsRef = useRef<number[]>([]);
+  const routeTransitionTimeoutRef = useRef(0);
+  const startAnimationRef = useRef<() => void>(() => {});
+  const routeAnimationUntilRef = useRef(0);
   const reducedMotionRef = useRef(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   if (!initialStateRef.current) {
     const states = typeof window === "undefined" ? desktopStates : getStates();
-    initialStateRef.current = states[getSectionFromPath(location.pathname)];
+    initialStateRef.current = states[getSectionFromPath(pathname)];
   }
 
   const animatedStateRef = useRef(initialStateRef.current);
@@ -135,13 +145,13 @@ const PersistentCommandCore = () => {
       .filter((section): section is SectionCenter => Boolean(section));
   }, []);
 
-  const scheduleSectionRefresh = useCallback(() => {
+  const scheduleSectionRefresh = useCallback((options: UpdateTargetOptions = {}) => {
     recalcTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
     recalcTimeoutsRef.current = [];
 
     const refresh = () => {
       updateSectionCenters();
-      updateTargetRef.current?.();
+      updateTargetRef.current?.(options);
     };
 
     window.requestAnimationFrame(refresh);
@@ -153,6 +163,10 @@ const PersistentCommandCore = () => {
   const resolveTarget = useCallback(() => {
     const isMobile = viewportModeRef.current === "mobile";
     const states = isMobile ? mobileStates : desktopStates;
+
+    if (Date.now() < routeAnimationUntilRef.current) {
+      return getRouteTarget(pathnameRef.current, states);
+    }
 
     if (pathnameRef.current === "/" && sectionCentersRef.current.length === 0) {
       updateSectionCenters();
@@ -172,23 +186,65 @@ const PersistentCommandCore = () => {
     }
   }, []);
 
+  const animateRouteTarget = useCallback((pathname: string) => {
+    const states = viewportModeRef.current === "mobile" ? mobileStates : desktopStates;
+    const target = getRouteTarget(pathname, states);
+
+    targetStateRef.current = target;
+    animatedStateRef.current = target;
+
+    if (!containerRef.current) {
+      return;
+    }
+
+    window.clearTimeout(routeTransitionTimeoutRef.current);
+    containerRef.current.style.transition =
+      "transform 980ms cubic-bezier(0.16, 1, 0.3, 1), opacity 820ms ease";
+
+    window.requestAnimationFrame(() => {
+      applyState(target);
+    });
+
+    routeTransitionTimeoutRef.current = window.setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.style.transition = "";
+      }
+    }, 1050);
+  }, [applyState]);
+
   const updateTarget = useCallback(() => {
     const target = resolveTarget();
     targetStateRef.current = target;
+
     animatedStateRef.current = target;
     applyState(target);
   }, [applyState, resolveTarget]);
 
-  const updateTargetRef = useRef(updateTarget);
+  const updateTargetRef = useRef<(options?: UpdateTargetOptions) => void>(updateTarget);
+
+  const updateTargetSmooth = useCallback((options: UpdateTargetOptions = {}) => {
+    const target = resolveTarget();
+    targetStateRef.current = target;
+
+    if (options.immediate !== false || reducedMotionRef.current) {
+      animatedStateRef.current = target;
+      applyState(target);
+      return;
+    }
+
+    startAnimationRef.current();
+  }, [applyState, resolveTarget]);
 
   useEffect(() => {
-    updateTargetRef.current = updateTarget;
-  }, [updateTarget]);
+    updateTargetRef.current = updateTargetSmooth;
+  }, [updateTargetSmooth]);
 
   useEffect(() => {
-    pathnameRef.current = location.pathname;
-    scheduleSectionRefresh();
-  }, [location.pathname, scheduleSectionRefresh]);
+    pathnameRef.current = pathname;
+    routeAnimationUntilRef.current = Date.now() + 1100;
+    animateRouteTarget(pathname);
+    scheduleSectionRefresh({ immediate: false });
+  }, [animateRouteTarget, pathname, scheduleSectionRefresh]);
 
   useEffect(() => {
     viewportModeRef.current = viewportMode;
@@ -197,7 +253,7 @@ const PersistentCommandCore = () => {
   useEffect(() => {
     const handleResize = () => {
       setViewportMode(getViewportMode());
-      scheduleSectionRefresh();
+      scheduleSectionRefresh({ immediate: true });
     };
 
     handleResize();
@@ -209,6 +265,7 @@ const PersistentCommandCore = () => {
       window.removeEventListener("public-site-data:loaded", handleResize);
       recalcTimeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
       recalcTimeoutsRef.current = [];
+      window.clearTimeout(routeTransitionTimeoutRef.current);
     };
   }, [scheduleSectionRefresh]);
 
@@ -225,7 +282,7 @@ const PersistentCommandCore = () => {
     observedSections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, [location.pathname, scheduleSectionRefresh]);
+  }, [pathname, scheduleSectionRefresh]);
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -242,13 +299,15 @@ const PersistentCommandCore = () => {
   }, [updateTarget]);
 
   useEffect(() => {
-    const handleScroll = () => updateTarget();
+    const handleScroll = () => {
+      updateTargetSmooth({ immediate: Date.now() >= routeAnimationUntilRef.current });
+    };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [updateTarget]);
+  }, [updateTargetSmooth]);
 
   useEffect(() => {
     const animate = () => {
@@ -261,20 +320,20 @@ const PersistentCommandCore = () => {
       const target = targetStateRef.current || resolveTarget();
       const current = animatedStateRef.current;
       const next = {
-        x: lerp(current.x, target.x, 0.42),
-        y: lerp(current.y, target.y, 0.42),
-        scale: lerp(current.scale, target.scale, 0.36),
-        opacity: lerp(current.opacity, target.opacity, 0.4),
+        x: lerp(current.x, target.x, 0.16),
+        y: lerp(current.y, target.y, 0.16),
+        scale: lerp(current.scale, target.scale, 0.14),
+        opacity: lerp(current.opacity, target.opacity, 0.18),
       };
 
       animatedStateRef.current = next;
       applyState(next);
 
       const isSettled =
-        Math.abs(next.x - target.x) < 0.6 &&
-        Math.abs(next.y - target.y) < 0.6 &&
-        Math.abs(next.scale - target.scale) < 0.018 &&
-        Math.abs(next.opacity - target.opacity) < 0.035;
+        Math.abs(next.x - target.x) < 0.18 &&
+        Math.abs(next.y - target.y) < 0.18 &&
+        Math.abs(next.scale - target.scale) < 0.006 &&
+        Math.abs(next.opacity - target.opacity) < 0.012;
 
       if (isSettled) {
         animatedStateRef.current = target;
@@ -292,13 +351,12 @@ const PersistentCommandCore = () => {
       }
     };
 
+    startAnimationRef.current = startAnimation;
     startAnimation();
-    window.addEventListener("scroll", startAnimation, { passive: true });
     window.addEventListener("resize", startAnimation, { passive: true });
     window.addEventListener("public-site-data:loaded", startAnimation, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", startAnimation);
       window.removeEventListener("resize", startAnimation);
       window.removeEventListener("public-site-data:loaded", startAnimation);
       if (frameIdRef.current) {

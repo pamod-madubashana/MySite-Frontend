@@ -1,6 +1,6 @@
 import { KeyboardEvent } from "react";
 import { motion } from "framer-motion";
-import { Star, GitFork, ExternalLink, Github } from "lucide-react";
+import { Star, GitFork, ExternalLink, Github, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { languageColors } from "@/lib/languageColors";
 import { useNavigate } from "react-router-dom";
@@ -59,7 +59,7 @@ export const ProjectCard = ({
       initial={disableEntryAnimation ? false : { opacity: 0, y: 28 }}
       animate={disableEntryAnimation ? undefined : { opacity: 1, y: 0 }}
       transition={disableEntryAnimation ? undefined : { duration: 0.45, delay: index * 0.08 }}
-      className="surface-card group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+      className="surface-card group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl p-0 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-primary/55 hover:shadow-[0_0_0_1px_hsl(var(--primary)/0.22),0_24px_80px_rgba(0,212,255,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
       onClick={() => navigateWithTransition(navigate, projectPath)}
       onKeyDown={handleCardKeyDown}
       role="link"
@@ -74,7 +74,7 @@ export const ProjectCard = ({
         </div>
       )}
 
-      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10 bg-muted/30">
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/10 bg-background/70">
         <TransitionLink to={projectPath} onClick={(event) => event.stopPropagation()} className="block h-full w-full">
           {project.thumbnail ? (
             <img
@@ -83,7 +83,7 @@ export const ProjectCard = ({
               loading="lazy"
               decoding="async"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover opacity-88 saturate-[0.92] transition-[transform,opacity,filter] duration-500 group-hover:scale-[1.025] group-hover:opacity-100 group-hover:saturate-110"
             />
           ) : (
             <div className={`flex h-full w-full items-center justify-center bg-gradient-to-br ${fallbackGradient}`}>
@@ -94,15 +94,18 @@ export const ProjectCard = ({
           )}
         </TransitionLink>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-background/92 via-background/25 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.06)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.05)_1px,transparent_1px)] bg-[size:34px_34px] opacity-30" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/88 via-background/20 to-primary/5" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.07)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.055)_1px,transparent_1px)] bg-[size:34px_34px] opacity-35 transition-opacity duration-300 group-hover:opacity-60" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-primary/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="pointer-events-none absolute left-0 right-0 top-0 h-20 -translate-y-full bg-gradient-to-b from-primary/0 via-primary/14 to-primary/0 opacity-0 blur-sm transition-all duration-700 group-hover:translate-y-[170%] group-hover:opacity-100" />
 
-        <div className="absolute inset-x-0 bottom-4 z-10 flex translate-y-2 items-center justify-center gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="absolute bottom-4 right-4 z-10 flex translate-y-1 items-center justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           {project.liveUrl && (
             <Button
               size="sm"
               variant="secondary"
-              className="gap-1.5 border border-primary/20 bg-primary/85 text-primary-foreground hover:bg-primary"
+              className="h-9 gap-1.5 rounded-lg border border-primary/40 bg-primary/90 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_24px_hsl(var(--primary)/0.24)] hover:bg-primary"
               asChild
             >
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
@@ -116,7 +119,7 @@ export const ProjectCard = ({
             <Button
               size="sm"
               variant="outline"
-              className="brand-outline-btn gap-1.5"
+              className="h-9 gap-1.5 rounded-lg border-primary/35 bg-background/70 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary backdrop-blur-xl hover:border-primary/70 hover:bg-primary/12"
               asChild
             >
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
@@ -128,7 +131,8 @@ export const ProjectCard = ({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col bg-background/35 p-6">
+      <div className="relative flex flex-1 flex-col bg-background/35 p-6 transition-colors duration-300 group-hover:bg-primary/[0.035]">
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-primary/45 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <TransitionLink to={projectPath} onClick={(event) => event.stopPropagation()} className="inline-block">
           <h3 className="text-xl font-bold text-foreground transition-colors group-hover:text-primary">
             {project.title}
