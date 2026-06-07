@@ -12,6 +12,7 @@ import type { SiteInterest, SiteTimelineItem } from '@/api/siteDataApi';
 import { usePublicSiteData } from "@/hooks/usePublicSiteData";
 import PageSeo from "@/components/seo/PageSeo";
 import DynamicPageBackground from "@/components/DynamicPageBackground";
+import { AboutHoverGraphic } from "@/components/sections/AboutHoverGraphic";
 
 // Icon mapping for dynamic icon rendering
 const iconMap = {
@@ -197,16 +198,20 @@ const About = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="page-hero-panel mx-auto max-w-4xl"
+              className="page-hero-panel mx-auto grid max-w-6xl items-center gap-10 text-center md:grid-cols-[minmax(0,0.95fr)_minmax(320px,1.05fr)] md:text-left"
             >
-              <span className="section-pill">IDENTITY PROFILE</span>
-              <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-foreground/80">Architecting Digital</span>{" "}
-                <span className="text-gradient">Flows</span>
-              </h1>
-              <p className="section-copy mx-auto mt-5 max-w-2xl">
-                Developer, automation builder, and self-hosting enthusiast working across web apps, bots, and resilient infrastructure.
-              </p>
+              <div>
+                <span className="section-pill">IDENTITY PROFILE</span>
+                <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
+                  <span className="text-foreground/80">Architecting Digital</span>{" "}
+                  <span className="text-gradient">Flows</span>
+                </h1>
+                <p className="section-copy mx-auto mt-5 max-w-2xl md:mx-0">
+                  Developer, automation builder, and self-hosting enthusiast working across web apps, bots, and resilient infrastructure.
+                </p>
+              </div>
+
+              <AboutHoverGraphic />
             </motion.div>
           </div>
         </section>
