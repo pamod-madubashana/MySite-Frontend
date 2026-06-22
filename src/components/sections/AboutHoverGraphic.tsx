@@ -7,6 +7,7 @@ type Point = {
 };
 
 const TILT_DAMPING = 0.12;
+const clampTilt = (value: number) => Math.max(-5.5, Math.min(5.5, value));
 
 export const AboutHoverGraphic = () => {
   const portraitRef = useRef<HTMLDivElement>(null);
@@ -22,7 +23,10 @@ export const AboutHoverGraphic = () => {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const pieces = Array.from(svg.querySelectorAll("path"));
     let setupFrame = 0;
-    let tiltFrame = 0;
+    let renderFrame = 0;
+    let pendingPiece: SVGPathElement | null = null;
+    let hasPending = false;
+    let lastApplied: SVGPathElement | null = null;
     let currentTilt: Point = { x: 0, y: 0 };
     let targetTilt: Point = { x: 0, y: 0 };
 
@@ -33,146 +37,107 @@ export const AboutHoverGraphic = () => {
       piece.style.setProperty("--move-y", "0px");
     });
 
-    const boxCenter = (element: SVGPathElement) => {
-      const rect = element.getBoundingClientRect();
-
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height / 2,
-        w: rect.width,
-        h: rect.height,
-      };
-    };
-
-    const setupMovement = () => {
+    // Per-piece outward offset for the subtle "breathing" on hover. Measured
+    // once per enter/resize so pointermove never has to read layout.
+    const measure = () => {
       const svgRect = svg.getBoundingClientRect();
       const centerX = svgRect.left + svgRect.width / 2;
       const centerY = svgRect.top + svgRect.height / 2;
 
       pieces.forEach((piece, index) => {
-        const center = boxCenter(piece);
-        let dx = center.x - centerX;
-        let dy = center.y - centerY;
+        const rect = piece.getBoundingClientRect();
+        let dx = rect.left + rect.width / 2 - centerX;
+        let dy = rect.top + rect.height / 2 - centerY;
         const length = Math.hypot(dx, dy) || 1;
         const amount = 3.4 + (index % 9) * 0.28;
-
         dx /= length;
         dy /= length;
-
         piece.style.setProperty("--move-x", `${(dx * amount).toFixed(2)}px`);
         piece.style.setProperty("--move-y", `${(dy * amount).toFixed(2)}px`);
       });
     };
 
-    const scheduleSetupMovement = () => {
+    const scheduleMeasure = () => {
       cancelAnimationFrame(setupFrame);
-      setupFrame = requestAnimationFrame(setupMovement);
+      setupFrame = requestAnimationFrame(measure);
     };
 
-    const clearFocus = () => {
-      portrait.classList.remove("has-focus");
-      pieces.forEach((piece) => {
-        piece.classList.remove("active-piece", "near-strong", "near-soft");
-      });
-    };
+    // Single rAF loop drives the highlight + eased tilt, so bursts of
+    // pointermove events coalesce into one update per frame.
+    const render = () => {
+      renderFrame = 0;
 
-    const activatePiece = (activePiece: SVGPathElement) => {
-      clearFocus();
-      portrait.classList.add("has-focus");
-      activePiece.classList.add("active-piece");
-
-      const active = boxCenter(activePiece);
-      const influenceBoost = Math.max(active.w, active.h) * 0.34;
-
-      pieces.forEach((piece) => {
-        if (piece === activePiece) {
-          return;
+      if (hasPending) {
+        hasPending = false;
+        // Only the piece under the cursor lights up. When it changes (or the
+        // pointer leaves -> null) we drop the class from the previous one; the
+        // slow base CSS transition then lets its glow linger and fade on its own.
+        if (pendingPiece !== lastApplied) {
+          lastApplied?.classList.remove("active-piece");
+          pendingPiece?.classList.add("active-piece");
+          lastApplied = pendingPiece;
         }
+      }
 
-        const center = boxCenter(piece);
-        const distance = Math.hypot(center.x - active.x, center.y - active.y);
-
-        if (distance < 62 + influenceBoost) {
-          piece.classList.add("near-strong");
-        } else if (distance < 132 + influenceBoost) {
-          piece.classList.add("near-soft");
-        }
-      });
-    };
-
-    const renderTilt = () => {
       currentTilt = {
         x: currentTilt.x + (targetTilt.x - currentTilt.x) * TILT_DAMPING,
         y: currentTilt.y + (targetTilt.y - currentTilt.y) * TILT_DAMPING,
       };
-
       portrait.style.transform = `rotateX(${currentTilt.y.toFixed(3)}deg) rotateY(${currentTilt.x.toFixed(3)}deg)`;
 
       if (Math.abs(targetTilt.x - currentTilt.x) > 0.01 || Math.abs(targetTilt.y - currentTilt.y) > 0.01) {
-        tiltFrame = requestAnimationFrame(renderTilt);
-      } else {
-        // ponytail: must reset, else stale frame id wedges scheduleTilt and tilt freezes
-        tiltFrame = 0;
+        schedule();
       }
     };
 
-    const scheduleTilt = () => {
-      if (!tiltFrame) {
-        tiltFrame = requestAnimationFrame(renderTilt);
+    const schedule = () => {
+      if (!renderFrame) {
+        renderFrame = requestAnimationFrame(render);
       }
     };
 
     const handlePointerEnter = () => {
-      scheduleSetupMovement();
+      scheduleMeasure();
       portrait.classList.add("is-active");
     };
 
     const handlePointerLeave = () => {
       portrait.classList.remove("is-active");
-      clearFocus();
+      pendingPiece = null;
+      hasPending = true;
       targetTilt = { x: 0, y: 0 };
-      scheduleTilt();
+      schedule();
     };
 
     const handlePointerMove = (event: PointerEvent) => {
-      // Track the piece under the cursor on every move, not just on enter,
-      // so the highlight follows the pointer and clears over gaps.
-      if (event.target instanceof window.SVGPathElement) {
-        activatePiece(event.target);
-      } else {
-        clearFocus();
+      pendingPiece = event.target instanceof window.SVGPathElement ? event.target : null;
+      hasPending = true;
+
+      if (!prefersReducedMotion) {
+        const rect = portrait.getBoundingClientRect();
+        targetTilt = {
+          x: clampTilt((event.clientX - (rect.left + rect.width / 2)) * 0.009),
+          y: clampTilt(-(event.clientY - (rect.top + rect.height / 2)) * 0.009),
+        };
       }
 
-      if (prefersReducedMotion) {
-        return;
-      }
-
-      const rect = portrait.getBoundingClientRect();
-      const x = event.clientX - (rect.left + rect.width / 2);
-      const y = event.clientY - (rect.top + rect.height / 2);
-
-      targetTilt = {
-        x: Math.max(-5.5, Math.min(5.5, x * 0.009)),
-        y: Math.max(-5.5, Math.min(5.5, -y * 0.009)),
-      };
-
-      scheduleTilt();
+      schedule();
     };
 
     portrait.addEventListener("pointerenter", handlePointerEnter);
     portrait.addEventListener("pointerleave", handlePointerLeave);
     portrait.addEventListener("pointermove", handlePointerMove);
-    window.addEventListener("resize", scheduleSetupMovement);
+    window.addEventListener("resize", scheduleMeasure);
 
-    scheduleSetupMovement();
+    scheduleMeasure();
 
     return () => {
       cancelAnimationFrame(setupFrame);
-      cancelAnimationFrame(tiltFrame);
+      cancelAnimationFrame(renderFrame);
       portrait.removeEventListener("pointerenter", handlePointerEnter);
       portrait.removeEventListener("pointerleave", handlePointerLeave);
       portrait.removeEventListener("pointermove", handlePointerMove);
-      window.removeEventListener("resize", scheduleSetupMovement);
+      window.removeEventListener("resize", scheduleMeasure);
     };
   }, []);
 
@@ -215,54 +180,34 @@ export const AboutHoverGraphic = () => {
           cursor: pointer;
           transform-box: fill-box;
           transform-origin: center;
+          /* Base = the slow fade-OUT once .active-piece is removed, so the
+             highlight lingers and drifts back instead of snapping off. */
           transition:
-            transform 520ms cubic-bezier(.16, 1, .3, 1),
-            filter 360ms ease,
-            opacity 360ms ease;
-          will-change: transform, filter, opacity;
+            transform 900ms cubic-bezier(.62, 1, .36, 1),
+            filter 900ms ease,
+            opacity 900ms ease;
+          will-change: transform, opacity, filter;
         }
 
         .about-hover-portrait.is-active svg path {
           transform: translate(calc(var(--move-x) * .32), calc(var(--move-y) * .32));
         }
 
-        .about-hover-portrait.has-focus svg path {
-          opacity: .74;
-        }
-
-        .about-hover-portrait.has-focus svg path.near-soft {
-          opacity: .94;
-          transform:
-            translate(calc(var(--move-x) * .58), calc(var(--move-y) * .58))
-            scale(1.01);
-          filter:
-            brightness(1.08)
-            saturate(1.06)
-            drop-shadow(0 0 4px hsl(var(--secondary) / .28));
-        }
-
-        .about-hover-portrait.has-focus svg path.near-strong {
+        /* Only the hovered piece reacts — no neighbour highlighting. Its own
+           transition is fast, so it lights up quickly then fades out slowly via
+           the base rule above. */
+        .about-hover-portrait svg path.active-piece {
+          transition:
+            transform 150ms ease-out,
+            filter 150ms ease-out,
+            opacity 150ms ease-out;
           opacity: 1;
           transform:
-            translate(calc(var(--move-x) * .76), calc(var(--move-y) * .76))
-            scale(1.022);
+            translate(calc(var(--move-x) * .55), calc(var(--move-y) * .55))
+            scale(1.03);
           filter:
-            brightness(1.16)
-            saturate(1.1)
-            drop-shadow(0 0 7px hsl(var(--primary) / .44));
-        }
-
-        .about-hover-portrait.has-focus svg path.active-piece {
-          opacity: 1;
-          transform:
-            translate(calc(var(--move-x) * .98), calc(var(--move-y) * .98))
-            scale(1.055);
-          filter:
-            brightness(1.3)
-            saturate(1.22)
-            drop-shadow(0 0 8px rgb(255 255 255 / .42))
-            drop-shadow(0 0 16px hsl(var(--primary) / .82))
-            drop-shadow(0 0 26px hsl(var(--secondary) / .42));
+            brightness(1.1)
+            drop-shadow(0 0 6px hsl(var(--primary) / .5));
         }
 
         @media (prefers-reduced-motion: reduce) {
