@@ -110,15 +110,15 @@ export const AboutHoverGraphic = () => {
 
       if (Math.abs(targetTilt.x - currentTilt.x) > 0.01 || Math.abs(targetTilt.y - currentTilt.y) > 0.01) {
         tiltFrame = requestAnimationFrame(renderTilt);
+      } else {
+        // ponytail: must reset, else stale frame id wedges scheduleTilt and tilt freezes
+        tiltFrame = 0;
       }
     };
 
     const scheduleTilt = () => {
       if (!tiltFrame) {
-        tiltFrame = requestAnimationFrame(() => {
-          tiltFrame = 0;
-          renderTilt();
-        });
+        tiltFrame = requestAnimationFrame(renderTilt);
       }
     };
 
@@ -135,6 +135,14 @@ export const AboutHoverGraphic = () => {
     };
 
     const handlePointerMove = (event: PointerEvent) => {
+      // Track the piece under the cursor on every move, not just on enter,
+      // so the highlight follows the pointer and clears over gaps.
+      if (event.target instanceof window.SVGPathElement) {
+        activatePiece(event.target);
+      } else {
+        clearFocus();
+      }
+
       if (prefersReducedMotion) {
         return;
       }
@@ -151,16 +159,9 @@ export const AboutHoverGraphic = () => {
       scheduleTilt();
     };
 
-    const handlePointerOver = (event: PointerEvent) => {
-      if (event.target instanceof window.SVGPathElement) {
-        activatePiece(event.target);
-      }
-    };
-
     portrait.addEventListener("pointerenter", handlePointerEnter);
     portrait.addEventListener("pointerleave", handlePointerLeave);
     portrait.addEventListener("pointermove", handlePointerMove);
-    svg.addEventListener("pointerover", handlePointerOver);
     window.addEventListener("resize", scheduleSetupMovement);
 
     scheduleSetupMovement();
@@ -171,7 +172,6 @@ export const AboutHoverGraphic = () => {
       portrait.removeEventListener("pointerenter", handlePointerEnter);
       portrait.removeEventListener("pointerleave", handlePointerLeave);
       portrait.removeEventListener("pointermove", handlePointerMove);
-      svg.removeEventListener("pointerover", handlePointerOver);
       window.removeEventListener("resize", scheduleSetupMovement);
     };
   }, []);
