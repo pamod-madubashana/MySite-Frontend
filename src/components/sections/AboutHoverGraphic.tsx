@@ -29,6 +29,64 @@ export const AboutHoverGraphic = () => {
       return undefined;
     }
 
+    // Touch devices can't hover, so wander an automatic trail across the
+    // triangles instead. It's a random walk that only ever hops to an adjacent
+    // piece, so the light meanders organically; the slow CSS fade-out is the trail.
+    if (window.matchMedia("(hover: none), (pointer: coarse)").matches) {
+      const centers = Array.from(svg.querySelectorAll<SVGPathElement>("path")).map((path) => {
+        const box = path.getBBox();
+        return { path, cx: box.x + box.width / 2, cy: box.y + box.height / 2 };
+      });
+
+      // Precompute each triangle's nearest neighbours once so a step only jumps
+      // to a touching piece. ponytail: O(n²) build, fine for ~243 nodes.
+      const K = 6;
+      const neighbours = centers.map((a, i) =>
+        centers
+          .map((b, j) => ({ j, d: (a.cx - b.cx) ** 2 + (a.cy - b.cy) ** 2 }))
+          .filter((n) => n.j !== i)
+          .sort((p, q) => p.d - q.d)
+          .slice(0, K)
+          .map((n) => n.j)
+      );
+
+      let current = Math.floor(Math.random() * centers.length);
+      const COOLDOWN = 6000; // a lit triangle stays asleep this long before re-firing
+      const lastLit = new Array<number>(centers.length).fill(-Infinity);
+      const timeouts = new Set<number>();
+
+      const step = () => {
+        const now = performance.now();
+        const awake = (j: number) => now - lastLit[j] >= COOLDOWN;
+
+        // Prefer an awake neighbour; if the whole local cluster is sleeping,
+        // teleport to a random awake triangle so the trail leaves the area.
+        let pool = neighbours[current].filter(awake);
+        if (!pool.length) {
+          const all = centers.map((_, j) => j).filter(awake);
+          pool = all.length ? all : centers.map((_, j) => j);
+        }
+        current = pool[Math.floor(Math.random() * pool.length)];
+        lastLit[current] = now;
+
+        const path = centers[current].path;
+        path.classList.add("is-active");
+        const id = window.setTimeout(() => {
+          path.classList.remove("is-active"); // base transition fades the trail
+          timeouts.delete(id);
+        }, 1400);
+        timeouts.add(id);
+      };
+
+      const interval = window.setInterval(step, 110);
+
+      return () => {
+        window.clearInterval(interval);
+        timeouts.forEach((id) => window.clearTimeout(id));
+        centers.forEach((c) => c.path.classList.remove("is-active"));
+      };
+    }
+
     let frame = 0;
     let current: Point = { x: 0, y: 0 };
     let target: Point = { x: 0, y: 0 };
@@ -121,7 +179,8 @@ export const AboutHoverGraphic = () => {
 
         /* :hover snaps the colour on instantly (transition: none); the
            hue-rotate + brightness flash is what gives iamschulz its vivid pop. */
-        .about-hover-portrait svg path:hover {
+        .about-hover-portrait svg path:hover,
+        .about-hover-portrait svg path.is-active {
           fill: hsl(var(--primary));
           filter: hue-rotate(-140deg) brightness(1.8);
           transition: none;
