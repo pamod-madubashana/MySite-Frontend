@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/RouteProtector";
 import ScrollToTop from "./components/ScrollToTop";
 import DynamicPageBackground from "./components/DynamicPageBackground";
 import PersistentCommandCore from "./components/PersistentCommandCore";
+import MagneticCursor from "./components/MagneticCursor";
 import Index from "./pages/Index";
 
 const About = lazy(() => import("./pages/About"));
@@ -248,6 +249,7 @@ const App = () => {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <div className="dark">
+            <MagneticCursor />
             <Toaster />
             <Sonner />
             <ScrollToTop />
