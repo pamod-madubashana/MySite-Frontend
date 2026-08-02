@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
-const RING_SPEED = 0.22;
-const DOT_SPEED = 0.45;
+const RING_LERP = 0.22;
+const DOT_LERP = 0.45;
 
 export default function MagneticCursor() {
   const [hasPointer, setHasPointer] = useState(true);
   const ringRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
-  const mouseRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  const ringPos = useRef({ x: mouseRef.current.x, y: mouseRef.current.y });
-  const dotPos = useRef({ x: mouseRef.current.x, y: mouseRef.current.y });
+  const mx = useRef(window.innerWidth / 2);
+  const my = useRef(window.innerHeight / 2);
+  const rx = useRef(mx.current);
+  const ry = useRef(my.current);
+  const dx = useRef(mx.current);
+  const dy = useRef(my.current);
 
   useEffect(() => {
     const mq = window.matchMedia("(pointer: fine)");
@@ -27,53 +30,55 @@ export default function MagneticCursor() {
     if (!ring || !dot) return;
 
     const onMove = (e: MouseEvent) => {
-      mouseRef.current.x = e.clientX;
-      mouseRef.current.y = e.clientY;
+      mx.current = e.clientX;
+      my.current = e.clientY;
     };
 
     let raf: number;
     const animate = () => {
-      const { x: mx, y: my } = mouseRef.current;
-      const rp = ringPos.current;
-      const dp = dotPos.current;
+      rx.current += (mx.current - rx.current) * RING_LERP;
+      ry.current += (my.current - ry.current) * RING_LERP;
+      dx.current += (mx.current - dx.current) * DOT_LERP;
+      dy.current += (my.current - dy.current) * DOT_LERP;
 
-      rp.x += (mx - rp.x) * RING_SPEED;
-      rp.y += (my - rp.y) * RING_SPEED;
-      dp.x += (mx - dp.x) * DOT_SPEED;
-      dp.y += (my - dp.y) * DOT_SPEED;
-
-      ring.style.transform = `translate3d(${rp.x}px, ${rp.y}px, 0) translate(-50%, -50%)`;
-      dot.style.transform = `translate3d(${dp.x}px, ${dp.y}px, 0) translate(-50%, -50%)`;
+      ring.style.transform =
+        "translate3d(" + rx.current + "px," + ry.current + "px,0) translate(-50%,-50%)";
+      dot.style.transform =
+        "translate3d(" + dx.current + "px," + dy.current + "px,0) translate(-50%,-50%)";
 
       raf = requestAnimationFrame(animate);
     };
     raf = requestAnimationFrame(animate);
 
-    const hoverableSelector = "a, button, [data-cursor-hover]";
-    const addActive = () => document.body.classList.add("cursor-active");
-    const removeActive = () => document.body.classList.remove("cursor-active");
+    const isHoverable = (el: Element | null) =>
+      el && (el instanceof HTMLAnchorElement || el instanceof HTMLButtonElement || (el as HTMLElement).closest?.("[data-cursor-hover]"));
 
-    const onEnter = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest(hoverableSelector)) addActive();
+    const onOver = (e: MouseEvent) => {
+      if (isHoverable(e.target as Element)) {
+        document.body.classList.add("cursor-active");
+      }
     };
-    const onLeave = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).closest(hoverableSelector)) removeActive();
+    const onOut = (e: MouseEvent) => {
+      const related = e.relatedTarget as Element | null;
+      if (!isHoverable(related)) {
+        document.body.classList.remove("cursor-active");
+      }
     };
 
     const onMouseLeave = () => document.body.classList.add("cursor-hidden");
     const onMouseEnter = () => document.body.classList.remove("cursor-hidden");
 
-    window.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseover", onEnter);
-    document.addEventListener("mouseout", onLeave);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    document.addEventListener("mouseover", onOver, { passive: true });
+    document.addEventListener("mouseout", onOut, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
     document.addEventListener("mouseenter", onMouseEnter);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseover", onEnter);
-      document.removeEventListener("mouseout", onLeave);
+      document.removeEventListener("mouseover", onOver);
+      document.removeEventListener("mouseout", onOut);
       document.removeEventListener("mouseleave", onMouseLeave);
       document.removeEventListener("mouseenter", onMouseEnter);
     };
