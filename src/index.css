@@ -882,3 +882,64 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
     animation: orbit-soft 9s ease-in-out infinite;
   }
 }
+
+/* Magnetic lag cursor */
+@media (pointer: fine) {
+  html, body, body *, body *::before, body *::after {
+    cursor: none !important;
+  }
+}
+
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid hsl(var(--foreground) / 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  transition: width 0.55s cubic-bezier(0.19, 1, 0.22, 1),
+              height 0.55s cubic-bezier(0.19, 1, 0.22, 1),
+              background-color 0.5s ease,
+              border-color 0.5s ease,
+              opacity 0.5s ease;
+  mix-blend-mode: difference;
+  opacity: 1;
+}
+
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--foreground) / 0.9);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10000;
+  will-change: transform, opacity;
+  mix-blend-mode: difference;
+  opacity: 1;
+  transition: opacity 0.5s ease,
+              width 0.55s cubic-bezier(0.19, 1, 0.22, 1),
+              height 0.55s cubic-bezier(0.19, 1, 0.22, 1),
+              background-color 0.5s ease;
+}
+
+body.cursor-active .cursor-ring {
+  opacity: 0;
+}
+
+body.cursor-active .cursor-dot {
+  width: 90px;
+  height: 90px;
+  background-color: hsl(var(--foreground) / 0.18);
+}
+
+body.cursor-hidden .cursor-ring,
+body.cursor-hidden .cursor-dot {
+  opacity: 0;
+}
