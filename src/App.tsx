@@ -213,13 +213,14 @@ const App = () => {
     contentNodes.forEach((node) => {
       node.style.transition = "none";
       node.style.transform = directionOffset;
-      node.style.opacity = "0.92";
+      node.style.opacity = "0";
       node.style.willChange = "transform";
     });
 
     const frame = requestAnimationFrame(() => {
       contentNodes.forEach((node) => {
-        node.style.transition = "transform 620ms cubic-bezier(0.16, 1, 0.3, 1), opacity 520ms ease";
+        node.style.transition =
+          "transform 620ms cubic-bezier(0.16, 1, 0.3, 1), opacity 420ms cubic-bezier(0.16, 1, 0.3, 1)";
         node.style.transform = "translate3d(0, 0, 0)";
         node.style.opacity = "1";
       });
