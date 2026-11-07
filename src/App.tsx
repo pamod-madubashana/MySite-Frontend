@@ -8,9 +8,11 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { SettingsProvider, useSettings } from "./contexts/SettingsContext";
 import ProtectedRoute from "./components/RouteProtector";
 import ScrollToTop from "./components/ScrollToTop";
+import SmoothScroll from "./components/SmoothScroll";
 import DynamicPageBackground from "./components/DynamicPageBackground";
 import PersistentCommandCore from "./components/PersistentCommandCore";
 import MagneticCursor from "./components/MagneticCursor";
+import { Navbar } from "./components/layout/Navbar";
 import Index from "./pages/Index";
 
 const About = lazy(() => import("./pages/About"));
@@ -154,6 +156,12 @@ const App = () => {
     !pathname.startsWith("/admin") &&
     !/^\/(login|register)\/?$/.test(pathname);
 
+  const showNavbar =
+    pathname === "/" ||
+    pathname.startsWith("/about") ||
+    pathname.startsWith("/projects") ||
+    pathname.startsWith("/articles");
+
   const transitionMeta = useMemo(() => {
     const currentPath = pathname;
     const previousPath = previousPathRef.current;
@@ -253,9 +261,11 @@ const App = () => {
             <Toaster />
             <Sonner />
             <ScrollToTop />
-            <Suspense fallback={<RouteFallback />}>
-              <AppBootstrapGate>
-                {showCommandCore && <PersistentCommandCore />}
+            <SmoothScroll />
+            <AppBootstrapGate>
+              {showCommandCore && <PersistentCommandCore />}
+              {showNavbar && <Navbar />}
+              <Suspense fallback={<RouteFallback />}>
                 <div
                   key={pathname}
                   className={`route-fallback-enter route-fallback-enter-${transitionMeta.axis}-${transitionMeta.direction}`}
@@ -362,8 +372,8 @@ const App = () => {
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 </div>
-              </AppBootstrapGate>
-            </Suspense>
+              </Suspense>
+            </AppBootstrapGate>
           </div>
         </TooltipProvider>
       </QueryClientProvider>

@@ -1,4 +1,3 @@
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
@@ -41,7 +40,6 @@ const Index = () => {
         path="/"
         keywords={["Pamod Madubashana", "full-stack developer", "React developer", "Node.js", "portfolio"]}
       />
-      <Navbar />
       <main className="route-transition-content relative z-10">
         <HeroSection />
         <AboutSection />

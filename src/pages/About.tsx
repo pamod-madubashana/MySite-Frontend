@@ -1,6 +1,5 @@
 import { motion } from "framer-motion";
 import type { ComponentType } from "react";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { 
   Briefcase, GraduationCap, Award, Code2, 
@@ -190,7 +189,6 @@ const About = () => {
           },
         }}
       />
-      <Navbar />
       <main className="route-transition-content relative z-10 pt-24 pb-20">
         <section className="section-shell">
           <div className="section-inner">

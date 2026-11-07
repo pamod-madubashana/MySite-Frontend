@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Calendar, ArrowRight, Tag, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -169,7 +168,6 @@ const Articles = () => {
           },
         }}
       />
-      <Navbar />
       <main className="route-transition-content relative z-10 flex-1 pt-24 pb-20">
         {!heroRemoved && (
           <motion.section

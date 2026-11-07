@@ -12,8 +12,8 @@ export const Footer = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col gap-2 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-7">
           <TransitionLink to="/" className="inline-flex items-center">
-            <span className="font-mono text-lg font-bold tracking-[0.32em] text-primary md:text-xl">
-              P A M O D
+            <span className="font-mono text-lg font-semibold tracking-[0.3em] text-primary md:text-xl">
+              PAMOD
             </span>
           </TransitionLink>
 

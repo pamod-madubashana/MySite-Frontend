@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Code, Sparkles } from "lucide-react";
+import { Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { SiteProject } from "@/api/siteDataApi";
 import { ProjectCard } from "@/components/ui/ProjectCard";
@@ -7,18 +7,18 @@ import { TransitionLink } from "@/components/TransitionLink";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePublicSiteData } from "@/hooks/usePublicSiteData";
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 const ProjectsHeader = ({ copy, shouldAnimate }: { copy: string; shouldAnimate: boolean }) => (
   <motion.div
-    initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
+    initial={shouldAnimate ? { opacity: 0, y: 8 } : false}
     whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
     viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
-    transition={shouldAnimate ? { duration: 0.42 } : undefined}
+    transition={shouldAnimate ? { duration: 0.4, ease: EASE } : undefined}
     className="mx-auto mb-14 max-w-3xl text-center"
   >
-    <span className="section-pill">Featured Work</span>
-    <h2 className="section-title">
-      <span className="text-foreground/80">Featured</span> <span className="text-gradient">Projects</span>
-    </h2>
+    <span className="section-pill">Featured work</span>
+    <h2 className="section-title">Projects</h2>
     <p className="section-copy mx-auto mt-4 max-w-2xl">{copy}</p>
   </motion.div>
 );
@@ -51,9 +51,8 @@ export const ProjectsSection = () => {
         ) : projects.length === 0 ? (
           <>
             <ProjectsHeader copy="No recent projects found yet." shouldAnimate={shouldAnimate} />
-            <div className="mx-auto max-w-2xl rounded-2xl border border-border/60 bg-card/30 p-8 text-center backdrop-blur-xl">
-              <Sparkles className="mx-auto h-8 w-8 text-primary" />
-              <p className="mt-4 text-muted-foreground">New case studies are on the way. Check back soon.</p>
+            <div className="mx-auto max-w-2xl rounded-xl border border-foreground/10 bg-card p-8 text-center">
+              <p className="text-muted-foreground">New case studies are on the way. Check back soon.</p>
             </div>
           </>
         ) : (
@@ -76,23 +75,22 @@ export const ProjectsSection = () => {
             </div>
 
             <motion.div
-              initial={shouldAnimate ? { opacity: 0, y: 18 } : false}
+              initial={shouldAnimate ? { opacity: 0, y: 8 } : false}
               whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
               viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
-              transition={shouldAnimate ? { duration: 0.38, delay: 0.12 } : undefined}
+              transition={shouldAnimate ? { duration: 0.4, delay: 0.12, ease: EASE } : undefined}
               className="mt-14 text-center"
             >
-              <Button asChild variant="outline" size="lg" className="brand-outline-btn group px-8 font-mono text-xs font-bold uppercase tracking-[0.14em]">
-                <TransitionLink to="/projects" className="inline-flex min-h-11 items-center">
-                  <Code className="mr-2 h-5 w-5" />
-                  View Full Archive
-                  <motion.span
-                    className="ml-2"
-                    animate={shouldAnimate ? { x: [0, 5, 0] } : undefined}
-                    transition={shouldAnimate ? { duration: 1.1, repeat: Infinity } : undefined}
-                  >
-                    {"->"}
-                  </motion.span>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-lg border-foreground/10 bg-transparent text-sm font-medium text-foreground transition-colors duration-150 hover:border-foreground/25 hover:bg-foreground/[0.04]"
+              >
+                <TransitionLink to="/projects" className="min-h-11">
+                  <Code className="text-muted-foreground" strokeWidth={1.5} />
+                  View full archive
+                  <span className="font-mono text-muted-foreground">{"->"}</span>
                 </TransitionLink>
               </Button>
             </motion.div>

@@ -279,7 +279,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
           </header>
 
           {/* Page Content */}
-          <main className="route-transition-content flex-1 overflow-auto">
+          <main data-lenis-prevent className="route-transition-content flex-1 overflow-auto">
             <div className="p-6 pt-0 md:pt-6">
               {children}
             </div>

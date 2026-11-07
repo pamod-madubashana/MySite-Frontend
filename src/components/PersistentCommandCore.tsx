@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import CommandCore3D from "@/components/CommandCore3D";
+import CommandCore3D, { type CoreMotionState } from "@/components/CommandCore3D";
 
 type CommandSection = "home" | "about" | "projects" | "articles";
 
@@ -21,14 +21,14 @@ interface UpdateTargetOptions {
 }
 
 const desktopStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 24, y: -2, scale: 0.82, opacity: 0.88 },
+  home: { x: 24, y: 0, scale: 0.82, opacity: 0.88 },
   about: { x: -30, y: 6, scale: 0.82, opacity: 0.4 },
   projects: { x: 12, y: 16, scale: 0.82, opacity: 0.46 },
   articles: { x: -6, y: -18, scale: 0.82, opacity: 0.38 },
 };
 
 const mobileStates: Record<CommandSection, CommandCoreTarget> = {
-  home: { x: 8, y: -12, scale: 1, opacity: 0.58 },
+  home: { x: 8, y: 0, scale: 1, opacity: 0.58 },
   about: { x: -8, y: -30, scale: 1, opacity: 0.3 },
   projects: { x: 12, y: 2, scale: 1, opacity: 0.34 },
   articles: { x: -2, y: -18, scale: 1, opacity: 0.28 },
@@ -119,6 +119,11 @@ const PersistentCommandCore = () => {
   const startAnimationRef = useRef<() => void>(() => {});
   const routeAnimationUntilRef = useRef(0);
   const reducedMotionRef = useRef(false);
+  const velRef = useRef(0);
+  const lastScrollYRef = useRef(typeof window === "undefined" ? 0 : window.scrollY);
+  const lastTimeRef = useRef(0);
+  const dynYRef = useRef(0);
+  const tiltXRef = useRef(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   if (!initialStateRef.current) {
@@ -128,6 +133,14 @@ const PersistentCommandCore = () => {
 
   const animatedStateRef = useRef(initialStateRef.current);
   targetStateRef.current = targetStateRef.current || initialStateRef.current;
+
+  const coreStateRef = useRef<CoreMotionState>({
+    scale: viewportMode === "mobile" ? 1 : initialStateRef.current.scale,
+    offsetX: 0,
+    offsetY: 0,
+    tiltX: 0,
+    tiltY: 0,
+  });
 
   const updateSectionCenters = useCallback(() => {
     sectionCentersRef.current = homeSectionOrder
@@ -182,8 +195,10 @@ const PersistentCommandCore = () => {
 
     if (containerRef.current) {
       containerRef.current.style.opacity = String(state.opacity);
-      containerRef.current.style.transform = `translate3d(${state.x}%, ${state.y}%, 0) scale(${isMobile ? 1 : state.scale})`;
+      containerRef.current.style.transform = `translate3d(${state.x}%, ${state.y}%, 0)`;
     }
+
+    coreStateRef.current.scale = isMobile ? 1 : state.scale;
   }, []);
 
   const animateRouteTarget = useCallback((pathname: string) => {
@@ -290,6 +305,7 @@ const PersistentCommandCore = () => {
       reducedMotionRef.current = motionQuery.matches;
       setPrefersReducedMotion(motionQuery.matches);
       updateTarget();
+      startAnimationRef.current();
     };
 
     handleMotionPreference();
@@ -310,13 +326,12 @@ const PersistentCommandCore = () => {
   }, [updateTargetSmooth]);
 
   useEffect(() => {
-    const animate = () => {
+    const animate = (time: number) => {
       if (reducedMotionRef.current) {
         frameIdRef.current = 0;
         return;
       }
 
-      const isMobile = viewportModeRef.current === "mobile";
       const target = targetStateRef.current || resolveTarget();
       const current = animatedStateRef.current;
       const next = {
@@ -325,9 +340,6 @@ const PersistentCommandCore = () => {
         scale: lerp(current.scale, target.scale, 0.14),
         opacity: lerp(current.opacity, target.opacity, 0.18),
       };
-
-      animatedStateRef.current = next;
-      applyState(next);
 
       const isSettled =
         Math.abs(next.x - target.x) < 0.18 &&
@@ -338,9 +350,37 @@ const PersistentCommandCore = () => {
       if (isSettled) {
         animatedStateRef.current = target;
         applyState(target);
-        frameIdRef.current = 0;
-        return;
+      } else {
+        animatedStateRef.current = next;
+        applyState(next);
       }
+
+      const dtSec = Math.min((time - lastTimeRef.current) / 1000, 0.05);
+      lastTimeRef.current = time;
+
+      const scrollY = window.scrollY;
+      const dy = scrollY - lastScrollYRef.current;
+      lastScrollYRef.current = scrollY;
+
+      const instantVel = dtSec > 0 ? dy / dtSec : 0;
+      const velAlpha = Math.min(1, 10 * dtSec);
+      velRef.current += (instantVel - velRef.current) * velAlpha;
+
+      const spring = 1 - Math.exp(-6 * dtSec);
+      const inertiaTargetY = Math.max(-70, Math.min(70, velRef.current * 0.03));
+      const tiltTargetX = Math.max(-7, Math.min(7, velRef.current * 0.002));
+      dynYRef.current += (inertiaTargetY - dynYRef.current) * spring;
+      tiltXRef.current += (tiltTargetX - tiltXRef.current) * spring;
+
+      const elapsed = time * 0.001;
+      const floatY = Math.sin(elapsed * 0.9) * 5;
+      const floatX = Math.sin(elapsed * 0.6 + 1.7) * 3.5;
+      const tiltY = Math.sin(elapsed * 0.45) * 1.5;
+
+      coreStateRef.current.offsetX = floatX;
+      coreStateRef.current.offsetY = floatY + dynYRef.current;
+      coreStateRef.current.tiltX = tiltXRef.current;
+      coreStateRef.current.tiltY = tiltY;
 
       frameIdRef.current = window.requestAnimationFrame(animate);
     };
@@ -366,7 +406,6 @@ const PersistentCommandCore = () => {
   }, [applyState, resolveTarget]);
 
   const initialState = initialStateRef.current;
-  const initialScale = viewportMode === "mobile" ? 1 : initialState.scale;
 
   return (
     <div
@@ -375,10 +414,10 @@ const PersistentCommandCore = () => {
       className="pointer-events-none fixed -inset-x-[18vw] -inset-y-[18vh] z-[5] overflow-visible will-change-[transform,opacity] [backface-visibility:hidden] [contain:layout_paint_style]"
       style={{
         opacity: initialState.opacity,
-        transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0) scale(${initialScale})`,
+        transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0)`,
       }}
     >
-      <CommandCore3D isActive={!prefersReducedMotion} />
+      <CommandCore3D isActive={!prefersReducedMotion} coreStateRef={coreStateRef} />
     </div>
   );
 };

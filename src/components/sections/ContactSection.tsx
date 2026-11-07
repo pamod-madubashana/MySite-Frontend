@@ -123,31 +123,27 @@ export const ContactSection = () => {
 
   return (
     <section id="contact" className="section-shell section-shell-muted">
-      <div aria-hidden className="pointer-events-none absolute -right-20 top-0 h-48 w-48 rounded-full bg-secondary/20 blur-3xl animate-orbit-soft" />
-
       <div className="section-inner">
         <div className="mx-auto max-w-5xl">
           <motion.div
-            initial={shouldAnimate ? { opacity: 0, y: 24 } : false}
+            initial={shouldAnimate ? { opacity: 0, y: 8 } : false}
             whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
             viewport={shouldAnimate ? { once: true, amount: 0.2, margin: "0px 0px -64px 0px" } : undefined}
-            transition={shouldAnimate ? { duration: 0.4 } : undefined}
+            transition={shouldAnimate ? { duration: 0.4, ease: [0.22, 1, 0.36, 1] } : undefined}
             className="mb-12 text-center"
           >
-            <span className="section-pill">Get in Touch</span>
-            <h2 className="section-title">
-              <span className="text-foreground/75">Start a</span> <span className="text-gradient">Conversation</span>
-            </h2>
+            <span className="section-pill">Get in touch</span>
+            <h2 className="section-title">Start a conversation</h2>
             <p className="section-copy mx-auto mt-4 max-w-xl">
               Share your goals, scope, and timeline. I will review your request and send a clear next-step plan.
             </p>
           </motion.div>
 
           <motion.div
-            initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+            initial={shouldAnimate ? { opacity: 0, y: 8 } : false}
             whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
             viewport={shouldAnimate ? { once: true, amount: 0.18, margin: "0px 0px -56px 0px" } : undefined}
-            transition={shouldAnimate ? { duration: 0.38, delay: 0.06 } : undefined}
+            transition={shouldAnimate ? { duration: 0.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] } : undefined}
             className="surface-card"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
@@ -160,7 +156,7 @@ export const ContactSection = () => {
                     type="text"
                     id="name"
                     name="name"
-                    placeholder="Your Name"
+                    placeholder="Name"
                     value={formData.name}
                     onChange={(event) => handleChange("name", event.target.value)}
                     autoComplete="name"
@@ -204,14 +200,14 @@ export const ContactSection = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="mb-2 block text-sm font-medium text-foreground/90">
-                  Project Brief
-                </label>
-                <Textarea
-                  id="message"
-                  name="message"
-                  rows={5}
-                  placeholder="Tell me what you are building, timeline, and key requirements..."
+                  <label htmlFor="message" className="mb-2 block text-sm font-medium text-foreground/90">
+                    Project brief
+                  </label>
+                  <Textarea
+                    id="message"
+                    name="message"
+                    rows={5}
+                    placeholder="Goals, timeline, and requirements..."
                   value={formData.message}
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
@@ -222,22 +218,22 @@ export const ContactSection = () => {
               </div>
 
               <div className="space-y-2">
-                {submitSuccess && <p className="text-sm text-green-500">{submitSuccess}</p>}
+                {submitSuccess && <p className="text-sm text-[#4cc38a]">{submitSuccess}</p>}
                 {submitError && <p className="text-sm text-destructive">{submitError}</p>}
               </div>
 
               <Button
                 type="submit"
                 size="lg"
-                className="group w-full bg-gradient-to-r from-primary to-secondary font-semibold text-primary-foreground shadow-glow hover:opacity-95 md:w-auto"
+                className="group w-full rounded-lg md:w-auto"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 ) : (
-                  <Send className="mr-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <Send className="mr-2 h-5 w-5" strokeWidth={1.5} />
                 )}
-                {isSubmitting ? "Sending..." : "Send Inquiry"}
+                {isSubmitting ? "Sending..." : "Send inquiry"}
               </Button>
             </form>
           </motion.div>

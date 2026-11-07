@@ -146,7 +146,21 @@ const usePrefersReducedMotion = () => {
   return prefersReducedMotion;
 };
 
-const CommandCoreScene = ({ isActive }: { isActive: boolean }) => {
+export interface CoreMotionState {
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+  tiltX: number;
+  tiltY: number;
+}
+
+const CommandCoreScene = ({
+  isActive,
+  coreStateRef,
+}: {
+  isActive: boolean;
+  coreStateRef?: React.MutableRefObject<CoreMotionState>;
+}) => {
   const groupRef = useRef<THREE.Group>(null);
   const coreRef = useRef<THREE.Mesh>(null);
   const shieldRef = useRef<THREE.Mesh>(null);
@@ -164,13 +178,33 @@ const CommandCoreScene = ({ isActive }: { isActive: boolean }) => {
   const nodeGeometry = useMemo(makeNodeGeometry, []);
   const dataBeamGeometry = useMemo(makeDataBeamGeometry, []);
 
-  useFrame(({ clock }) => {
+  useFrame(({ clock, camera }) => {
     if (!isActive) {
       return;
     }
 
     const elapsed = clock.getElapsedTime();
     const pulse = 1 + Math.sin(elapsed * 1.5) * 0.045;
+
+    if (coreStateRef?.current) {
+      const state = coreStateRef.current;
+      const worldHeight = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z;
+      const worldPerPx = worldHeight / Math.max(window.innerHeight, 1);
+      const offsetX = state.offsetX * worldPerPx;
+      const offsetY = -state.offsetY * worldPerPx;
+
+      if (groupRef.current) {
+        groupRef.current.scale.setScalar(1.04 * state.scale);
+        groupRef.current.position.set(offsetX, offsetY, 0);
+        groupRef.current.rotation.x = (state.tiltX * Math.PI) / 180;
+        groupRef.current.rotation.y = (state.tiltY * Math.PI) / 180;
+      }
+
+      if (ambientParticlesRef.current) {
+        ambientParticlesRef.current.scale.setScalar(state.scale);
+        ambientParticlesRef.current.position.set(offsetX, offsetY, 0);
+      }
+    }
 
     if (groupRef.current) {
       groupRef.current.rotation.y += 0.00045;
@@ -422,9 +456,10 @@ const CommandCoreFallback = () => (
 interface CommandCore3DProps {
   className?: string;
   isActive?: boolean;
+  coreStateRef?: React.MutableRefObject<CoreMotionState>;
 }
 
-const CommandCore3D = ({ className = "", isActive = true }: CommandCore3DProps) => {
+const CommandCore3D = ({ className = "", isActive = true, coreStateRef }: CommandCore3DProps) => {
   const isMobile = useIsMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
 
@@ -442,7 +477,7 @@ const CommandCore3D = ({ className = "", isActive = true }: CommandCore3DProps) 
           gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
           performance={{ min: 0.65 }}
         >
-          <CommandCoreScene isActive={isActive} />
+          <CommandCoreScene isActive={isActive} coreStateRef={coreStateRef} />
         </Canvas>
       </Suspense>
     </div>

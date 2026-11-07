@@ -12,7 +12,6 @@ import {
   Share2,
   Star
 } from "lucide-react";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -804,7 +803,6 @@ const ProjectDetail = () => {
         keywords={project ? [project.title, ...project.tags] : ["project details", "full-stack project"]}
         structuredData={projectStructuredData}
       />
-      <Navbar />
       <main className="route-transition-content relative z-10 pt-24 pb-20">
         <h1 className="sr-only">{project?.title ? `${project.title} Project Details` : "Project Details"}</h1>
         {loading ? (

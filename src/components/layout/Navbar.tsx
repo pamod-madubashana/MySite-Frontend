@@ -37,8 +37,12 @@ interface SocialLink {
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [navReady, setNavReady] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
   const [contactDialogOrigin, setContactDialogOrigin] = useState<ContactDialogOrigin>({
     x: "50vw",
     y: "50vh",
@@ -102,20 +106,16 @@ export const Navbar = () => {
     { icon: socialIcons.email, href: "mailto:contact@pamod.is-a.dev", label: "Email" }
   ];
 
+  // Close mobile menu when route changes
   useEffect(() => {
-    const handleScroll = () => {
-      // Debounce scroll handler to prevent jank
-      requestAnimationFrame(() => {
-        setScrolled(window.scrollY > 20);
-      });
-    };
-    
-    // Also close mobile menu when route changes
     setIsOpen(false);
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
   }, [location]);
+
+  // Safety net: enable backdrop blur even if the CSS entrance never reports completion
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => setNavReady(true), 1600);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
 
   useEffect(() => {
     if (!isOpen || !mobileMenuRef.current) {
@@ -156,46 +156,40 @@ export const Navbar = () => {
   }, [isOpen]);
 
   return (
-    <motion.nav
-      initial={false}
-      animate={{ 
-        y: 0,
-        backgroundColor: scrolled ? "var(--glass-bg-strong)" : "transparent"
+    <nav
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget) {
+          setNavReady(true);
+        }
       }}
-      transition={{ 
-        type: "spring", 
-        stiffness: 200, 
-        damping: 25,
-        mass: 0.5
-      }}
-      className={`site-navbar fixed top-0 left-0 right-0 z-50 select-none ${
-        scrolled
-          ? "glass-strong shadow-[0_10px_40px_rgba(0,0,0,0.35)]"
-          : "bg-background/20 backdrop-blur-md"
-      }`}
+      className="site-navbar pointer-events-none fixed inset-x-0 top-0 z-50 select-none"
     >
-      <div className="container mx-auto px-4 navbar-container transform3d">
-        <div className="flex items-center justify-between h-16 md:h-20">
+      <div className="pointer-events-auto relative mx-auto w-full md:max-w-[min(calc(100%_-_6rem),_80rem)]">
+        <div
+          aria-hidden
+          className="navbar-shape hidden md:block absolute inset-0 rounded-b-[1rem] bg-foreground/[0.12]"
+        />
+        <div
+          aria-hidden
+          className={`navbar-shape absolute inset-px rounded-b-[1rem]${navReady ? " backdrop-blur-md" : ""}`}
+          style={{ backgroundColor: "var(--glass-bg-strong)" }}
+        />
+        <div className="navbar-container transform3d relative mx-auto flex h-16 w-full items-center justify-between px-4 md:h-20 md:px-9">
           {/* Logo */}
           <TransitionLink to="/" className="group relative inline-flex min-h-11 items-center">
-            <span className="whitespace-nowrap font-mono text-lg font-bold uppercase tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-xl">
-              P A M O D
+            <span className="whitespace-nowrap font-mono text-lg font-semibold uppercase tracking-[0.3em] text-primary md:text-xl">
+              PAMOD
             </span>
-            <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-all duration-300 group-hover:w-full" />
+            <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary transition-[width] duration-300 group-hover:w-full" />
           </TransitionLink>
 
           {/* Desktop Navigation */}
           <ul className="hidden md:flex items-center gap-1" aria-label="Primary navigation">
             {navLinks.map((link) => (
-              <motion.li
-                key={link.path}
-                className="relative list-none"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <li key={link.path} className="relative list-none">
                 <TransitionLink
                   to={link.path}
-                  className={`block min-h-11 px-4 py-2 font-mono text-xs font-bold uppercase tracking-[0.14em] transition-colors duration-200 ${
+                  className={`block min-h-11 px-4 py-2 text-sm font-medium transition-colors duration-150 ${
                     location.pathname === link.path
                       ? "text-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -206,11 +200,11 @@ export const Navbar = () => {
                     <motion.span
                       layoutId="navbar-indicator"
                       className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                     />
                   )}
                 </TransitionLink>
-              </motion.li>
+              </li>
             ))}
           </ul>
 
@@ -234,7 +228,7 @@ export const Navbar = () => {
               <Button
                 variant="default"
                 size="sm"
-                className="neon-glow min-h-11"
+                className="min-h-11 rounded-lg"
                 onClick={(event) => openContactModal(getContactDialogOrigin(event.currentTarget))}
               >
                 Contact
@@ -266,7 +260,7 @@ export const Navbar = () => {
             transition={{ 
               duration: 0.2
             }}
-            className="overflow-hidden border-t border-white/10 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90 md:hidden"
+            className="pointer-events-auto overflow-hidden border-t border-white/10 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90 md:hidden"
             style={{
               maxHeight: isOpen ? "300px" : "0",
               overflow: "hidden",
@@ -281,31 +275,26 @@ export const Navbar = () => {
                 className="flex flex-col gap-2"
               >
                 {navLinks.map((link) => (
-                  <motion.li
-                    key={link.path}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full list-none"
-                  >
+                  <li key={link.path} className="w-full list-none">
                     <TransitionLink
                       to={link.path}
                       onClick={() => setIsOpen(false)}
-                      className={`block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-colors duration-200 ${
+                      className={`block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-colors duration-150 ${
                         location.pathname === link.path
                           ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                          : "text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
                       }`}
                       aria-current={location.pathname === link.path ? "page" : undefined}
                     >
                     {link.name}
                   </TransitionLink>
-                </motion.li>
+                </li>
               ))}
               </ul>
               {settings?.siteSections.showContact !== false && (
                 <Button
                   variant="default"
-                  className="mt-4 neon-glow min-h-11 w-full"
+                  className="mt-4 min-h-11 w-full rounded-lg"
                   onClick={(event) => {
                     const origin = getContactDialogOrigin(event.currentTarget);
                     setIsOpen(false);
@@ -326,11 +315,14 @@ export const Navbar = () => {
           overlayClassName="bg-transparent backdrop-blur-[2px]"
           className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-border/60 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 contact-dialog-content"
         >
-          <div className="h-full overflow-y-auto contact-modal-scroll bg-gradient-to-b from-background/55 to-background/70">
+          <div
+            data-lenis-prevent
+            className="h-full overflow-y-auto contact-modal-scroll bg-gradient-to-b from-background/55 to-background/70"
+          >
             <ContactSection />
           </div>
         </DialogContent>
       </Dialog>
-    </motion.nav>
+    </nav>
   );
 };

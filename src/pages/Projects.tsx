@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { Filter, Search, Loader2 } from "lucide-react";
 import { ProjectCard } from "@/components/ui/ProjectCard";
@@ -226,7 +225,6 @@ const Projects = () => {
           description: "Portfolio collection of full-stack software projects.",
         }}
       />
-      <Navbar />
       <main className="route-transition-content relative z-10 flex-1 pt-24 pb-20">
         {!heroRemoved && (
           <motion.section
