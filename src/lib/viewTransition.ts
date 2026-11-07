@@ -1,3 +1,4 @@
+import { startTransition } from "react";
 import { NavigateOptions, To } from "react-router-dom";
 
 declare global {
@@ -26,4 +27,10 @@ export const navigateWithTransition = (
   navigate: (to: To, options?: NavigateOptions) => void,
   to: To,
   options?: NavigateOptions,
-) => runWithViewTransition(() => navigate(to, options));
+) => {
+  // React 18 transition: if the target route suspends (lazy chunk), the current
+  // page stays visible until the new one is ready instead of flashing the fallback.
+  startTransition(() => {
+    runWithViewTransition(() => navigate(to, options));
+  });
+};
