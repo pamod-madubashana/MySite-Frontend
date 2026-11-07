@@ -211,7 +211,7 @@ const Projects = () => {
   });
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative flex min-h-screen flex-col bg-background">
       <DynamicPageBackground />
       <PageSeo
         title="Projects | Pamod Madubashana"
@@ -227,7 +227,7 @@ const Projects = () => {
         }}
       />
       <Navbar />
-      <main className="route-transition-content relative z-10 pt-24 pb-20">
+      <main className="route-transition-content relative z-10 flex-1 pt-24 pb-20">
         {!heroRemoved && (
           <motion.section
             className="section-shell"
