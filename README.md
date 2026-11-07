@@ -26,3 +26,14 @@
 ## 🌟 Projects
 
 Check out my latest work on [pamod.is-a.dev/projects](https://pamod.is-a.dev/projects)
+
+## Development
+
+```bash
+npm install
+cp .env.example .env   # then fill in values
+npm run dev            # Vite dev server
+npm run build          # sitemap + vite build + react-snap prerender
+npm run preview        # preview the production build
+npm run lint           # ESLint
+```
