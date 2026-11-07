@@ -29,7 +29,7 @@ const DEFAULT_SETTINGS: Settings = {
   themeOptions: {
     primaryColor: '#6366f1',
     secondaryColor: '#8b5cf6',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'Space Grotesk, sans-serif',
   },
   siteSections: {
     showAbout: true,

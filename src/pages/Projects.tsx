@@ -112,6 +112,15 @@ const Projects = () => {
   const [githubStats, setGithubStats] = useState<GithubStats>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [heroExiting, setHeroExiting] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  const [heroRemoved, setHeroRemoved] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setHeroExiting(true), 300);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const cachedData = readProjectsPageCache();
@@ -219,24 +228,38 @@ const Projects = () => {
       />
       <Navbar />
       <main className="route-transition-content relative z-10 pt-24 pb-20">
-        <section className="section-shell">
-          <div className="section-inner">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="page-hero-panel mx-auto max-w-4xl"
-            >
-              <span className="section-pill">PROJECTS ARCHIVE</span>
-              <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-foreground/80">Builds, Bots,</span> <span className="text-gradient">Systems</span>
-              </h1>
-              <p className="section-copy mx-auto mt-5 max-w-2xl">
-                A curated archive of products, automation systems, and experiments powered by the existing project API.
-              </p>
-            </motion.div>
-          </div>
-        </section>
+        {!heroRemoved && (
+          <motion.section
+            className="section-shell"
+            initial={false}
+            animate={
+              heroExiting
+                ? { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0 }
+                : { opacity: 1 }
+            }
+            transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+            onAnimationComplete={() => {
+              if (heroExiting) setHeroRemoved(true);
+            }}
+          >
+            <div className="section-inner">
+              <motion.div
+                initial={false}
+                animate={heroExiting ? { opacity: 0, y: -48 } : { opacity: 1, y: 0 }}
+                transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+                className="page-hero-panel mx-auto max-w-4xl"
+              >
+                <span className="section-pill">PROJECTS ARCHIVE</span>
+                <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
+                  <span className="text-foreground/80">Builds, Bots,</span> <span className="text-gradient">Systems</span>
+                </h1>
+                <p className="section-copy mx-auto mt-5 max-w-2xl">
+                  A curated archive of products, automation systems, and experiments powered by the existing project API.
+                </p>
+              </motion.div>
+            </div>
+          </motion.section>
+        )}
 
         <section className="section-shell py-10">
           <div className="section-inner">
@@ -244,7 +267,7 @@ const Projects = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.15 }}
-              className="surface-card flex flex-col gap-5 rounded-3xl backdrop-blur-2xl md:flex-row md:items-center md:justify-between"
+              className="surface-card flex flex-col gap-5 rounded-3xl  md:flex-row md:items-center md:justify-between"
             >
               <div className="relative w-full max-w-xl">
                 <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />

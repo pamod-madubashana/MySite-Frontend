@@ -15,11 +15,16 @@ export default function MagneticCursor() {
   const dy = useRef(my.current);
 
   useEffect(() => {
-    const mq = window.matchMedia("(pointer: fine)");
-    setHasPointer(mq.matches);
-    const onChange = (e: MediaQueryListEvent) => setHasPointer(e.matches);
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
+    const pointerMq = window.matchMedia("(pointer: fine)");
+    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setHasPointer(pointerMq.matches && !motionMq.matches);
+    update();
+    pointerMq.addEventListener("change", update);
+    motionMq.addEventListener("change", update);
+    return () => {
+      pointerMq.removeEventListener("change", update);
+      motionMq.removeEventListener("change", update);
+    };
   }, []);
 
   useEffect(() => {

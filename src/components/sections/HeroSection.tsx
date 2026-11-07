@@ -18,10 +18,10 @@ export const HeroSection = () => {
         <div className="w-full max-w-[430px] space-y-4 md:max-w-[470px] md:space-y-5">
           <div className="space-y-2.5 md:space-y-3">
             <span className="section-pill mb-2">WELCOME TO MY DIGITAL SANCTUARY</span>
-            <h1 className="text-[2.35rem] font-black leading-[0.92] tracking-normal text-foreground drop-shadow-2xl min-[390px]:text-[2.55rem] sm:text-5xl md:text-[3.9rem] lg:text-[4.6rem]">
+            <h1 className="text-[2.35rem] font-bold leading-[0.92] tracking-normal text-foreground drop-shadow-2xl min-[390px]:text-[2.55rem] sm:text-5xl md:text-[3.9rem] lg:text-[4.6rem]">
               Hi, I&apos;m Pamod
             </h1>
-            <p className="max-w-md text-[0.95rem] font-black leading-snug text-primary min-[390px]:text-base sm:text-lg md:text-xl">
+            <p className="max-w-md text-[0.95rem] font-bold leading-snug text-primary min-[390px]:text-base sm:text-lg md:text-xl">
               Developer / Automation Builder / Self-Hosting Enthusiast
             </p>
           </div>
@@ -35,9 +35,9 @@ export const HeroSection = () => {
             <Button
               asChild
               size="sm"
-              className="h-10 rounded-lg bg-primary px-5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_30px_hsl(var(--primary)/0.38)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:h-11 sm:px-6 sm:text-[10px]"
+              className="h-11 rounded-lg bg-primary px-5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_30px_hsl(var(--primary)/0.38)] transition-all duration-300 hover:scale-[1.02] hover:bg-primary/90 sm:px-6"
             >
-              <TransitionLink to="/projects" className="inline-flex min-h-10 items-center justify-center gap-2 sm:min-h-11">
+              <TransitionLink to="/projects" className="inline-flex min-h-11 items-center justify-center gap-2">
                 <span>View Projects</span>
               </TransitionLink>
             </Button>
@@ -46,9 +46,9 @@ export const HeroSection = () => {
               asChild
               size="sm"
               variant="outline"
-              className="h-10 rounded-lg border-white/10 bg-white/[0.04] px-5 font-mono text-[9px] font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary sm:h-11 sm:px-6 sm:text-[10px]"
+              className="h-11 rounded-lg border-white/10 bg-white/[0.04] px-5 font-mono text-xs font-bold uppercase tracking-[0.08em] text-foreground backdrop-blur-xl hover:border-primary/40 hover:bg-primary/10 hover:text-primary sm:px-6"
             >
-              <TransitionLink to="/about" className="inline-flex min-h-10 items-center justify-center gap-2 sm:min-h-11">
+              <TransitionLink to="/about" className="inline-flex min-h-11 items-center justify-center gap-2">
                 <span>About Me</span>
               </TransitionLink>
             </Button>
@@ -59,14 +59,14 @@ export const HeroSection = () => {
       <div aria-hidden className="pointer-events-none absolute inset-y-20 right-0 z-30 hidden w-[58%] md:block">
         <div className="hero-dashboard-overlay surface-card absolute right-[15%] top-[23%] w-64 rounded-2xl p-5">
           <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">System Metrics</span>
+            <span className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary">System Metrics</span>
             <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,0.85)]" />
           </div>
           <div className="space-y-4">
             {systemStats.map((stat) => (
               <div key={stat.label}>
                 <div className="mb-1 flex items-center justify-between">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</p>
+                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">{stat.label}</p>
                   <p className="font-mono text-xs font-bold text-foreground">{stat.value}</p>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -85,7 +85,7 @@ export const HeroSection = () => {
         </div>
         <div className="surface-card absolute bottom-[30%] left-[18%] flex items-center gap-2 rounded-full px-4 py-2">
           <Activity className="h-4 w-4 text-primary" />
-          <span className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-foreground">CORE_STABLE</span>
+          <span className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-foreground">CORE_STABLE</span>
         </div>
         <div className="surface-card absolute bottom-[11%] left-[28%] flex w-[420px] items-center justify-between rounded-2xl p-4">
           <div className="flex items-center gap-3">
@@ -93,7 +93,7 @@ export const HeroSection = () => {
               <Server className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Node Status</p>
+              <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Node Status</p>
               <p className="text-sm font-bold text-foreground">Production Ready</p>
             </div>
           </div>

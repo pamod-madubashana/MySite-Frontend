@@ -67,7 +67,7 @@ export const ProjectCard = ({
     >
       {project.featured && (
         <div className="absolute left-4 top-4 z-20">
-          <span className="inline-flex items-center gap-1 rounded-md border border-accent/35 bg-accent/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-accent">
+          <span className="inline-flex items-center gap-1 rounded-md border border-accent/35 bg-accent/10 px-2.5 py-1 font-mono text-[11px] font-bold uppercase tracking-[0.12em] text-accent">
             <Star className="h-3 w-3" />
             Featured
           </span>
@@ -94,18 +94,18 @@ export const ProjectCard = ({
           )}
         </TransitionLink>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/88 via-background/20 to-primary/5" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background/[0.88] via-background/20 to-primary/5" />
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--primary)/0.07)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--primary)/0.055)_1px,transparent_1px)] bg-[size:34px_34px] opacity-35 transition-opacity duration-300 group-hover:opacity-60" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-primary/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        <div className="pointer-events-none absolute left-0 right-0 top-0 h-20 -translate-y-full bg-gradient-to-b from-primary/0 via-primary/14 to-primary/0 opacity-0 blur-sm transition-all duration-700 group-hover:translate-y-[170%] group-hover:opacity-100" />
+        <div className="pointer-events-none absolute left-0 right-0 top-0 h-20 -translate-y-full bg-gradient-to-b from-primary/0 via-primary/[0.14] to-primary/0 opacity-0 blur-sm transition-all duration-700 group-hover:translate-y-[170%] group-hover:opacity-100" />
 
         <div className="absolute bottom-4 right-4 z-10 flex translate-y-1 items-center justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
           {project.liveUrl && (
             <Button
               size="sm"
               variant="secondary"
-              className="h-9 gap-1.5 rounded-lg border border-primary/40 bg-primary/90 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_24px_hsl(var(--primary)/0.24)] hover:bg-primary"
+              className="h-11 gap-1.5 rounded-lg border border-primary/40 bg-primary/90 px-3 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-primary-foreground shadow-[0_0_24px_hsl(var(--primary)/0.24)] hover:bg-primary"
               asChild
             >
               <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>
@@ -119,7 +119,7 @@ export const ProjectCard = ({
             <Button
               size="sm"
               variant="outline"
-              className="h-9 gap-1.5 rounded-lg border-primary/35 bg-background/70 px-3 font-mono text-[10px] font-bold uppercase tracking-[0.08em] text-primary backdrop-blur-xl hover:border-primary/70 hover:bg-primary/12"
+              className="h-11 gap-1.5 rounded-lg border-primary/35 bg-background/70 px-3 font-mono text-[11px] font-bold uppercase tracking-[0.08em] text-primary backdrop-blur-xl hover:border-primary/70 hover:bg-primary/[0.12]"
               asChild
             >
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()}>

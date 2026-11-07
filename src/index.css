@@ -1,6 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -130,8 +129,8 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased select-none;
-    font-family: "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.5;
     background-color: #0b0e14;
@@ -165,10 +164,12 @@
     -webkit-user-select: text;
   }
 
-  /* Removed global scroll-behavior: smooth to prevent navbar jumping */
-  /* html {
+  /* Route-change scrolls pass behavior: "instant" explicitly (ScrollToTop),
+     so they override this and won't animate across page transitions. */
+  html {
     scroll-behavior: smooth;
-  } */
+    scroll-padding-top: 6rem;
+  }
 }
 
 ::view-transition-old(root),
@@ -378,7 +379,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .section-title {
-    @apply text-3xl font-black tracking-normal text-foreground sm:text-4xl lg:text-5xl;
+    @apply text-3xl font-bold tracking-normal text-foreground sm:text-4xl lg:text-5xl;
   }
 
   .section-copy {
@@ -386,7 +387,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .page-hero-panel {
-    @apply relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center backdrop-blur-2xl md:px-12 md:py-14;
+    @apply relative overflow-hidden rounded-3xl border border-white/10 bg-card/[0.92] px-6 py-10 text-center md:px-12 md:py-14;
     box-shadow:
       0 30px 58px -42px hsl(var(--background) / 0.95),
       0 0 48px -30px hsl(var(--primary) / 0.55),
@@ -435,7 +436,7 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 
   .surface-card {
-    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-2xl;
+    @apply relative overflow-hidden rounded-2xl border border-white/10 bg-card/90 p-6;
     box-shadow:
       0 22px 45px -28px hsl(var(--background) / 0.9),
       inset 0 1px 0 hsl(0 0% 100% / 0.12);
@@ -883,8 +884,8 @@ html[data-route-axis="vertical"][data-route-direction="backward"]::view-transiti
   }
 }
 
-/* Magnetic lag cursor */
-@media (pointer: fine) {
+/* Magnetic lag cursor — only when fine pointer and motion is welcome */
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
   html, body, body *, body *::before, body *::after {
     cursor: none !important;
   }
@@ -942,4 +943,30 @@ body.cursor-active .cursor-dot {
 body.cursor-hidden .cursor-ring,
 body.cursor-hidden .cursor-dot {
   opacity: 0;
+}
+
+html {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--primary) / 0.55) hsl(var(--background) / 0.9);
+}
+
+html::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html::-webkit-scrollbar-track {
+  background: hsl(var(--background) / 0.9);
+}
+
+html::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.5);
+  border: 2px solid hsl(var(--background));
+  border-radius: 999px;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.85);
+  box-shadow: 0 0 8px hsl(var(--primary) / 0.5);
 }

@@ -80,6 +80,15 @@ const Articles = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [heroExiting, setHeroExiting] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  const [heroRemoved, setHeroRemoved] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setHeroExiting(true), 300);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const cachedData = readArticlesPageCache();
@@ -162,24 +171,38 @@ const Articles = () => {
       />
       <Navbar />
       <main className="route-transition-content relative z-10 pt-24 pb-20">
-        <section className="section-shell">
-          <div className="section-inner">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="page-hero-panel mx-auto max-w-4xl"
-            >
-              <span className="section-pill">Blog</span>
-              <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
-                <span className="text-foreground/75">Thoughts</span> <span className="text-gradient">& Ideas</span>
-              </h1>
-              <p className="section-copy mx-auto mt-5 max-w-2xl">
-                Writing about product engineering, frontend architecture, and practical lessons from shipping real projects.
-              </p>
-            </motion.div>
-          </div>
-        </section>
+        {!heroRemoved && (
+          <motion.section
+            className="section-shell"
+            initial={false}
+            animate={
+              heroExiting
+                ? { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 0 }
+                : { opacity: 1 }
+            }
+            transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+            onAnimationComplete={() => {
+              if (heroExiting) setHeroRemoved(true);
+            }}
+          >
+            <div className="section-inner">
+              <motion.div
+                initial={false}
+                animate={heroExiting ? { opacity: 0, y: -48 } : { opacity: 1, y: 0 }}
+                transition={{ duration: 1.5, ease: [0.4, 0, 0.2, 1] }}
+                className="page-hero-panel mx-auto max-w-4xl"
+              >
+                <span className="section-pill">Blog</span>
+                <h1 className="section-title text-4xl md:text-5xl lg:text-6xl">
+                  <span className="text-foreground/75">Thoughts</span> <span className="text-gradient">& Ideas</span>
+                </h1>
+                <p className="section-copy mx-auto mt-5 max-w-2xl">
+                  Writing about product engineering, frontend architecture, and practical lessons from shipping real projects.
+                </p>
+              </motion.div>
+            </div>
+          </motion.section>
+        )}
 
         {featuredArticle && !loading && !error && (
           <section className="section-shell section-shell-muted py-10">
@@ -188,7 +211,7 @@ const Articles = () => {
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.1 }}
-                className="surface-card group overflow-hidden p-0 backdrop-blur-2xl"
+                className="surface-card group overflow-hidden p-0 "
               >
                 <div className="grid md:grid-cols-2">
                   <div className="relative aspect-video overflow-hidden md:aspect-auto">
@@ -264,7 +287,7 @@ const Articles = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
-                    className="surface-card backdrop-blur-2xl"
+                    className="surface-card "
                   >
                     {renderSkeleton()}
                   </motion.div>
@@ -290,7 +313,7 @@ const Articles = () => {
                     initial={{ opacity: 0, y: 22 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.45, delay: index * 0.08 }}
-                    className="surface-card group overflow-hidden p-0 backdrop-blur-2xl"
+                    className="surface-card group overflow-hidden p-0 "
                   >
                     <div className="relative aspect-video overflow-hidden border-b border-border/60">
                       <img

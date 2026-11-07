@@ -1,5 +1,5 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Github, Linkedin, Send, Mail, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,6 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
 import { TransitionLink } from "@/components/TransitionLink";
-import { navigateWithTransition } from "@/lib/viewTransition";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const navLinks = [
@@ -46,7 +45,6 @@ export const Navbar = () => {
   });
   const isMobile = useIsMobile();
   const location = useLocation();
-  const navigate = useNavigate();
   const { settings } = useSettings();
   const mobileMenuRef = useRef<HTMLUListElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -157,11 +155,6 @@ export const Navbar = () => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const handleNavigate = (path: string) => {
-    navigateWithTransition(navigate, path);
-    setIsOpen(false);
-  };
-
   return (
     <motion.nav
       initial={false}
@@ -185,7 +178,7 @@ export const Navbar = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <TransitionLink to="/" className="group relative inline-flex min-h-11 items-center">
-            <span className="whitespace-nowrap font-mono text-lg font-black uppercase tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-xl">
+            <span className="whitespace-nowrap font-mono text-lg font-bold uppercase tracking-[0.34em] text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.35)] md:text-xl">
               P A M O D
             </span>
             <span className="absolute -bottom-1 left-0 h-px w-0 bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.7)] transition-all duration-300 group-hover:w-full" />
@@ -284,7 +277,6 @@ export const Navbar = () => {
               <ul
                 id="mobile-menu"
                 ref={mobileMenuRef}
-                role="menu"
                 aria-label="Mobile navigation"
                 className="flex flex-col gap-2"
               >
@@ -295,18 +287,18 @@ export const Navbar = () => {
                     whileTap={{ scale: 0.98 }}
                     className="w-full list-none"
                   >
-                    <button
-                      type="button"
-                      onClick={() => handleNavigate(link.path)}
+                    <TransitionLink
+                      to={link.path}
+                      onClick={() => setIsOpen(false)}
                       className={`block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium transition-colors duration-200 ${
                         location.pathname === link.path
                           ? "bg-primary/10 text-primary"
                           : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
                       }`}
-                      role="menuitem"
+                      aria-current={location.pathname === link.path ? "page" : undefined}
                     >
                     {link.name}
-                  </button>
+                  </TransitionLink>
                 </motion.li>
               ))}
               </ul>

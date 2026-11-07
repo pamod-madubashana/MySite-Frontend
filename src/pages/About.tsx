@@ -253,7 +253,7 @@ const About = () => {
                     >
                       <div className={`hidden md:block md:w-1/2 md:pr-12 ${isLeft ? "" : "md:invisible"}`}>
                         {isLeft && (
-                          <div className="surface-card p-5 text-right backdrop-blur-sm md:p-6">
+                          <div className="surface-card p-5 text-right  md:p-6">
                         <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                             <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                             <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
@@ -267,7 +267,7 @@ const About = () => {
                       </div>
 
                       <div className={`ml-20 md:ml-0 md:w-1/2 md:pl-12 ${isLeft ? "md:hidden" : ""}`}>
-                        <div className="surface-card p-5 text-left backdrop-blur-sm md:p-6">
+                        <div className="surface-card p-5 text-left  md:p-6">
                           <span className="font-mono text-xs font-semibold uppercase tracking-[0.12em] text-primary">{item.year}</span>
                           <h3 className="mt-2 text-xl font-semibold text-foreground">{item.role}</h3>
                           <p className="mt-1 text-sm text-muted-foreground">{item.company}</p>
@@ -301,7 +301,7 @@ const About = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: index * 0.08 }}
-                  className="surface-card backdrop-blur-sm"
+                  className="surface-card "
                 >
                   <div className="surface-icon mb-4">
                     <category.icon className="h-6 w-6" />

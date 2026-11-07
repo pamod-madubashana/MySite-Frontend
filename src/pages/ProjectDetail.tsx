@@ -277,10 +277,10 @@ const ProjectSection = ({ title, children, index, action, disableAnimation = fal
     <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
     <div className="mb-5 flex flex-wrap items-end gap-3 border-b border-white/10 pb-4">
       <div>
-        <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary/70">
+        <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/70">
           MODULE_{String(index + 1).padStart(2, "0")}
         </p>
-        <h2 className="mt-1 text-lg font-black text-foreground sm:text-xl md:text-2xl">{title}</h2>
+        <h2 className="mt-1 text-lg font-bold text-foreground sm:text-xl md:text-2xl">{title}</h2>
       </div>
       <div className="hidden h-px flex-1 bg-gradient-to-r from-primary/40 to-transparent sm:block" />
       {action ? <div className="w-full sm:w-auto sm:shrink-0">{action}</div> : null}
@@ -360,7 +360,7 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
       transition={disableAnimation ? undefined : { duration: 0.45 }}
       className="surface-card overflow-hidden p-0"
     >
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/16 via-transparent to-secondary/16" />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary/[0.16] via-transparent to-secondary/[0.16]" />
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
 
       <div className="relative min-h-[360px] overflow-hidden rounded-lg border border-white/10 bg-background/55 md:h-[460px] md:min-h-0">
@@ -375,7 +375,7 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
         />
 
         <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10 md:pt-10">
-          <nav aria-label="Breadcrumb" className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-background/45 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground backdrop-blur-xl sm:gap-2">
+          <nav aria-label="Breadcrumb" className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-background/45 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground backdrop-blur-xl sm:gap-2">
             <Link to="/" className="transition-colors hover:text-primary">Home</Link>
             <ChevronRight className="h-3.5 w-3.5" />
             <Link to="/projects" className="transition-colors hover:text-primary">Projects</Link>
@@ -404,7 +404,7 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
               />
               Project Showcase
             </p>
-            <h1 className="relative inline-block max-w-3xl break-words px-1 text-xl font-black leading-tight text-foreground sm:text-2xl md:text-5xl">
+            <h1 className="relative inline-block max-w-3xl break-words px-1 text-xl font-bold leading-tight text-foreground sm:text-2xl md:text-5xl">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -inset-x-5 -inset-y-3 -z-10 rounded-full bg-background/30 blur-2xl"
@@ -447,7 +447,7 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
       <div className="space-y-6">
         <div>
-          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Project Links</h3>
+          <h3 className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/75">Project Links</h3>
           <div className="space-y-2">
             {project.liveUrl && (
               <Button asChild className="h-11 w-full justify-start gap-2 rounded-lg bg-primary text-primary-foreground shadow-[0_0_28px_hsl(var(--primary)/0.26)] hover:bg-primary/90">
@@ -469,7 +469,7 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
         </div>
 
         <div className="border-t border-white/10 pt-5">
-          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Quick Stats</h3>
+          <h3 className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/75">Quick Stats</h3>
           <div className="space-y-2 text-sm text-muted-foreground">
             {[
               { label: "Stars", value: githubStats?.stars ?? 0, icon: Star },
@@ -489,7 +489,7 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
         </div>
 
         <div className="border-t border-white/10 pt-5">
-          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Stack</h3>
+          <h3 className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/75">Stack</h3>
           <div className="flex flex-wrap gap-2">
             {project.tags.map((tag) => (
               <span key={`side-tag-${tag}`} className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 font-mono text-[11px] font-bold text-primary/90">
@@ -506,7 +506,7 @@ const ProjectSidebar = ({ project, githubStats, disableAnimation = false }: Proj
         </div>
 
         <div className="border-t border-white/10 pt-5">
-          <h3 className="mb-3 font-mono text-[11px] font-black uppercase tracking-[0.16em] text-primary/75">Share</h3>
+          <h3 className="mb-3 font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/75">Share</h3>
           <Button type="button" variant="outline" onClick={copyLink} className="h-11 w-full justify-start gap-2 rounded-lg border-white/15 bg-white/[0.035] text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary">
             <Share2 className="h-4 w-4" />
             {copied ? "Link copied" : "Copy project link"}
@@ -819,7 +819,7 @@ const ProjectDetail = () => {
               >
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/70 to-transparent" />
                 <span className="section-pill">Route Error</span>
-                <h1 className="mb-4 mt-4 text-3xl font-black text-foreground md:text-4xl">Project not found</h1>
+                <h1 className="mb-4 mt-4 text-3xl font-bold text-foreground md:text-4xl">Project not found</h1>
                 <p className="mb-8 text-muted-foreground">
                   We couldn&apos;t find the project you requested. It may have been removed or the slug is invalid.
                 </p>
@@ -870,7 +870,7 @@ const ProjectDetail = () => {
                             <Skeleton className="h-28 w-full" />
                           </div>
                         ) : readme ? (
-                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-primary/25 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-black [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-primary/20 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-black [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground [&_p]:my-4 [&_p]:break-words [&_p]:leading-relaxed [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:break-words [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:py-2 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-primary/20 [&_table]:my-5 [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-white/10 [&_table]:whitespace-nowrap [&_th]:bg-primary/10 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-primary/20 [&_pre]:bg-black/45 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:break-words [&_code]:rounded [&_code]:bg-primary/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
+                          <div className="max-w-none text-sm text-muted-foreground md:text-base [&_h1]:mb-4 [&_h1]:mt-2 [&_h1]:border-b [&_h1]:border-primary/25 [&_h1]:pb-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:text-foreground [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:border-b [&_h2]:border-primary/20 [&_h2]:pb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-foreground [&_h3]:mb-2 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-foreground [&_p]:my-4 [&_p]:break-words [&_p]:leading-relaxed [&_a]:break-all [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary/80 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5 [&_li]:break-words [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_blockquote]:my-4 [&_blockquote]:border-l-2 [&_blockquote]:border-primary/50 [&_blockquote]:bg-primary/5 [&_blockquote]:py-2 [&_blockquote]:pl-4 [&_blockquote]:italic [&_hr]:my-6 [&_hr]:border-primary/20 [&_table]:my-5 [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:rounded-lg [&_table]:border [&_table]:border-white/10 [&_table]:whitespace-nowrap [&_th]:bg-primary/10 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-foreground [&_td]:border-t [&_td]:border-white/10 [&_td]:px-3 [&_td]:py-2 [&_pre]:my-5 [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:border [&_pre]:border-primary/20 [&_pre]:bg-black/45 [&_pre]:p-4 [&_pre]:text-[13px] [&_code]:break-words [&_code]:rounded [&_code]:bg-primary/10 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] [&_pre_code]:bg-transparent [&_pre_code]:p-0">
                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
                               {readme}
                             </ReactMarkdown>

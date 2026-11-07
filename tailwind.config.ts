@@ -101,7 +101,7 @@ export default {
 			'glow-pulse': 'glow-pulse 2s ease-in-out infinite'
 		},
 		fontFamily: {
-			sans: ['Space Grotesk', 'Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+			sans: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 			mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
 		},
 		boxShadow: {

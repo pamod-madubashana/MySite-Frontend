@@ -89,7 +89,7 @@ export const AboutSection = () => {
           >
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/80 to-transparent" />
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">INITIALIZING SYSTEM</span>
+              <span className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary">INITIALIZING SYSTEM</span>
               <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_12px_rgba(74,222,128,0.85)]" />
             </div>
             <div className="h-full min-h-[280px] overflow-hidden font-mono text-sm leading-7 text-primary/65">
@@ -175,11 +175,11 @@ export const AboutSection = () => {
           <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <span className="section-pill">Skill Matrix</span>
-              <h3 className="mt-3 text-2xl font-black leading-tight text-foreground md:text-3xl">
+              <h3 className="mt-3 text-2xl font-bold leading-tight text-foreground md:text-3xl">
                 Technical <span className="text-gradient">Proficiency</span>
               </h3>
             </div>
-            <div className="inline-flex items-center gap-3 self-start rounded-full border border-primary/25 bg-primary/10 px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-primary sm:self-auto">
+            <div className="inline-flex items-center gap-3 self-start rounded-full border border-primary/25 bg-primary/10 px-4 py-2 font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-primary sm:self-auto">
               <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_14px_rgba(74,222,128,0.9)]" />
               Core Synced
             </div>
@@ -193,7 +193,7 @@ export const AboutSection = () => {
                     <div className="absolute inset-2 animate-spin rounded-full border-2 border-transparent border-r-primary/50 border-t-primary" />
                     <div className="absolute -inset-1 animate-[spin_1.6s_linear_infinite_reverse] rounded-full border border-transparent border-t-secondary/60" />
                   </div>
-                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary">
+                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
                     Scanning Skill Nodes
                   </p>
                 </div>
@@ -211,12 +211,12 @@ export const AboutSection = () => {
                   <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
-                      <p className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-primary/70">
+                      <p className="font-mono text-[11px] font-bold uppercase tracking-[0.16em] text-primary/70">
                         NODE_{String(index + 1).padStart(2, "0")}
                       </p>
-                      <h4 className="mt-1 text-base font-black text-foreground">{tech.name}</h4>
+                      <h4 className="mt-1 text-base font-bold text-foreground">{tech.name}</h4>
                     </div>
-                    <span className="rounded-md border border-primary/20 bg-background/55 px-2.5 py-1 font-mono text-xs font-black text-primary">
+                    <span className="rounded-md border border-primary/20 bg-background/55 px-2.5 py-1 font-mono text-xs font-bold text-primary">
                       {tech.level}%
                     </span>
                   </div>
@@ -233,7 +233,7 @@ export const AboutSection = () => {
                     />
                   </div>
 
-                  <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                  <div className="mt-3 flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                     <span>Throughput</span>
                     <span>{tech.level >= 80 ? "High" : tech.level >= 60 ? "Stable" : "Learning"}</span>
                   </div>
