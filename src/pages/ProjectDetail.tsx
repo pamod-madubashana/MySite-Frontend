@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
@@ -13,6 +13,7 @@ import {
   Star
 } from "lucide-react";
 import { Footer } from "@/components/layout/Footer";
+import { TransitionLink } from "@/components/TransitionLink";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -375,9 +376,9 @@ const ProjectHero = ({ project, disableAnimation = false }: ProjectHeroProps) =>
 
         <div className="absolute inset-x-0 top-0 z-20 px-4 pt-4 sm:px-6 sm:pt-6 md:px-10 md:pt-10">
           <nav aria-label="Breadcrumb" className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-background/45 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground backdrop-blur-xl sm:gap-2">
-            <Link to="/" className="transition-colors hover:text-primary">Home</Link>
+            <TransitionLink to="/" className="transition-colors hover:text-primary">Home</TransitionLink>
             <ChevronRight className="h-3.5 w-3.5" />
-            <Link to="/projects" className="transition-colors hover:text-primary">Projects</Link>
+            <TransitionLink to="/projects" className="transition-colors hover:text-primary">Projects</TransitionLink>
             <ChevronRight className="h-3.5 w-3.5" />
             <span className="truncate text-primary">{project.slug || project._id}</span>
           </nav>
@@ -822,7 +823,7 @@ const ProjectDetail = () => {
                   We couldn&apos;t find the project you requested. It may have been removed or the slug is invalid.
                 </p>
                 <Button asChild className="rounded-lg bg-primary text-primary-foreground shadow-[0_0_28px_hsl(var(--primary)/0.26)] hover:bg-primary/90">
-                  <Link to="/projects">Back to Projects</Link>
+                  <TransitionLink to="/projects">Back to Projects</TransitionLink>
                 </Button>
               </motion.div>
             </div>
