@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Github, Linkedin, Send, Mail, type LucideIcon } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ContactSection } from "@/components/sections/ContactSection";
@@ -16,23 +16,9 @@ const navLinks = [
   { name: "Articles", path: "/articles" },
 ];
 
-// Social link icons mapping
-const socialIcons = {
-  github: Github,
-  linkedin: Linkedin,
-  telegram: Send,
-  email: Mail
-};
-
 interface ContactDialogOrigin {
   x: string;
   y: string;
-}
-
-interface SocialLink {
-  icon: LucideIcon;
-  href: string;
-  label: string;
 }
 
 export const Navbar = () => {
@@ -77,35 +63,6 @@ export const Navbar = () => {
         "--contact-origin-y": contactDialogOrigin.y,
       } as CSSProperties);
   
-  // Generate social links from settings, fallback to defaults if not loaded
-  const socialLinks: SocialLink[] = settings?.socialLinks ? [
-    settings.socialLinks.github ? {
-      icon: socialIcons.github,
-      href: settings.socialLinks.github,
-      label: "GitHub"
-    } : null,
-    settings.socialLinks.linkedin ? {
-      icon: socialIcons.linkedin,
-      href: settings.socialLinks.linkedin,
-      label: "LinkedIn"
-    } : null,
-    settings.socialLinks.telegram ? {
-      icon: socialIcons.telegram,
-      href: settings.socialLinks.telegram,
-      label: "Telegram"
-    } : null,
-    settings.socialLinks.email ? {
-      icon: socialIcons.email,
-      href: `mailto:${settings.socialLinks.email}`,
-      label: "Email"
-    } : null
-  ].filter((social): social is SocialLink => Boolean(social)) : [
-    { icon: socialIcons.github, href: "https://github.com/pamod-madubashana", label: "GitHub" },
-    { icon: socialIcons.linkedin, href: "https://www.linkedin.com/in/pamod-madubashana-886b621a2", label: "LinkedIn" },
-    { icon: socialIcons.telegram, href: "https://t.me/pamod_madubashana", label: "Telegram" },
-    { icon: socialIcons.email, href: "mailto:contact@pamod.is-a.dev", label: "Email" }
-  ];
-
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
@@ -208,22 +165,8 @@ export const Navbar = () => {
             ))}
           </ul>
 
-          {/* Social Links & CTA */}
+          {/* Contact CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-200 hover:text-primary"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
             {settings?.siteSections.showContact !== false && (
               <Button
                 variant="default"
