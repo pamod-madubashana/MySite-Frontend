@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import CommandCore3D, { type CoreMotionState } from "@/components/CommandCore3D";
+import { useBootReveal } from "@/lib/bootReveal";
 
 type CommandSection = "home" | "about" | "projects" | "articles";
 
@@ -39,6 +40,8 @@ const homeSectionOrder: CommandSection[] = ["home", "about", "projects"];
 const getViewportMode = () => (window.innerWidth < 768 ? "mobile" : "desktop");
 
 const getStates = () => (getViewportMode() === "mobile" ? mobileStates : desktopStates);
+
+const CORE_START_TRANSFORM = "translate3d(0px, 48px, 0px) scale(0.06)";
 
 const getSectionFromPath = (pathname: string): CommandSection => {
   if (pathname.startsWith("/about")) {
@@ -405,6 +408,46 @@ const PersistentCommandCore = () => {
     };
   }, [applyState, resolveTarget]);
 
+  const doorOpen = useBootReveal();
+  const [coreRevealed, setCoreRevealed] = useState(false);
+  const [entranceSettled, setEntranceSettled] = useState(false);
+  const revealRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!doorOpen || coreRevealed) {
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCoreRevealed(true);
+      return;
+    }
+
+    const revealTimer = window.setTimeout(() => setCoreRevealed(true), 0);
+    return () => window.clearTimeout(revealTimer);
+  }, [doorOpen, coreRevealed]);
+
+  useEffect(() => {
+    if (!coreRevealed || entranceSettled) {
+      return;
+    }
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const settleTimer = window.setTimeout(
+      () => {
+        const target = resolveTarget();
+        targetStateRef.current = target;
+        animatedStateRef.current = target;
+        applyState(target);
+        startAnimationRef.current();
+        setEntranceSettled(true);
+      },
+      reduced ? 0 : 1200
+    );
+
+    return () => window.clearTimeout(settleTimer);
+  }, [coreRevealed, entranceSettled, applyState, resolveTarget]);
+
   const initialState = initialStateRef.current;
 
   return (
@@ -417,7 +460,19 @@ const PersistentCommandCore = () => {
         transform: `translate3d(${initialState.x}%, ${initialState.y}%, 0)`,
       }}
     >
-      <CommandCore3D isActive={!prefersReducedMotion} coreStateRef={coreStateRef} />
+      <div
+        ref={revealRef}
+        className={`command-core-reveal absolute inset-0 ${coreRevealed ? "opacity-100" : "opacity-0"}`}
+        style={{
+          transform: entranceSettled
+            ? undefined
+            : coreRevealed
+              ? "translate3d(0px, 0px, 0px) scale(1)"
+              : CORE_START_TRANSFORM,
+        }}
+      >
+        <CommandCore3D isActive={!prefersReducedMotion} coreStateRef={coreStateRef} />
+      </div>
     </div>
   );
 };

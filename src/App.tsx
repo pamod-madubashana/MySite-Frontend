@@ -13,6 +13,7 @@ import DynamicPageBackground from "./components/DynamicPageBackground";
 import PersistentCommandCore from "./components/PersistentCommandCore";
 import MagneticCursor from "./components/MagneticCursor";
 import { Navbar } from "./components/layout/Navbar";
+import { BootDoorOpenContext, useBootReveal } from "./lib/bootReveal";
 import Index from "./pages/Index";
 
 const About = lazy(() => import("./pages/About"));
@@ -35,6 +36,7 @@ const MessagesManager = lazy(() => import("./pages/Admin/MessagesManager"));
 
 const queryClient = new QueryClient();
 const APP_BOOT_LOADER_ID = "app-boot-loader";
+const APP_BOOT_LOADER_CONTENT_HIDDEN_CLASS = "app-boot-loader-content-hidden";
 const APP_BOOT_LOADER_HIDDEN_CLASS = "app-boot-loader-hidden";
 const APP_BOOT_LOADING_CLASS = "app-boot-loading";
 
@@ -109,6 +111,7 @@ const RouteFallback = () => (
 const AppBootstrapGate = ({ children }: { children: ReactNode }) => {
   const { loading } = useSettings();
   const [isBootstrapped, setIsBootstrapped] = useState(false);
+  const [doorOpen, setDoorOpen] = useState(false);
 
   useEffect(() => {
     if (!loading) {
@@ -125,18 +128,30 @@ const AppBootstrapGate = ({ children }: { children: ReactNode }) => {
     const bootLoader = document.getElementById(APP_BOOT_LOADER_ID);
     if (!bootLoader) {
       body.classList.remove(APP_BOOT_LOADING_CLASS);
+      setDoorOpen(true);
       return;
     }
 
-    bootLoader.classList.add(APP_BOOT_LOADER_HIDDEN_CLASS);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const contentDelay = reduceMotion ? 0 : 300;
+    const doorDuration = reduceMotion ? 180 : 950;
 
-    const timer = window.setTimeout(() => {
+    // Spinner fades out first, then the layer rises like a garage door.
+    bootLoader.classList.add(APP_BOOT_LOADER_CONTENT_HIDDEN_CLASS);
+
+    const doorTimer = window.setTimeout(() => {
+      bootLoader.classList.add(APP_BOOT_LOADER_HIDDEN_CLASS);
+    }, contentDelay);
+
+    const removeTimer = window.setTimeout(() => {
       bootLoader.remove();
       body.classList.remove(APP_BOOT_LOADING_CLASS);
-    }, 260);
+      setDoorOpen(true);
+    }, contentDelay + doorDuration);
 
     return () => {
-      window.clearTimeout(timer);
+      window.clearTimeout(doorTimer);
+      window.clearTimeout(removeTimer);
     };
   }, [isBootstrapped]);
 
@@ -144,7 +159,26 @@ const AppBootstrapGate = ({ children }: { children: ReactNode }) => {
     return null;
   }
 
-  return <>{children}</>;
+  return <BootDoorOpenContext.Provider value={doorOpen}>{children}</BootDoorOpenContext.Provider>;
+};
+
+const NavbarGate = () => {
+  const doorOpen = useBootReveal();
+  const [navReady, setNavReady] = useState(false);
+
+  useEffect(() => {
+    if (!doorOpen) {
+      return;
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setNavReady(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setNavReady(true), 250);
+    return () => window.clearTimeout(timer);
+  }, [doorOpen]);
+
+  return navReady ? <Navbar /> : null;
 };
 
 const App = () => {
@@ -265,7 +299,7 @@ const App = () => {
             <SmoothScroll />
             <AppBootstrapGate>
               {showCommandCore && <PersistentCommandCore />}
-              {showNavbar && <Navbar />}
+              {showNavbar && <NavbarGate />}
               <Suspense fallback={<RouteFallback />}>
                 <div
                   key={pathname}

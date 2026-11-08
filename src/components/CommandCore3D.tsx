@@ -270,7 +270,7 @@ const CommandCoreScene = ({
       <pointLight color={CORE_COLOR} intensity={5.2} position={[2.5, 2.5, 3.5]} distance={14} />
       <pointLight color={SECONDARY_COLOR} intensity={1.4} position={[-3, -1.5, -2]} distance={12} />
 
-      <points ref={ambientParticlesRef} geometry={ambientParticleGeometry}>
+      <points ref={ambientParticlesRef} geometry={ambientParticleGeometry} scale={0.82}>
         <pointsMaterial
           color={RING_COLOR}
           size={0.012}
@@ -282,7 +282,7 @@ const CommandCoreScene = ({
         />
       </points>
 
-      <group ref={groupRef} scale={1.04}>
+      <group ref={groupRef} scale={0.853}>
         <mesh scale={1.38}>
           <sphereGeometry args={[1.22, 28, 28]} />
           <meshBasicMaterial
@@ -471,7 +471,8 @@ const CommandCore3D = ({ className = "", isActive = true, coreStateRef }: Comman
     <div className={`absolute inset-0 ${className}`}>
       <Suspense fallback={<CommandCoreFallback />}>
         <Canvas
-          frameloop={isActive ? "always" : "demand"}
+          resize={{ offsetSize: true }}
+          frameloop="always"
           camera={{ position: [0, 0, isMobile ? 16.5 : 9.8], fov: isMobile ? 46 : 48 }}
           dpr={isMobile ? [1, 1] : [1, 1.15]}
           gl={{ alpha: true, antialias: false, powerPreference: "high-performance" }}
