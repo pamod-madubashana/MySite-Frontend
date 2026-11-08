@@ -248,6 +248,28 @@
   }
 }
 
+@keyframes nav-rise {
+  from {
+    transform: translateY(115%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.site-bottom-nav {
+  view-transition-name: site-bottom-nav;
+  animation: nav-rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-bottom-nav {
+    animation: none;
+  }
+}
+
 .command-core-reveal {
   transition:
     opacity 300ms ease,
