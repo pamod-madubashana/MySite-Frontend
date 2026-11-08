@@ -63,6 +63,10 @@ interface ActivePillProps {
   variant?: "pill" | "underline";
   /** tailwind classes for the indicator fill */
   fillClass?: string;
+  /** vertical inset (px) shaved off the top/bottom of the target rect (pill only) */
+  insetY?: number;
+  /** corner radius (px) for the clip-path round */
+  radius?: number;
 }
 
 export function ActivePill({
@@ -70,6 +74,8 @@ export function ActivePill({
   activeId,
   variant = "pill",
   fillClass = "bg-primary",
+  insetY = 0,
+  radius = 99,
 }: ActivePillProps) {
   const pillRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -98,6 +104,9 @@ export function ActivePill({
       t.left += 12;
       t.right -= 12;
       t.top = t.bottom - 2;
+    } else if (insetY > 0) {
+      t.top += insetY;
+      t.bottom -= insetY;
     }
 
     const prevEl = prevRef.current;
@@ -108,6 +117,9 @@ export function ActivePill({
       p.left += 12;
       p.right -= 12;
       p.top = p.bottom - 2;
+    } else if (p && insetY > 0) {
+      p.top += insetY;
+      p.bottom -= insetY;
     }
 
     prevRef.current = target;
@@ -124,7 +136,7 @@ export function ActivePill({
     if (!p || !boxRef.current || prefersReduced) {
       // first paint / reduced motion — snap into place
       applyBox(pill, t);
-      pill.style.clipPath = "inset(0px round 99px)";
+      pill.style.clipPath = `inset(0px round ${radius}px)`;
       boxRef.current = t;
       return;
     }
@@ -160,19 +172,19 @@ export function ActivePill({
       const top = from.top + (to.top - from.top) * vert;
       const bottom = from.bottom + (to.bottom - from.bottom) * vert;
 
-      pill.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px round 99px)`;
+      pill.style.clipPath = `inset(${top}px ${right}px ${bottom}px ${left}px round ${radius}px)`;
 
       if (el < DUR_TRAIL) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
         rafRef.current = null;
         applyBox(pill, t);
-        pill.style.clipPath = "inset(0px round 99px)";
+        pill.style.clipPath = `inset(0px round ${radius}px)`;
         boxRef.current = t;
       }
     };
     rafRef.current = requestAnimationFrame(tick);
-  }, [activeId, containerRef, variant]);
+  }, [activeId, containerRef, variant, insetY, radius]);
 
   // ---- Resize observer: set up ONCE, reads activeId from ref ----
   useEffect(() => {
@@ -189,16 +201,19 @@ export function ActivePill({
         t.left += 12;
         t.right -= 12;
         t.top = t.bottom - 2;
+      } else if (insetY > 0) {
+        t.top += insetY;
+        t.bottom -= insetY;
       }
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
       applyBox(pill, t);
-      pill.style.clipPath = "inset(0px round 99px)";
+      pill.style.clipPath = `inset(0px round ${radius}px)`;
       boxRef.current = t;
     });
     ro.observe(root);
     return () => ro.disconnect();
-  }, [containerRef, variant]);
+  }, [containerRef, variant, insetY, radius]);
 
   useEffect(
     () => () => {
@@ -212,7 +227,7 @@ export function ActivePill({
       ref={pillRef}
       aria-hidden
       className={`pointer-events-none absolute z-0 ${fillClass}`}
-      style={{ clipPath: "inset(0px round 99px)" }}
+      style={{ clipPath: `inset(0px round ${radius}px)` }}
     />
   );
 }

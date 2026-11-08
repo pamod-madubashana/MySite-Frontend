@@ -115,6 +115,7 @@ export const Navbar = () => {
               activeId={pathActiveId}
               variant="pill"
               fillClass="bg-primary"
+              insetY={6}
             />
             {navLinks.map((link) => (
               <li key={link.path} className="relative list-none">
