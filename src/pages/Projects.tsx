@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Footer } from "@/components/layout/Footer";
-import { Filter, Search, Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { projectApi } from "@/api/projectApi";
 import PageSeo from "@/components/seo/PageSeo";
@@ -105,7 +105,6 @@ const writeProjectsPageCache = (projects: Project[], githubStats: GithubStats) =
 };
 
 const Projects = () => {
-  const [selectedTag, setSelectedTag] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [githubStats, setGithubStats] = useState<GithubStats>({});
@@ -196,17 +195,13 @@ const Projects = () => {
     };
   }, []);
 
-  const availableTags = ["All", ...new Set(projects.flatMap((project) => project.tags))].slice(0, 10);
-
   const filteredProjects = projects.filter((project) => {
-    const matchesTag = selectedTag === "All" || project.tags.includes(selectedTag);
     const query = searchQuery.toLowerCase();
-    const matchesSearch =
+    return (
       project.title.toLowerCase().includes(query) ||
       project.description.toLowerCase().includes(query) ||
-      project.tags.some((tag) => tag.toLowerCase().includes(query));
-
-    return matchesTag && matchesSearch;
+      project.tags.some((tag) => tag.toLowerCase().includes(query))
+    );
   });
 
   return (
@@ -265,38 +260,17 @@ const Projects = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45, delay: 0.15 }}
-              className="surface-card flex flex-col gap-5 rounded-3xl  md:flex-row md:items-center md:justify-between"
+              className="surface-card rounded-3xl"
             >
-              <div className="relative w-full max-w-xl">
+              <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search archive..."
+                  placeholder="Search project"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-11 w-full rounded-lg border border-white/10 bg-background/55 pl-10 pr-4 font-mono text-sm text-foreground outline-none transition placeholder:text-muted-foreground/70 focus:border-primary/50 focus:ring-2 focus:ring-primary/20"
                 />
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  <Filter className="h-4 w-4" />
-                  Filter
-                </span>
-
-                {availableTags.map((tag) => (
-                  <button
-                    key={tag}
-                    onClick={() => setSelectedTag(tag)}
-                    className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
-                      selectedTag === tag
-                        ? "border-primary/55 bg-primary/20 text-primary"
-                        : "border-white/10 bg-white/[0.04] text-muted-foreground hover:border-primary/35 hover:text-foreground"
-                    }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
               </div>
             </motion.div>
           </div>
@@ -306,7 +280,7 @@ const Projects = () => {
           <div className="section-inner">
             <AnimatePresence mode="wait">
               <motion.div
-                key={selectedTag + searchQuery}
+                key={searchQuery}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
