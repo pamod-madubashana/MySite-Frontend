@@ -144,7 +144,7 @@ export const ContactSection = () => {
             whileInView={shouldAnimate ? { opacity: 1, y: 0 } : undefined}
             viewport={shouldAnimate ? { once: true, amount: 0.18, margin: "0px 0px -56px 0px" } : undefined}
             transition={shouldAnimate ? { duration: 0.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] } : undefined}
-            className="surface-card"
+            className="surface-card border-primary/20"
           >
             <form className="space-y-6" onSubmit={handleSubmit} noValidate>
               <div className="grid gap-6 md:grid-cols-2">
@@ -162,7 +162,7 @@ export const ContactSection = () => {
                     autoComplete="name"
                     maxLength={80}
                     aria-invalid={Boolean(formErrors.name)}
-                    className="h-12 border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
+                    className="h-12 border-primary/25 bg-background/55 text-foreground placeholder:text-muted-foreground/80 focus-visible:border-primary/50"
                   />
                   {formErrors.name && <p className="mt-2 text-sm text-destructive">{formErrors.name}</p>}
                 </div>
@@ -181,7 +181,7 @@ export const ContactSection = () => {
                     autoComplete="email"
                     maxLength={254}
                     aria-invalid={Boolean(formErrors.email)}
-                    className="h-12 border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
+                    className="h-12 border-primary/25 bg-background/55 text-foreground placeholder:text-muted-foreground/80 focus-visible:border-primary/50"
                   />
                   {formErrors.email && <p className="mt-2 text-sm text-destructive">{formErrors.email}</p>}
                 </div>
@@ -212,7 +212,7 @@ export const ContactSection = () => {
                   onChange={(event) => handleChange("message", event.target.value)}
                   maxLength={2000}
                   aria-invalid={Boolean(formErrors.message)}
-                  className="resize-none border-border/70 bg-background/55 text-foreground placeholder:text-muted-foreground/80"
+                  className="resize-none border-primary/25 bg-background/55 text-foreground placeholder:text-muted-foreground/80 focus-visible:border-primary/50"
                 />
                 {formErrors.message && <p className="mt-2 text-sm text-destructive">{formErrors.message}</p>}
               </div>

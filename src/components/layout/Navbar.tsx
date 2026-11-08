@@ -2,7 +2,6 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ContactSection } from "@/components/sections/ContactSection";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -168,14 +167,13 @@ export const Navbar = () => {
           {/* Contact CTA */}
           <div className="hidden md:flex items-center gap-4">
             {settings?.siteSections.showContact !== false && (
-              <Button
-                variant="default"
-                size="sm"
-                className="min-h-11 rounded-lg"
+              <button
+                type="button"
+                className="block min-h-11 px-4 py-2 text-sm font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground"
                 onClick={(event) => openContactModal(getContactDialogOrigin(event.currentTarget))}
               >
                 Contact
-              </Button>
+              </button>
             )}
           </div>
 
@@ -235,9 +233,9 @@ export const Navbar = () => {
               ))}
               </ul>
               {settings?.siteSections.showContact !== false && (
-                <Button
-                  variant="default"
-                  className="mt-4 min-h-11 w-full rounded-lg"
+                <button
+                  type="button"
+                  className="mt-2 block min-h-11 w-full rounded-lg px-4 py-3 text-left text-base font-medium text-muted-foreground transition-colors duration-150 hover:bg-foreground/[0.04] hover:text-foreground"
                   onClick={(event) => {
                     const origin = getContactDialogOrigin(event.currentTarget);
                     setIsOpen(false);
@@ -245,7 +243,7 @@ export const Navbar = () => {
                   }}
                 >
                   Contact
-                </Button>
+                </button>
               )}
             </div>
           </motion.div>
@@ -256,7 +254,7 @@ export const Navbar = () => {
         <DialogContent
           style={contactDialogStyle}
           overlayClassName="bg-transparent backdrop-blur-[2px]"
-          className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-border/60 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 contact-dialog-content"
+          className="dark w-[95vw] max-w-5xl h-[90vh] p-0 border border-primary/25 bg-background/60 backdrop-blur-2xl shadow-2xl shadow-black/50 contact-dialog-content"
         >
           <div
             data-lenis-prevent
