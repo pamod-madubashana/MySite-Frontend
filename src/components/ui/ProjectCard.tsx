@@ -64,8 +64,8 @@ export const ProjectCard = ({
     >
       {project.featured && (
         <div className="absolute left-4 top-4 z-20">
-          <span className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-            <Star className="h-3.5 w-3.5" strokeWidth={1.5} />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-background/75 px-2.5 py-1 font-mono text-xs text-foreground shadow-lg shadow-black/30 backdrop-blur-md">
+            <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" strokeWidth={1.5} />
             Featured
           </span>
         </div>
